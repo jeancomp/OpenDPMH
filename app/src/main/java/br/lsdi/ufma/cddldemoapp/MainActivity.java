@@ -1,23 +1,3 @@
-/**
- * Copyright 2019 LSDi - Laboratório de Sistemas Distribuídos Inteligentes
- * Universidade Federal do Maranhão
- *
- * This file is part of CDDLDemoApp.
- *
- * CDDLDemoApp is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Foobar is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Foobar.  If not, see <https://www.gnu.org/licenses/>6.
- */
-
 package br.lsdi.ufma.cddldemoapp;
 
 import android.Manifest;
@@ -41,7 +21,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import br.pucrio.inf.lac.mhub.s2pa.technologies.internal.sensors.BatterySensor;
@@ -67,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText filterEditText;
 
     private CDDL cddl;
-    private String email = "lcmuniz@lsdi.ufma.br";
+    private String email = "jean.marques@lsdi.ufma.br";
     private List<String> sensorNames;
     private String currentSensor;
     private Subscriber subscriber;
@@ -163,9 +145,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void configSpinner() {
-
         List<Sensor> sensors = cddl.getInternalSensorList();
+
         sensorNames = sensors.stream().map(Sensor::getName).collect(Collectors.toList());
+
+        //for (Sensor sensor: cddl.getInternalSensorList()) {
+            //sensorNames = Collections.singletonList(sensor.getName());
+            //System.out.println(sensorNames);
+        //}
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, sensorNames);
         spinner = findViewById(R.id.spinner);
