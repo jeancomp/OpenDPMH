@@ -1,3 +1,7 @@
+// Possiveis nomes para o framework:
+
+// SERELEPE, QUATIPURU: trata-se de um esquilo selvagem
+// MUTUM: ave maranhense extinsão
 package br.lsdi.ufma.cddldemoapp;
 
 import android.Manifest;
@@ -21,6 +25,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText filterEditText;
 
     private CDDL cddl;
-    private String email = "jean.marques@lsdi.ufma.br";
-    private List<String> sensorNames;
+    private String email = "jean.marques@lsdi.ufma.br";    // Observacao importante para topico definido: mhub/+/service_topic/my-service
+    private List<String> sensorNames = new ArrayList<String>();  ;
     private String currentSensor;
     private Subscriber subscriber;
 
@@ -84,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void configCDDL() {
 
-        //String host = CDDL.startMicroBroker();
-        String host = "broker.hivemq.com";
+        String host = CDDL.startMicroBroker();
+        //String host = "broker.hivemq.com";
 
         Connection connection = ConnectionFactory.createConnection();
         connection.setHost(host);
@@ -147,12 +152,13 @@ public class MainActivity extends AppCompatActivity {
     private void configSpinner() {
         List<Sensor> sensors = cddl.getInternalSensorList();
 
-        sensorNames = sensors.stream().map(Sensor::getName).collect(Collectors.toList());
+        //sensorNames = sensors.stream().map(Sensor::getName).collect(Collectors.toList());
 
-        //for (Sensor sensor: cddl.getInternalSensorList()) {
-            //sensorNames = Collections.singletonList(sensor.getName());
-            //System.out.println(sensorNames);
-        //}
+        for (Sensor sensor: cddl.getInternalSensorList()) {
+            sensorNames.add(sensor.getName());
+            //List<String> str = Collections.singletonList(sensor.getName());
+            System.out.println(sensorNames);
+        }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, sensorNames);
         spinner = findViewById(R.id.spinner);
@@ -180,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
     private void startSelectedSensor() {
 
         String selectedSensor = spinner.getSelectedItem().toString();
-        cddl.setFilter("select * from Message where cast(serviceValue[0], int) > 50");
+        //cddl.setFilter("select * from Message where cast(serviceValue[0], int) > 50");
         cddl.startSensor(selectedSensor);
         subscriber.subscribeServiceByName(selectedSensor);
         currentSensor = selectedSensor;
