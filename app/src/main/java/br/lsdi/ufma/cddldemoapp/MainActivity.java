@@ -1,7 +1,8 @@
-// Possiveis nomes para o framework:
+// Possiveis nomes para o framework fenotipagem digital na saude:
 
 // SERELEPE, QUATIPURU: trata-se de um esquilo selvagem
 // MUTUM: ave maranhense extinsão
+
 package br.lsdi.ufma.cddldemoapp;
 
 import android.Manifest;
@@ -25,21 +26,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import br.pucrio.inf.lac.mhub.s2pa.technologies.internal.sensors.BatterySensor;
-import br.pucrio.inf.lac.mhub.s2pa.technologies.internal.sensors.LocationSensor;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.Connection;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.cddl.qos.TimeBasedFilterQoS;
 
 
 public class MainActivity extends AppCompatActivity {
