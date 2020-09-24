@@ -17,10 +17,10 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MasterActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
+    public AppBarConfiguration mAppBarConfiguration;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_master);
         Toolbar toolbar = findViewById(R.id.toolbar);

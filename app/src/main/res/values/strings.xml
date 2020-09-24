@@ -8,7 +8,7 @@
     <string name="filter_label">Filtro (EPL):</string>
     <string name="filter_button_label">Filtrar</string>
     <string name="clear_filter_button_label">Tudo</string>
-    <string name="subscrever_sensores">Recebendo Sensores</string>
+    <string name="subscrever_sensores"></string>
     <string name="pub_sub_mensagem">Transmitir Mensagem</string>
     <string name="subscrever_no_topico">Subscrever no Tópico</string>
     <string name="subscrever">Subscrever</string>
@@ -27,5 +27,6 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_sensor">Sensores</string>
     <string name="title_activity_master">MainActivity2</string>
 </resources>
