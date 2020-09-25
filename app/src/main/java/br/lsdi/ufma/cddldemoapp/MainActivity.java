@@ -10,8 +10,11 @@ import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -19,6 +22,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import org.apache.commons.lang3.StringUtils;
 import org.greenrobot.eventbus.EventBus;
@@ -56,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean filtering;
 
     private Handler handler = new Handler();
+    private AppBarConfiguration mAppBarConfiguration;
 
     EventBus eb;
 
@@ -64,9 +73,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         eb = EventBus.builder().build();
         eb.register(this);
 
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                .setDrawerLayout(drawer)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+
+
+/*
         setPermissions();
 
         if (savedInstanceState == null) {
@@ -79,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
         configStopButton();
         configClearButton();
         configFilterButton();
+*/
+
+
+
     }
 
     private void configCDDL() {
@@ -131,8 +160,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        AppMenu appMenu = AppMenu.getInstance();
-        appMenu.setMenu(menu);
+        //AppMenu appMenu = AppMenu.getInstance();
+        //appMenu.setMenu(menu);
+
+        getMenuInflater().inflate(R.menu.master, menu);
+
         return true;
     }
 
@@ -141,6 +173,13 @@ public class MainActivity extends AppCompatActivity {
         AppMenu appMenu = AppMenu.getInstance();
         appMenu.setMenuItem(MainActivity.this, item);
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
+                || super.onSupportNavigateUp();
     }
 
     private void configSpinner() {

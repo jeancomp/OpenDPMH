@@ -186,23 +186,19 @@ public class HomeFragment extends Fragment {
     }
 
     public void configStartButton() {
-
         Button button = root.findViewById(R.id.start_button);
         button.setOnClickListener(e -> {
             stopCurrentSensor();
             startSelectedSensor();
         });
-
     }
 
     public void startSelectedSensor() {
-
         String selectedSensor = spinner.getSelectedItem().toString();
         //cddl.setFilter("select * from Message where cast(serviceValue[0], int) > 50");
         cddl.startSensor(selectedSensor);
         subscriber.subscribeServiceByName(selectedSensor);
         currentSensor = selectedSensor;
-
     }
 
     public void stopCurrentSensor() {

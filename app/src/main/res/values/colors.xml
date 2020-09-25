@@ -4,4 +4,14 @@
     <color name="colorPrimaryDark">#FF4500</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorTitle">#FFA500</color>
+
+
+    <!--cores do tema amarelo com laranja -->
+    <color name="primaryColor">#fdd835</color>
+    <color name="primaryLightColor">#ffff6b</color>
+    <color name="primaryDarkColor">#c6a700</color>
+    <color name="primaryTextColor">#000000</color>
+    <color name="secondaryLightColor">#ffa040</color>
+    <color name="secondaryDarkColor">#c43e00</color>
+    <color name="secondaryTextColor">#000000</color>
 </resources>
