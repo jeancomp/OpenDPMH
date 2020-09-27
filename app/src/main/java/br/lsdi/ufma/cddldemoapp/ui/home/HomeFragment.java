@@ -2,6 +2,7 @@ package br.lsdi.ufma.cddldemoapp.ui.home;
 
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +35,9 @@ import java.util.List;
 import br.lsdi.ufma.cddldemoapp.AppMenu;
 import br.lsdi.ufma.cddldemoapp.ListViewAdapter;
 import br.lsdi.ufma.cddldemoapp.MessageEvent;
+import br.lsdi.ufma.cddldemoapp.PubSubActivity;
 import br.lsdi.ufma.cddldemoapp.R;
+import br.lsdi.ufma.cddldemoapp.ui.slideshow.SlideshowFragment;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.Connection;
 import br.ufma.lsdi.cddl.ConnectionFactory;
@@ -67,6 +72,8 @@ public class HomeFragment extends Fragment {
 
     View root;
 
+    Button btAudio;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         homeViewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
@@ -79,6 +86,22 @@ public class HomeFragment extends Fragment {
                 //textView.setText(s);
             //}
         //});
+
+        btAudio = (Button) root.findViewById(R.id.btAudio);
+        btAudio.setOnClickListener(new View.OnClickListener() {
+            private Context currentObj = getActivity();
+            @Override
+            public void onClick(View view) {
+                PubSubActivity pub = new PubSubActivity();
+                SlideshowFragment slideshowFragment = new SlideshowFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.container, slideshowFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+        });
+
 
         eb = EventBus.builder().build();
         eb.register(this);
@@ -252,5 +275,10 @@ public class HomeFragment extends Fragment {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
+    }
+
+    public void proximaTela(View view){
+        //Intent intent = new Intent(getActivity(), PubSubActivity.class);
+        //startActivity(intent);
     }
 }

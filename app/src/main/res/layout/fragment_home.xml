@@ -45,18 +45,31 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:labelFor="@id/filter_edittext"
-            android:textColor="@android:color/black"
-            android:text="@string/filter_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:labelFor="@id/filter_edittext"
+            android:text="@string/filter_label"
+            android:textColor="@android:color/black"
+            android:visibility="invisible"
+            tools:visibility="invisible" />
+
+        <Button
+            android:id="@+id/btAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="proximaTela"
+            android:text="Audio"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="-2dp" />
 
         <EditText
-            android:inputType="text"
             android:id="@+id/filter_edittext"
-            android:autofillHints="Filtro EPL"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:autofillHints="Filtro EPL"
+            android:inputType="text"
+            android:visibility="invisible"
+            tools:visibility="invisible" />
 
         <LinearLayout
             style="?android:attr/buttonBarStyle"

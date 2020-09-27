@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@id/nav_home">
 
     <fragment
         android:id="@+id/nav_home"
@@ -22,4 +22,9 @@
         android:name="br.lsdi.ufma.cddldemoapp.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="br.lsdi.ufma.cddldemoapp.MainActivity"
+        android:label="activity_pub_sub"
+        tools:layout="@layout/activity_pub_sub" />
 </navigation>
