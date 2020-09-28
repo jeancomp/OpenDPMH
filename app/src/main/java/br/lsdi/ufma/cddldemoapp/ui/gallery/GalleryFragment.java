@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.media.AudioTimestamp;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,6 +22,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import br.lsdi.ufma.cddldemoapp.R;
 
@@ -50,22 +53,19 @@ public class GalleryFragment extends Fragment{
             //}
         //});
 
-        requestRecordAudioPermission();
-        Log.d("LENDO AUDIO", "1");
-
         // SENSOR - AUDIO
         // Código que realiza coleta dos dados audio
         // Get the minimum buffer size required for the successful creation of an AudioRecord object.
         int bufferSizeInBytes = AudioRecord.getMinBufferSize( RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
-        Log.d("LENDO AUDIO", "2");
-        System.out.printf("valor: %d ", bufferSizeInBytes);
+        Log.d("getMinBufferSize", "2");
+        System.out.printf("Tam buffer min: %d \n ", bufferSizeInBytes);
 
         // Initialize Audio Recorder.
         AudioRecord audioRecorder = new AudioRecord( MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, bufferSizeInBytes);
-        Log.d("LENDO AUDIO", "3");
+        Log.d("AudioRecord", "3");
         // Start Recording.
         audioRecorder.startRecording();
-        Log.d("LENDO AUDIO", "4");
+        Log.d("StartRecording", "4");
 
 
         int numberOfReadBytes   = 0;
@@ -74,9 +74,9 @@ public class GalleryFragment extends Fragment{
         float tempFloatBuffer[] = new float[3];
         int tempIndex           = 0;
         int totalReadBytes      = 0;
-        byte totalByteBuffer[]  = new byte[60 * 44100 * 2];
+        byte totalByteBuffer[]  = new byte[60 * 16000 * 2];
 
-        Log.d("LENDO AUDIO", "5");
+        Log.d("Config", "5");
 
         // While data come from microphone.
         while( true )
@@ -84,11 +84,21 @@ public class GalleryFragment extends Fragment{
             float totalAbsValue = 0.0f;
             short sample        = 0;
 
-            // Lendo o audio
+            Log.d("LendoAudio", "6");
+            // Ler o audio capturado pelo microfone
             numberOfReadBytes = audioRecorder.read( audioBuffer, 0, bufferSizeInBytes );
-            Log.d("LENDO AUDIO", "6");
 
+            // Captura inicio da gravação
+            long startTime = System.nanoTime()/1000;
+            System.out.printf("Start Tempo: %d \n", startTime);
+            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            System.out.print(Timestamp.valueOf(formatDate.format(startTime)));
+            System.out.printf("\n");
 
+            AudioTimestamp inicioTemp = new AudioTimestamp();
+            audioRecorder.getTimestamp(inicioTemp,AudioTimestamp.TIMEBASE_MONOTONIC);
+
+            System.out.printf("Analisando som... \n");
             // Analyze Sound.
             for( int i=0; i<bufferSizeInBytes; i+=2 )
             {
@@ -96,6 +106,7 @@ public class GalleryFragment extends Fragment{
                 totalAbsValue += Math.abs( sample ) / (numberOfReadBytes/2);
             }
 
+            System.out.printf("Analisando temp buffer... \n");
             // Analyze temp buffer.
             tempFloatBuffer[tempIndex%3] = totalAbsValue;
             float temp                   = 0.0f;
@@ -121,6 +132,7 @@ public class GalleryFragment extends Fragment{
 
                 // Save audio to file.
                 String filepath = Environment.getExternalStorageDirectory().getPath();
+                System.out.printf("Endereço do arquivo: %s \n", filepath);
                 File file = new File(filepath,"AudioRecorder");
                 if( !file.exists() )
                     file.mkdirs();
@@ -211,9 +223,7 @@ public class GalleryFragment extends Fragment{
                 totalByteBuffer[totalReadBytes + i] = audioBuffer[i];
             totalReadBytes += numberOfReadBytes;
             //*/
-
             tempIndex++;
-
         }
         return root;
     }
