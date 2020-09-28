@@ -5,7 +5,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
-import android.media.AudioTimestamp;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 
 import br.lsdi.ufma.cddldemoapp.R;
 
@@ -38,6 +36,11 @@ public class GalleryFragment extends Fragment{
     private static final int RECORDER_SAMPLERATE = 16000;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
+
+    private Timestamp startTimeAudio;
+    private Timestamp endTimeAudio;
+    private Timestamp duractionAudio;
+    private int aux1, aux2;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +81,13 @@ public class GalleryFragment extends Fragment{
 
         Log.d("Config", "5");
 
+        //long timeAux=0;
+        Timestamp timeAux1, timeAux2;
+        java.util.Date date = new java.util.Date();
+        aux1=0; aux2=0;
+
         // While data come from microphone.
-        while( true )
-        {
+        while( true ) {
             float totalAbsValue = 0.0f;
             short sample        = 0;
 
@@ -88,15 +95,27 @@ public class GalleryFragment extends Fragment{
             // Ler o audio capturado pelo microfone
             numberOfReadBytes = audioRecorder.read( audioBuffer, 0, bufferSizeInBytes );
 
-            // Captura inicio da gravação
-            long startTime = System.nanoTime()/1000;
-            System.out.printf("Start Tempo: %d \n", startTime);
-            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            System.out.print(Timestamp.valueOf(formatDate.format(startTime)));
-            System.out.printf("\n");
+            // Captura tempo - inicio da gravação
+            //timeAux = System.currentTimeMillis();
+            timeAux1 = new Timestamp(date.getTime());
 
-            AudioTimestamp inicioTemp = new AudioTimestamp();
-            audioRecorder.getTimestamp(inicioTemp,AudioTimestamp.TIMEBASE_MONOTONIC);
+            // Set o valor inicial da captura do audio
+            if( aux1 == 0 ){
+                startTimeAudio = timeAux1;
+                aux1=1;
+                System.out.println("Start Tempo:  \n" + timeAux1);
+            }
+
+            //long startTime = System.nanoTime()/1000000;
+            //System.out.println("Start Tempo:  \n" + timeAux1);
+            //SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            //System.out.print(Timestamp.valueOf(formatDate.format(timeAux)));
+            //System.out.printf("\n");
+
+            //AudioTimestamp inicioTemp = new AudioTimestamp();
+            //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                //audioRecorder.getTimestamp(inicioTemp,AudioTimestamp.TIMEBASE_MONOTONIC);
+            //}
 
             System.out.printf("Analisando som... \n");
             // Analyze Sound.
@@ -113,21 +132,37 @@ public class GalleryFragment extends Fragment{
             for( int i=0; i<3; ++i )
                 temp += tempFloatBuffer[i];
 
-            if( (temp >=0 && temp <= 350) && recording == false )
-            {
+            if( (temp >=0 && temp <= 350) && recording == false ) {
                 Log.i("TAG", "1");
                 tempIndex++;
                 continue;
             }
 
-            if( temp > 350 && recording == false )
-            {
+            if( temp > 350 && recording == false ) {
                 Log.i("TAG", "2");
                 recording = true;
             }
 
-            if( (temp >= 0 && temp <= 350) && recording == true )
-            {
+            if( (temp >= 0 && temp <= 350) && recording == true ) {
+                // Set o valor final da captura do audio
+                java.util.Date date2 = new java.util.Date();
+                timeAux2 = new Timestamp(date2.getTime());
+                if( aux2 == 0 ){endTimeAudio = timeAux2; aux2=1;}
+                System.out.println("Start Tempo: " + startTimeAudio);
+                System.out.println("End Tempo: " + endTimeAudio);
+
+                Timestamp a = startTimeAudio;
+                long miliseconds = endTimeAudio.getTime() - startTimeAudio.getTime();
+                int seconds = (int) miliseconds / 1000;
+                int hours = (int)seconds / 3600;
+                int minutes = ((int)seconds % 3600) / 60;
+                seconds = ((int)seconds % 3600) % 60;
+                System.out.printf("\n");
+                System.out.println("Horas: " + hours);
+                System.out.println("Minutos: " + minutes);
+                System.out.println("Segundos:" + seconds);
+                System.out.println("Miliseconds: " + miliseconds);
+
                 Log.i("TAG", "Save audio to file.");
 
                 // Save audio to file.
@@ -225,6 +260,9 @@ public class GalleryFragment extends Fragment{
             //*/
             tempIndex++;
         }
+
+        
+
         return root;
     }
 
