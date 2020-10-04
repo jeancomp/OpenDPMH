@@ -1,16 +1,16 @@
-package br.lsdi.ufma.cddldemoapp.ui.gallery;
+package br.lsdi.ufma.cddldemoapp.ui.fenotipagem;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-public class GalleryViewModel extends ViewModel {
+public class FenotipagemViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public GalleryViewModel() {
-        //mText = new MutableLiveData<>();
-        //mText.setValue("This is gallery fragment");
+    public FenotipagemViewModel() {
+        mText = new MutableLiveData<>();
+        mText.setValue("This is slideshow fragment");
     }
 
     public LiveData<String> getText() {

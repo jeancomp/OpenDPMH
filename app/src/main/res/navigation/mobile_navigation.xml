@@ -12,19 +12,32 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_sociability"
+        android:name="br.lsdi.ufma.cddldemoapp.ui.sociability.SociabilityFragment"
+        android:label="@string/menu_sociability"
+        tools:layout="@layout/fragment_sociability" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
-    <activity
-        android:id="@+id/mainActivity"
-        android:name="br.lsdi.ufma.cddldemoapp.MainActivity"
-        android:label="activity_pub_sub"
-        tools:layout="@layout/activity_pub_sub" />
+        android:id="@+id/nav_fenotipagem"
+        android:name="br.lsdi.ufma.cddldemoapp.ui.fenotipagem.FenotipagemFragment"
+        android:label="@string/menu_fenotipagem"
+        tools:layout="@layout/fragment_fenotipagem" />
+
+    <fragment
+        android:id="@+id/nav_configuracao"
+        android:name="br.lsdi.ufma.cddldemoapp.ui.configuracao.ConfiguracaoFragment"
+        android:label="@string/menu_configuracao"
+        tools:layout="@layout/fragment_configuracao" />
+
+    <fragment
+        android:id="@+id/nav_chat"
+        android:name="br.lsdi.ufma.cddldemoapp.ui.chat.ChatFragment"
+        android:label="@string/menu_chat"
+        tools:layout="@layout/fragment_chat" />
+
+    <fragment
+        android:id="@+id/nav_sair"
+        android:name="br.lsdi.ufma.cddldemoapp.ui.login.LoginFragment"
+        android:label="@string/menu_sair"
+        tools:layout="@layout/fragment_login" />
 </navigation>

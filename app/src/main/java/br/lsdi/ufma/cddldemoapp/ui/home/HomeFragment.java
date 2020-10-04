@@ -37,7 +37,7 @@ import br.lsdi.ufma.cddldemoapp.ListViewAdapter;
 import br.lsdi.ufma.cddldemoapp.MessageEvent;
 import br.lsdi.ufma.cddldemoapp.PubSubActivity;
 import br.lsdi.ufma.cddldemoapp.R;
-import br.lsdi.ufma.cddldemoapp.ui.slideshow.SlideshowFragment;
+import br.lsdi.ufma.cddldemoapp.ui.fenotipagem.FenotipagemFragment;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.Connection;
 import br.ufma.lsdi.cddl.ConnectionFactory;
@@ -93,10 +93,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 PubSubActivity pub = new PubSubActivity();
-                SlideshowFragment slideshowFragment = new SlideshowFragment();
+                FenotipagemFragment fenotipagemFragment = new FenotipagemFragment();
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container, slideshowFragment);
+                fragmentTransaction.replace(R.id.container, fenotipagemFragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }

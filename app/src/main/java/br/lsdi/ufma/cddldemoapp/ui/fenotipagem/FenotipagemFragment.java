@@ -1,4 +1,4 @@
-package br.lsdi.ufma.cddldemoapp.ui.slideshow;
+package br.lsdi.ufma.cddldemoapp.ui.fenotipagem;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,17 +13,17 @@ import android.arch.lifecycle.ViewModelProviders;
 
 import br.lsdi.ufma.cddldemoapp.R;
 
-public class SlideshowFragment extends Fragment {
+public class FenotipagemFragment extends Fragment {
 
-    private SlideshowViewModel slideshowViewModel;
+    private FenotipagemViewModel fenotipagemViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        slideshowViewModel =
-                ViewModelProviders.of(this).get(SlideshowViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
+        fenotipagemViewModel =
+                ViewModelProviders.of(this).get(FenotipagemViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_fenotipagem, container, false);
         final TextView textView = root.findViewById(R.id.text_slideshow);
-        slideshowViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        fenotipagemViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

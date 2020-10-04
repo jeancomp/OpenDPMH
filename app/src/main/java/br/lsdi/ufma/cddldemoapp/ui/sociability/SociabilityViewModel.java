@@ -1,16 +1,16 @@
-package br.lsdi.ufma.cddldemoapp.ui.slideshow;
+package br.lsdi.ufma.cddldemoapp.ui.sociability;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-public class SlideshowViewModel extends ViewModel {
+public class SociabilityViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public SlideshowViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is slideshow fragment");
+    public SociabilityViewModel() {
+        //mText = new MutableLiveData<>();
+        //mText.setValue("This is gallery fragment");
     }
 
     public LiveData<String> getText() {

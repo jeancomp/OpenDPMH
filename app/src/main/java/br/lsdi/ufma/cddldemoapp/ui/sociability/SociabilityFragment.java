@@ -1,17 +1,13 @@
-package br.lsdi.ufma.cddldemoapp.ui.gallery;
+package br.lsdi.ufma.cddldemoapp.ui.sociability;
 
-import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +21,9 @@ import java.sql.Timestamp;
 
 import br.lsdi.ufma.cddldemoapp.R;
 
-public class GalleryFragment extends Fragment{
+public class SociabilityFragment extends Fragment{
 
-    private GalleryViewModel galleryViewModel;
+    private SociabilityViewModel galleryViewModel;
 
     private static final int RECORDER_BPP = 16;
     //private static final String AUDIO_RECORDER_FILE_EXT_WAV = ".wav";
@@ -46,8 +42,8 @@ public class GalleryFragment extends Fragment{
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.main);
 
-        galleryViewModel = ViewModelProviders.of(this).get(GalleryViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_gallery, container, false);
+        galleryViewModel = ViewModelProviders.of(this).get(SociabilityViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_sociability, container, false);
         //final TextView textView = root.findViewById(R.id.text_gallery);
         //galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             //@Override
@@ -260,51 +256,6 @@ public class GalleryFragment extends Fragment{
             //*/
             tempIndex++;
         }
-
-        
-
         return root;
-    }
-
-    // Fornece permissão em tempo de execução
-    private void requestRecordAudioPermission() {
-        //check API version, do nothing if API version < 23!
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion > android.os.Build.VERSION_CODES.LOLLIPOP){
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                // Should we show an explanation?
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.RECORD_AUDIO)) {
-
-                    // Show an expanation to the user *asynchronously* -- don't block
-                    // this thread waiting for the user's response! After the user
-                    // sees the explanation, try again to request the permission.
-                } else {
-                    // No explanation needed, we can request the permission.
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, 1);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    Log.d("Activity", "Granted!");
-                } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Log.d("Activity", "Denied!");
-                    //finish();
-                }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
     }
 }
