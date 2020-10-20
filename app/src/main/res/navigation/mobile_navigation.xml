@@ -7,37 +7,37 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.home.HomeFragment"
+        android:name="br.lsdi.ufma.appviews.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_sociability"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.sociability.SociabilityFragment"
+        android:name="br.lsdi.ufma.appviews.ui.sociability.SociabilityFragment"
         android:label="@string/menu_sociability"
         tools:layout="@layout/fragment_sociability" />
 
     <fragment
         android:id="@+id/nav_fenotipagem"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.fenotipagem.FenotipagemFragment"
+        android:name="br.lsdi.ufma.appviews.ui.fenotipagem.FenotipagemFragment"
         android:label="@string/menu_fenotipagem"
         tools:layout="@layout/fragment_fenotipagem" />
 
     <fragment
         android:id="@+id/nav_configuracao"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.configuracao.ConfiguracaoFragment"
+        android:name="br.lsdi.ufma.appviews.ui.configuracao.ConfiguracaoFragment"
         android:label="@string/menu_configuracao"
         tools:layout="@layout/fragment_configuracao" />
 
     <fragment
         android:id="@+id/nav_chat"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.chat.ChatFragment"
+        android:name="br.lsdi.ufma.appviews.ui.chat.ChatFragment"
         android:label="@string/menu_chat"
         tools:layout="@layout/fragment_chat" />
 
     <fragment
         android:id="@+id/nav_sair"
-        android:name="br.lsdi.ufma.cddldemoapp.ui.login.LoginFragment"
+        android:name="br.lsdi.ufma.appviews.ui.login.LoginFragment"
         android:label="@string/menu_sair"
         tools:layout="@layout/fragment_login" />
 </navigation>
