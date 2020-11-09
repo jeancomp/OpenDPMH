@@ -47,7 +47,10 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
 
-    //implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android.gms:play-services-base:16.0.1'
+    implementation 'com.google.android.gms:play-services-identity:16.0.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:16.0.0'
 
     //implementation (group: 'br.ufma.lsdi', name: 'cddl', version: '1.0.4', ext: 'aar')
     //implementation (group: 'br.ufma.lsdi', name: 'cddl-mhub', version: '1.0.4', ext: 'aar')

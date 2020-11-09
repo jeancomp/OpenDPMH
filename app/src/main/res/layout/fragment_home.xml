@@ -7,15 +7,6 @@
     tools:context=".ui.home.HomeFragment">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text=" "/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text=" "/>
-
-    <TextView
         android:text="@string/subscrever_sensores"
         android:background="@color/colorTitle"
         android:paddingBottom="10dp"
@@ -32,90 +23,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:textColor="@android:color/black"
-            android:text="@string/available_sensors"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Spinner
-            android:id="@+id/spinner"
-            android:focusedByDefault="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:labelFor="@id/filter_edittext"
-            android:text="@string/filter_label"
-            android:textColor="@android:color/black"
-            android:visibility="invisible"
-            tools:visibility="invisible" />
-
-        <Button
-            android:id="@+id/btAudio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="proximaTela"
-            android:text="Audio"
-            tools:layout_editor_absoluteX="16dp"
-            tools:layout_editor_absoluteY="-2dp" />
-
-        <EditText
-            android:id="@+id/filter_edittext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:autofillHints="Filtro EPL"
-            android:inputType="text"
-            android:visibility="invisible"
-            tools:visibility="invisible" />
-
         <LinearLayout
             style="?android:attr/buttonBarStyle"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <Button
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/start_button"
-                android:text="@string/start"
-                android:drawableTop="@drawable/ic_start"
-                android:layout_weight="1"
-                android:textColor="@android:color/black"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/stop_button"
-                android:textColor="@android:color/black"
-                android:text="@string/stop"
-                android:drawableTop="@drawable/ic_stop"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/clear_button"
-                android:text="@string/clear"
-                android:textColor="@android:color/black"
-                android:drawableTop="@drawable/ic_clear"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <Button
-                style="?android:attr/buttonBarButtonStyle"
-                android:id="@+id/filter_button"
-                android:text="@string/filter_button_label"
-                android:textColor="@android:color/black"
-                android:drawableTop="@drawable/ic_filter"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

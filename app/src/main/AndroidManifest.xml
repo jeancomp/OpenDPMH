@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.lsdi.ufma.appviews">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="br.lsdi.digialphenotyping.appviews">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -11,6 +12,7 @@
 
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -20,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="br.lsdi.ufma.appviews.MasterActivity"
+            android:name="br.lsdi.digialphenotyping.appviews.MasterActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden">
@@ -30,6 +32,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <receiver
+            android:name="br.lsdi.digialphenotyping.virtualsensors.SmsBroadcastReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
