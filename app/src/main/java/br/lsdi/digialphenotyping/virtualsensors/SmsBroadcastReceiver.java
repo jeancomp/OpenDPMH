@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.provider.Telephony;
+import android.telephony.SmsMessage;
+import android.util.Log;
 
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.common.api.CommonStatusCodes;
@@ -14,47 +16,34 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SmsBroadcastReceiver extends BroadcastReceiver {
-    VirtualSensorInterface onNewMessageListener;
-
-    public SmsBroadcastReceiver() {
-    }
-
-    public SmsBroadcastReceiver(VirtualSensorInterface onNewMessageListener) {
-        this.onNewMessageListener = onNewMessageListener;
-    }
+    private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String TAG = "SMSBroadcastReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (SmsRetriever.SMS_RETRIEVED_ACTION.equals(intent.getAction())) {
-            Bundle extras = intent.getExtras();
-            if (extras != null) {
-                Status status = (Status) extras.get(SmsRetriever.EXTRA_STATUS);
+        Log.i(TAG, "#######Intent recebida: " + intent.getAction());
 
-                if (status != null)
-                    switch (status.getStatusCode()) {
-                        case CommonStatusCodes.SUCCESS:
-                            // Obtenha o conteúdo da mensagem SMS
-                            String message = (String) extras.get(SmsRetriever.EXTRA_SMS_MESSAGE);
-                            // Extraia o código único da mensagem e conclua a verificação
-                            // enviando o código de volta ao seu servidor.
-                            if (!TextUtils.isEmpty(message)) {
-                                String activationCode = null;
-                                Pattern p = Pattern.compile("your pattern like \\b\\d{4}\\b");
-                                Matcher m = p.matcher(message);
-                                if (m.find()) {
-                                    activationCode = (m.group(0));  // A substring correspondente
-                                }
+//        if (intent.getAction().equals(SMS_RECEIVED)) {
+//            Bundle bundle = intent.getExtras();
+//            if (bundle != null) {
+//                Object[] pdus = (Object[])bundle.get("pdus");
+//                final SmsMessage[] messages = new SmsMessage[pdus.length];
+//                System.out.println(messages);
+//                for (int i = 0; i < pdus.length; i++) {
+//                    messages[i] = SmsMessage.createFromPdu((byte[])pdus[i], SMS_RECEIVED);
+//                }
+//                if (messages.length > -1) {
+//                    //Log.i(TAG, "####Mensagem recebida: " + messages[0].getMessageBody());
+//                }
+//            }
+//        }
 
-                                if (onNewMessageListener != null && !TextUtils.isEmpty(activationCode))
-                                    onNewMessageListener.onNewMessageReceived(activationCode);
-                            }
-                            break;
-                        case CommonStatusCodes.TIMEOUT:
-                            // Tempo limite de espera por SMS (5 minutos)
-                            // Lidar com o erro ...
-                            break;
-                    }
+        for(SmsMessage message : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
+            if (message == null) {
+                Log.e(TAG, "####Mensagem nula: ");
+                break;
             }
+            Log.e(TAG, "####Mensagem recebida: " + message.getDisplayMessageBody());
         }
     }
 }

@@ -41,42 +41,14 @@ public class HomeFragment extends Fragment {
         homeViewModel = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        VirtualSensorInterface onNewMessageListener = activationCode -> {
-            System.out.println(activationCode);
-            if (!TextUtils.isEmpty(activationCode)) {
-                //editText.setText(String.valueOf(activationCode));
-                System.out.println("################ ActivationCode...");
-                System.out.println(activationCode);
-            }
-        };
-
-        smsListener = new SmsBroadcastReceiver(onNewMessageListener);
-        if (getContext() != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                getContext().registerReceiver(smsListener, new IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION));
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            setPermissions();
+        else {
+            smsListener = new SmsBroadcastReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+            getActivity().registerReceiver(smsListener, intentFilter);
         }
-
-        //Cria sensor SMS
-        //SMSSensor smsSensor = new SMSSensor();
-        // Pega uma instância de SmsRetrieverClient, usada para começar a ouvir uma correspondência
-        // mensagem SMS.
-        SmsRetrieverClient client = SmsRetriever.getClient(Objects.requireNonNull(getContext()) /* context */);
-        // Inicia SmsRetriever, que espera por UMA mensagem SMS correspondente até o tempo limite
-        // (5 minutos). A mensagem SMS correspondente será enviada por meio de uma intenção de transmissão com
-        // ação SmsRetriever # SMS_RETRIEVED_ACTION.
-        Task<Void> task = client.startSmsRetriever();
-        // Listener sucesso/falha da tarefa de início. Se em um background thread, este
-        // pode ser feito o bloqueio usando Tasks.await (task, [timeout]);
-        task.addOnSuccessListener(aVoid -> {
-            // Iniciado retriever com sucesso, espera intent broadcast
-            System.out.println("################ Sucesso ao detectar broadcast...");
-        });
-        // Se falhou
-        task.addOnFailureListener(e -> {
-            // Failed to start retriever, inspect Exception for more details
-            System.out.println("################ Erro ao detectar SMS...");
-        });
 
         //setPermissions();
         return root;
