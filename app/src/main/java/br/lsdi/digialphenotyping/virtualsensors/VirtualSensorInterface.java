@@ -4,14 +4,14 @@ package br.lsdi.digialphenotyping.virtualsensors;
 public interface VirtualSensorInterface {
 
     // Método responsável por registrar o sensor virtual no sistema
-    Boolean registerListener(SensorEventListener sensorEventListener);
+    public boolean registerListener();
 
     // Método responsável por tirar dos registros o sensor virtual cadastrado, não é mais identificado como sensor
-    Boolean unregisterListener();
+    public boolean unregisterListener();
 
     // Método responsável por iniciar a coleta dos dados dos sensores virtuais
-    Boolean startCollecting();
+    public boolean startCollecting();
 
     // Método responsável por interromper a coleta dos dados,
-    Boolean stopCollecting();
+    public boolean stopCollecting();
 }

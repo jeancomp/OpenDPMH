@@ -1,33 +1,30 @@
 package br.lsdi.digialphenotyping.virtualsensors;
 
-import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.widget.Toast;
+import android.content.Intent;
+import android.provider.Telephony;
+import android.telephony.SmsMessage;
+import android.util.Log;
 
-import java.util.List;
+// BroadcastReceiver: é um componente android que permite registrar eventos no sistema ou aplicativos
+// 1- É registrado um receiver no AndroidManifest, com permissão para escutar sms recebido no dispositivo móvel
+// 2- Para implementar a classe  para receber SMS, precisa ser extendida do BroadcastReceiver
+// 3- Se o evento para o qual o BroadcastReceiver foi registrado acontecer, o onReceive() método do
+//      receptor é chamado pelo sistema Android.
+public class SMSSensor extends BroadcastReceiver {
+    private static final String TAG = SMSSensor.class.getName();
 
-public class SMSSensor {
-    //Construtor
-    public SMSSensor() {
-        SmsBroadcastReceiver smsBroadcastReceiver = new SmsBroadcastReceiver();
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.i(TAG, "#######Intent recebida: " + intent.getAction());
+
+        for(SmsMessage message : Telephony.Sms.Intents.getMessagesFromIntent(intent)) {
+            if (message == null) {
+                Log.e(TAG, "####Mensagem nula: ");
+                break;
+            }
+            Log.e(TAG, "####Mensagem recebida: " + message.getDisplayMessageBody());
+        }
     }
-
-//    public boolean isAppRunning(Context context, String packageName) {
-//        ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-//        List<ActivityManager.RunningAppProcessInfo> procInfos = activityManager.getRunningAppProcesses();
-//        if (procInfos != null) {
-//            for (ActivityManager.RunningAppProcessInfo processInfo : procInfos) {
-//                if (processInfo.processName.equals(packageName)) {
-//                    return true;
-//                }
-//                System.out.println("######################### Processos em execução: ");
-//                System.out.println(processInfo.processName);
-//                System.out.println(processInfo);
-//                System.out.println(procInfos);
-//            }
-//        }
-//        return false;
-//    }
 }
