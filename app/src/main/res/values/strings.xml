@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LSDinfo</string>
+    <string name="app_name">Framework</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">LSDi User</string>
@@ -44,4 +44,13 @@
     <string name="clear_data">Clear</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="request_client_id">request client id</string>
+    <string name="title_activity_main">MainActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>
