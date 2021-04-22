@@ -1,29 +1,23 @@
 package br.lsdi.digialphenotyping.appviews.ui.home;
 
 import android.Manifest;
-import android.arch.lifecycle.ViewModelProviders;;
+import androidx.lifecycle.ViewModelProviders;;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Telephony;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.google.android.gms.auth.api.phone.SmsRetriever;
-import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
-import com.google.android.gms.tasks.Task;
-
-import java.util.Objects;
 
 import br.lsdi.digialphenotyping.appviews.AppMenu;
 import br.lsdi.digialphenotyping.appviews.R;
