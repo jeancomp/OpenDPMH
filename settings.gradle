@@ -1,3 +1,2 @@
 include ':myapplication'
 include ':digitalphenotyping'
-include ':app'

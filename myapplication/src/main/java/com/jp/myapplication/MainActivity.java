@@ -1,19 +1,19 @@
 package com.jp.myapplication;
 
 import android.os.Bundle;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.view.View;
-
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
 public class MainActivity extends AppCompatActivity {
+    DigitalPhenotypingManager digitalPhenotyping;
+    TextView textview_first;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        textview_first = findViewById(R.id.textview_first);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -30,6 +32,17 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        startFramework();
+    }
+
+    public void startFramework(){
+        digitalPhenotyping = new DigitalPhenotypingManager(this,"lcmuniz@gmail.com", false);
+        digitalPhenotyping.setActivity(this);
+        digitalPhenotyping.start();
+        digitalPhenotyping.subscribeMessage("Meu serviço");
+        digitalPhenotyping.startVirtualSensor("TouchScreen");
+        //textview_first.setText(digitalPhenotyping.getStatusCon());
     }
 
     @Override
