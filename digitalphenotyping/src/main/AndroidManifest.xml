@@ -11,6 +11,7 @@
         android:theme="@style/Theme.Fenotipagem_digital_saude_vs_0_1">
 
         <service android:name=".inferenceprocessormanager.services.InferenceProcessorManager"/>
+        <service android:name=".dataprovider.services.ContextDataProvider" />
     </application>
 
 </manifest>

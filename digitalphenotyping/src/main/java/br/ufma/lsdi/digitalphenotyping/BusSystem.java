@@ -1,16 +1,21 @@
-package br.ufma.lsdi.digitalphenotyping.dataprovider;
+package br.ufma.lsdi.digitalphenotyping;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
-
 import androidx.core.app.ActivityCompat;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.FileNotFoundException;
 import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
@@ -24,53 +29,48 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.MyMessage;
-import br.ufma.lsdi.digitalphenotyping.R;
-import br.ufma.lsdi.digitalphenotyping.datacontroller.DataControllerManager;
-import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
 
-public class ContextDataProvider {
-    CDDL cddl;
-    String clientID;
-    public ConnectionImpl con;
-    public Context context;
-    public Activity activity;
-    public String nameCaCertificate = "rootCA.crt";
-    public String nameClientCertificate = "client.crt";
-    public String statusConnection = "";
+public class BusSystem extends Application {
+    private CDDL cddl;
+    private String clientID;
+    private ConnectionImpl con;
+//    public Subscriber subscriber;
+//    public Handler handler = new Handler();
+    private Context context;
+    private Activity activity;
     private TextView messageTextView;
-    private static final String TAG = ContextDataProvider.class.getName();
-    private static ContextDataProvider instance = null;
+    private String statusConnection = "";
+    private int communicationTechnology = 4;
+    private String nameCaCertificate = "rootCA.crt";
+    private String nameClientCertificate = "client.crt";
+    private static final String TAG = BusSystem.class.getName();
+    private static BusSystem instance = null;
+    //public List<String> listViewMessages;
+    //public ListViewAdapter listViewAdapter;
 
 
-    public ContextDataProvider(){ }
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+    }
 
 
-    public static ContextDataProvider getInstance() {
+    public static BusSystem getInstance() {
         if (instance == null) {
-            instance = new ContextDataProvider();
+            instance = new BusSystem();
         }
         return instance;
     }
 
 
-    public void start(Context context, Activity activity, String clientID){
-        Log.i(TAG,"#### ContextDataProvider->start() ----> clientID: " + clientID);
+    public void start(Context context, Activity activity, String clientID, int communicationTechnology){
         this.context = context;
         this.activity = activity;
         this.clientID = clientID;
+        this.communicationTechnology = communicationTechnology;
 
         messageTextView = new TextView(context);
-    }
-
-
-    private Context getContext() {
-        return context;
-    }
-
-
-    private void setContext(Context context) {
-        this.context= context;
     }
 
 
@@ -94,7 +94,8 @@ public class ContextDataProvider {
             // Para todas os sensores, para entao iniciar apenas a que temos interresse
             cddl.stopAllSensors();
 
-            cddl.startCommunicationTechnology(CDDL.INTERNAL_TECHNOLOGY_VIRTUAL_ID);
+            //cddl.startCommunicationTechnology(CDDL.INTERNAL_TECHNOLOGY_VIRTUAL_ID);
+            cddl.startCommunicationTechnology(this.communicationTechnology);
         }catch (Exception e){
             Log.i(TAG,"#### Error: " + e.getMessage());
         }
@@ -174,6 +175,21 @@ public class ContextDataProvider {
     };
 
 
+    public CDDL getInstanceCDDL(){
+        return cddl.getInstance();
+    }
+
+
+    public Context getContext() {
+        return context;
+    }
+
+
+    public void setContext(Context context) {
+        this.context= context;
+    }
+
+
     public String getStatusCon(){ return statusConnection; }
 
 
@@ -193,12 +209,14 @@ public class ContextDataProvider {
     public String getNameClientCertificate(){ return nameClientCertificate;}
 
 
-    public List<String> listSensoresVirtuais(){
-        List<String> s = cddl.getSensorVirtualList();
+    public List<String> listInternalSensor(){
+        List<String> s = null;
+        List<Sensor> sensorInternal = cddl.getInternalSensorList();
 
-        Log.i(TAG,"\n #### Sensores virtuais disponíveis: \n");
-        for(int i=0; i < s.size(); i++){
-            Log.i(TAG,"#### (" + i + "): " + s.get(i).toString());
+        Log.i(TAG,"\n #### Sensores internos disponíveis: \n");
+        for(int i=0; i < sensorInternal.size(); i++){
+            s.add(sensorInternal.get(i).getName());
+            Log.i(TAG,"#### (" + i + "): " + sensorInternal.get(i).toString());
         }
         return s;
     }
@@ -262,37 +280,89 @@ public class ContextDataProvider {
         CDDL.stopMicroBroker();
     }
 
+//    public void configSubscrbe(){
+//        subscriber = SubscriberFactory.createSubscriber();
+//        subscriber.addConnection(cddl.getConnection());
+//
+//        subscriber.subscribeServiceByName("Location");
+//        subscriber.setSubscriberListener(this::onMessage);
+//    }
 
-    public void subscribeMessage(String serviceName) {
+//    public void onMessage(Message message) {
+//        handler.post(() -> {
+//            Object[] valor = message.getServiceValue();
+//            Log.i(TAG,"#### Mensagem chegou: " + valor[0]);
+//            //listViewMessages.add(StringUtils.join(valor[0] , ", " + valor[1]));
+//            listViewAdapter.notifyDataSetChanged();
+//        });
+//    }
+
+    public Object subscribeMessageCDP(final String serviceName) {
+        final Object[] text = new String[1];
         try {
             Subscriber sub = SubscriberFactory.createSubscriber();
-            sub.addConnection(cddl.getConnection());
-            sub.subscribeServiceByName("Meu serviço");
+            sub.addConnection(cddl.getInstance().getConnection());
+            sub.subscribeServiceByName(serviceName);
             //sub.subscribeServiceByName("Location");
 
             sub.setSubscriberListener(new ISubscriberListener() {
                 @Override
                 public void onMessageArrived(Message message) {
-                    if (message.getServiceName().equals("Meu serviço")) {
-                        Log.d(TAG, "#### Message +++++: " + message);
+                    if (message.getServiceName().equalsIgnoreCase(serviceName)) {
+                        Log.d(TAG, ">>> #### READ MESSAGES: " + message);
+                        text[0] = message.getServiceValue();
                     }
-                    Log.d(TAG, "#### Message -----" + message);
                 }
             });
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.getMessage());
         }
 
+        return text;
     }
 
+    public ISubscriberListener subscriberStartSensor = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+//                    if (message.getServiceName().equals("Meu serviço")) {
+//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+//                    }
+            Log.d(TAG, "#### Read messages -----" + message);
+//                    cddl.getInstance().startSensor(message.getServiceValue().toString());
+        }
+    };
 
-    public void publishMessage() {
+//    public void subscribeMessage(String serviceName) {
+//        try {
+//            Subscriber sub = SubscriberFactory.createSubscriber();
+//            sub.addConnection(cddl.getConnection());
+//            sub.subscribeServiceByName(serviceName);
+//            //sub.subscribeServiceByName("Location");
+//
+//            sub.setSubscriberListener(new ISubscriberListener() {
+//                @Override
+//                public void onMessageArrived(Message message) {
+////                    if (message.getServiceName().equals("Meu serviço")) {
+////                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+////                    }
+//                    Log.d(TAG, "#### Read messages -----" + message);
+////                    cddl.getInstance().startSensor(message.getServiceValue().toString());
+//                }
+//            });
+//        }catch (Exception e){
+//            Log.e(TAG,"#### Error: " + e.getMessage());
+//        }
+//
+//    }
+
+
+    public void publishMessage(String service, String text) {
         Publisher publisher = PublisherFactory.createPublisher();
-        publisher.addConnection(cddl.getConnection());
+        publisher.addConnection(cddl.getInstance().getConnection());
 
         MyMessage message = new MyMessage();
-        message.setServiceName("Meu serviço");
-        message.setServiceByteArray("Valor");
+        message.setServiceName(service);
+        message.setServiceByteArray(text);
         publisher.publish(message);
     }
 
@@ -415,6 +485,4 @@ public class ContextDataProvider {
             ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
         }
     }
-
-
 }
