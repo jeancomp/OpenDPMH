@@ -58,11 +58,10 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.button_second: {
                 // do something for button 2 click
                 break;
-                }
+            }
 
-                case R.id.start: {
-                    break;
-                }
+            //.... etc
+            }
         }
     };
 
