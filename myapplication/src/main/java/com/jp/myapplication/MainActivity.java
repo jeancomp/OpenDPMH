@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     DigitalPhenotypingManager digitalPhenotyping;
     TextView textview_first;
     View button_first;
+    View button_stop;
     private static final String TAG = MainActivity.class.getName();
 
     @Override
@@ -25,7 +26,10 @@ public class MainActivity extends AppCompatActivity {
 
         textview_first = findViewById(R.id.textview_first);
         button_first = findViewById(R.id.button_first);
+        button_stop = findViewById(R.id.stop);
+
         button_first.setOnClickListener(clickListener);
+        button_stop.setOnClickListener(clickListener);
 
 //        FloatingActionButton fab = findViewById(R.id.fab);
 //        fab.setOnClickListener(new OnClickListener() {
@@ -46,13 +50,21 @@ public class MainActivity extends AppCompatActivity {
                 case  R.id.button_first: {
                     Log.i(TAG,"#### Publicando mensagem para start sensor");
                     digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+                    //digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"Goldfish 3-axis Accelerometer");
+                    //digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"SMS");
+                    break;
+                }
+
+                case R.id.stop: {
+                    Log.i(TAG, "#### Publicando mensagem para stop sensor");
+                    digitalPhenotyping.publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
                     break;
                 }
 
                 case R.id.button_second: {
-                // do something for button 2 click
-                break;
-            }
+                    // do something for button 2 click
+                    break;
+                }
 
             //.... etc
             }

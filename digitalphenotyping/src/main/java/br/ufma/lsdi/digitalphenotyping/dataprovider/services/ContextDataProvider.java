@@ -6,19 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.net.Uri;
-import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
-
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
@@ -30,23 +25,30 @@ public class ContextDataProvider extends Service {
     private final BusSystem busSystem = BusSystem.getInstance();
     private static final String TAG = ContextDataProvider.class.getName();
     Subscriber sub;
+    Subscriber subDeactive;
 
 
-    public ContextDataProvider(){ }
+    public ContextDataProvider() {
+    }
 
 
     @Override
-    public void onCreate(){
+    public void onCreate() {
         sub = SubscriberFactory.createSubscriber();
         sub.addConnection(busSystem.getInstance().getInstanceCDDL().getConnection());
+
+        subDeactive = SubscriberFactory.createSubscriber();
+        subDeactive.addConnection(busSystem.getInstance().getInstanceCDDL().getConnection());
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG,"#### Iniciando ContextDataProvider");
+        Log.i(TAG, "#### Iniciando ContextDataProvider");
 
-        subscribeMessage("activesensor");
+        subscribeMessageActive("activesensor");
+        //subscribeMessageActive("deactivatesensor");
+        subscribeMessageDeactive("deactivatesensor");
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -64,9 +66,14 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public void subscribeMessage(String serviceName) {
+    public void subscribeMessageActive(String serviceName) {
         sub.subscribeServiceByName(serviceName);
         sub.setSubscriberListener(subscriberStart);
+    }
+
+    public void subscribeMessageDeactive(String serviceName) {
+        subDeactive.subscribeServiceByName(serviceName);
+        subDeactive.setSubscriberListener(subscriberStop);
     }
 
 
@@ -76,30 +83,56 @@ public class ContextDataProvider extends Service {
 //                    if (message.getServiceName().equals("Meu serviço")) {
 //                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
 //                    }
-            Log.d(TAG, "#### Read messages:  " + message);
+            Log.d(TAG, "#### Read messages (start):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            if(isInternalSensor(atividade) || isVirtualSensor(atividade)){
-                Log.d(TAG, "#### Sensor monitoring---->  " + atividade);
+
+            if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
+                Log.d(TAG, "#### Start sensor monitoring->  " + atividade);
                 startVirtualSensor(atividade);
-            }
-            else{
-                Log.d(TAG, "#### Invalid sensor name---->" + atividade);
+            } else {
+                Log.d(TAG, "#### Invalid sensor name: " + atividade);
             }
         }
     };
 
 
-    public synchronized void publishMessage(String service, String text){
+    public ISubscriberListener subscriberStop = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+//                    if (message.getServiceName().equals("Meu serviço")) {
+//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+//                    }
+            Log.d(TAG, "#### Read messages (stop):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.d(TAG, "#### " + mensagemRecebida);
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+
+
+            if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
+                Log.d(TAG, "#### Stop sensor monitoring->  " + atividade);
+                stoptSensor(atividade);
+            } else {
+                Log.d(TAG, "#### Invalid sensor name: " + atividade);
+            }
+        }
+    };
+
+
+    public synchronized void publishMessage(String service, String text) {
         busSystem.getInstance().publishMessage(service, text);
     }
 
 
-    private Boolean isInternalSensor(String sensor){
+    private Boolean isInternalSensor(String sensor) {
         if (listInternalSensor().contains(sensor)) {
             return true;
         }
@@ -107,7 +140,7 @@ public class ContextDataProvider extends Service {
     }
 
 
-    private Boolean isVirtualSensor(String sensor){
+    private Boolean isVirtualSensor(String sensor) {
         if (listVirtualSensor().contains(sensor)) {
             return true;
         }
@@ -115,26 +148,26 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public List<String> listVirtualSensor(){
+    public List<String> listVirtualSensor() {
         List<String> s = busSystem.getInstance().getInstanceCDDL().getSensorVirtualList();
 
-        Log.i(TAG,"\n #### Sensores virtuais disponíveis, Tamanho: \n" + s.size());
-        for(int i=0; i < s.size(); i++){
-            Log.i(TAG,"#### (" + i + "): " + s.get(i).toString());
+        Log.i(TAG, "\n #### Sensores virtuais disponíveis, Tamanho: \n" + s.size());
+        for (int i = 0; i < s.size(); i++) {
+            Log.i(TAG, "#### (" + i + "): " + s.get(i).toString());
         }
         return s;
     }
 
 
-    public List<String> listInternalSensor(){
+    public List<String> listInternalSensor() {
         List<String> s = new ArrayList();
         List<Sensor> sensorInternal = busSystem.getInstance().getInstanceCDDL().getInternalSensorList();
 
-        Log.i(TAG,"\n #### Sensores internos disponíveis, Tamanho: \n" + s.size());
-        if(s.size() != 0) {
+        Log.i(TAG, "\n #### Sensores internos disponíveis, Tamanho: \n" + sensorInternal.size());
+        if (sensorInternal.size() != 0) {
             for (int i = 0; i < sensorInternal.size(); i++) {
                 s.add(sensorInternal.get(i).getName());
-                //Log.i(TAG,"#### (" + i + "): " + sensorInternal.get(i).toString());
+                Log.i(TAG, "#### (" + i + "): " + sensorInternal.get(i).getName());
             }
             return s;
         }
@@ -142,13 +175,12 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public void startVirtualSensor(String sensor){
-        if(sensor.equalsIgnoreCase("TouchScreen")) {
+    public void startVirtualSensor(String sensor) {
+        if (sensor.equalsIgnoreCase("TouchScreen")) {
             // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
             checkDrawOverlayPermission();
             busSystem.getInstanceCDDL().startSensor(sensor, 0);
-        }
-        else{
+        } else {
             initPermissions(sensor);
             busSystem.getInstanceCDDL().startSensor(sensor, 0);
         }
@@ -157,14 +189,20 @@ public class ContextDataProvider extends Service {
         //cddl.startSensor("ScreenOnOff",0);
     }
 
-    public void startAllVirtualSensors(){
+
+    public void stoptSensor(String sensor) {
+        busSystem.getInstanceCDDL().stopSensor(sensor);
+    }
+
+
+    public void startAllVirtualSensors() {
         // solicita permissão ao  usuário
         initAllPermissions();
 
         //Start sensores virtuais pelo nome e delay
-        busSystem.getInstanceCDDL().startSensor("SMS",0);
-        busSystem.getInstanceCDDL().startSensor("Call",0);
-        busSystem.getInstanceCDDL().startSensor("ScreenOnOff",0);
+        busSystem.getInstanceCDDL().startSensor("SMS", 0);
+        busSystem.getInstanceCDDL().startSensor("Call", 0);
+        busSystem.getInstanceCDDL().startSensor("ScreenOnOff", 0);
 
         // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
         checkDrawOverlayPermission();
@@ -175,7 +213,7 @@ public class ContextDataProvider extends Service {
         Log.i(TAG, "#### Permissao para o sensor TouchScreen");
         // check if we already  have permission to draw over other apps
         if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(busSystem.getContext()) ){
+            if (!Settings.canDrawOverlays(busSystem.getContext())) {
                 // if not construct intent to request permission
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + busSystem.getContext().getPackageName()));
@@ -205,21 +243,23 @@ public class ContextDataProvider extends Service {
         // Checa as permissões para rodar os sensores virtuais
         int PERMISSION_ALL = 1;
 
-        if(sensor.equalsIgnoreCase("SMS")){
+        if (sensor.equalsIgnoreCase("SMS")) {
             String[] PERMISSIONS = {
                     // SMS entrada
                     android.Manifest.permission.SEND_SMS,
                     android.Manifest.permission.RECEIVE_SMS,
                     android.Manifest.permission.READ_SMS,
+                    android.Manifest.permission.WRITE_CONTACTS,
+                    android.Manifest.permission.READ_CONTACTS,
+                    android.Manifest.permission.GET_ACCOUNTS,
                     // SMS saída
                     android.Manifest.permission.READ_EXTERNAL_STORAGE};
 
             if (!hasPermissions(busSystem.getActivity(), PERMISSIONS)) {
-                Log.i(TAG,"##### Permission enabled for the sensor: " + sensor);
+                Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
                 ActivityCompat.requestPermissions(busSystem.getActivity(), PERMISSIONS, PERMISSION_ALL);
             }
-        }
-        else if(sensor.equalsIgnoreCase("Call")){
+        } else if (sensor.equalsIgnoreCase("Call")) {
             String[] PERMISSIONS = {
                     //Call
                     android.Manifest.permission.READ_PHONE_STATE,
@@ -229,7 +269,7 @@ public class ContextDataProvider extends Service {
                     android.Manifest.permission.ADD_VOICEMAIL};
 
             if (!hasPermissions(busSystem.getActivity(), PERMISSIONS)) {
-                Log.i(TAG,"##### Permission enabled for the sensor: " + sensor);
+                Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
                 ActivityCompat.requestPermissions(busSystem.getActivity(), PERMISSIONS, PERMISSION_ALL);
             }
         }
@@ -281,12 +321,34 @@ public class ContextDataProvider extends Service {
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
 
                 // Para usar o GPS
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
         };
 
         if (!hasPermissions(busSystem.getActivity(), PERMISSIONS)) {
-            Log.i(TAG,"##### Permissão Ativada");
+            Log.i(TAG, "##### Permissão Ativada");
             ActivityCompat.requestPermissions(busSystem.getActivity(), PERMISSIONS, PERMISSION_ALL);
+        }
+    }
+
+
+    private void initPermissionsRequired() {
+        // Checa as permissões para rodar os sensores virtuais
+        int PERMISSION_ALL = 1;
+
+        if (true) {
+            String[] PERMISSIONS = {
+                    // Service location
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+
+                    // Outros services
+                    };
+
+            if (!hasPermissions(busSystem.getActivity(), PERMISSIONS)) {
+                Log.i(TAG, "##### Permission enabled for framework");
+                ActivityCompat.requestPermissions(busSystem.getActivity(), PERMISSIONS, PERMISSION_ALL);
+            }
         }
     }
 

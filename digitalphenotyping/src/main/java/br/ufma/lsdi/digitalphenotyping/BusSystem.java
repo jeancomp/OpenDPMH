@@ -47,6 +47,7 @@ public class BusSystem extends Application {
     private static BusSystem instance = null;
     //public List<String> listViewMessages;
     //public ListViewAdapter listViewAdapter;
+    Publisher publisher = PublisherFactory.createPublisher();
 
 
     @Override
@@ -288,39 +289,6 @@ public class BusSystem extends Application {
 //        subscriber.setSubscriberListener(this::onMessage);
 //    }
 
-//    public void onMessage(Message message) {
-//        handler.post(() -> {
-//            Object[] valor = message.getServiceValue();
-//            Log.i(TAG,"#### Mensagem chegou: " + valor[0]);
-//            //listViewMessages.add(StringUtils.join(valor[0] , ", " + valor[1]));
-//            listViewAdapter.notifyDataSetChanged();
-//        });
-//    }
-
-    public Object subscribeMessageCDP(final String serviceName) {
-        final Object[] text = new String[1];
-        try {
-            Subscriber sub = SubscriberFactory.createSubscriber();
-            sub.addConnection(cddl.getInstance().getConnection());
-            sub.subscribeServiceByName(serviceName);
-            //sub.subscribeServiceByName("Location");
-
-            sub.setSubscriberListener(new ISubscriberListener() {
-                @Override
-                public void onMessageArrived(Message message) {
-                    if (message.getServiceName().equalsIgnoreCase(serviceName)) {
-                        Log.d(TAG, ">>> #### READ MESSAGES: " + message);
-                        text[0] = message.getServiceValue();
-                    }
-                }
-            });
-        }catch (Exception e){
-            Log.e(TAG,"#### Error: " + e.getMessage());
-        }
-
-        return text;
-    }
-
 //    public ISubscriberListener subscriberStartSensor = new ISubscriberListener() {
 //        @Override
 //        public void onMessageArrived(Message message) {
@@ -357,7 +325,6 @@ public class BusSystem extends Application {
 
 
     public void publishMessage(String service, String text) {
-        Publisher publisher = PublisherFactory.createPublisher();
         publisher.addConnection(cddl.getInstance().getConnection());
 
         MyMessage message = new MyMessage();

@@ -3,12 +3,17 @@ package br.ufma.lsdi.digitalphenotyping;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+
 import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
 import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
 
 public class DigitalPhenotypingManager{
     public static final String ACTIVE_SENSOR = "activesensor";
+    public static final String DEACTIVATE_SENSOR = "deactivatesensor";
     private String statusCon = "undefined";
     private final BusSystem busSystem = BusSystem.getInstance();
     // MyApplication mApplication = (MyApplication)getApplicationContext();
@@ -30,6 +35,8 @@ public class DigitalPhenotypingManager{
             Log.i(TAG,"#### Iniciando busSystem sem criptografia.");
         }
         setStatusCon(busSystem.getInstance().getStatusCon());
+
+        initPermissionsRequired();
     }
 
 
@@ -96,4 +103,39 @@ public class DigitalPhenotypingManager{
     public void publishMessage(String service, String text){
         busSystem.getInstance().publishMessage(service, text);
     }
+
+
+    private static boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    private void initPermissionsRequired() {
+        // Checa as permissões para rodar os sensores virtuais
+        int PERMISSION_ALL = 1;
+
+        if (true) {
+            String[] PERMISSIONS = {
+                    // Service location
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+
+                    // Outros services
+            };
+
+            if (!hasPermissions(busSystem.getActivity(), PERMISSIONS)) {
+                Log.i(TAG, "##### Permission enabled for framework");
+                ActivityCompat.requestPermissions(busSystem.getActivity(), PERMISSIONS, PERMISSION_ALL);
+            }
+        }
+    }
+
+
 }
