@@ -1,20 +1,14 @@
 package com.jp.myapplication;
 
 import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
-
-import static android.view.View.*;
 
 public class MainActivity extends AppCompatActivity {
     DigitalPhenotypingManager digitalPhenotyping;
@@ -51,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case  R.id.button_first: {
                     Log.i(TAG,"#### Publicando mensagem para start sensor");
-                    digitalPhenotyping.publishMessage("activesensor","TouchScreen");
+                    digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
                     break;
                 }
 
@@ -65,31 +59,11 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-//    public void onClick(View v) {
-//        switch (v.getId()) {
-//            case  R.id.button_first: {
-//                startFramework();
-//                break;
-//            }
-//
-//            case R.id.button_second: {
-//                // do something for button 2 click
-//                break;
-//            }
-//
-//            //.... etc
-//        }
-//    }
 
     public void startFramework(){
         Log.i(TAG,"#### INICIANDO FRAMEWORK");
         digitalPhenotyping = new DigitalPhenotypingManager(this, this,"lcmuniz@gmail.com", 4, false);
-
-
-        //digitalPhenotyping.startVirtualSensor("TouchScreen");
         digitalPhenotyping.start();
-        //digitalPhenotyping.subscribeMessage("activesensor");
-        //digitalPhenotyping.publishMessage("activesensor","TouchScreen");
         //textview_first.setText(digitalPhenotyping.getStatusCon());
     }
 

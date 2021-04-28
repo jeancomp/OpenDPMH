@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-
-import br.ufma.lsdi.cddl.services.CommandService;
 import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
 import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
 
 public class DigitalPhenotypingManager{
+    public static final String ACTIVE_SENSOR = "activesensor";
     private String statusCon = "undefined";
     private final BusSystem busSystem = BusSystem.getInstance();
     // MyApplication mApplication = (MyApplication)getApplicationContext();

@@ -15,6 +15,8 @@ import androidx.core.app.ActivityCompat;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
@@ -27,17 +29,16 @@ public class ContextDataProvider extends Service {
     private String statusCon = "undefined";
     private final BusSystem busSystem = BusSystem.getInstance();
     private static final String TAG = ContextDataProvider.class.getName();
+    Subscriber sub;
 
 
     public ContextDataProvider(){ }
 
 
-    private final IBinder mBinder = new ContextDataProvider.LocalBinder();
-
-    public class LocalBinder extends Binder {
-        public ContextDataProvider getService() {
-            return ContextDataProvider.this;
-        }
+    @Override
+    public void onCreate(){
+        sub = SubscriberFactory.createSubscriber();
+        sub.addConnection(busSystem.getInstance().getInstanceCDDL().getConnection());
     }
 
 
@@ -45,9 +46,7 @@ public class ContextDataProvider extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG,"#### Iniciando ContextDataProvider");
 
-        //init();
-        //subscribeMessage("activesensor");
-        teste("activesensor");
+        subscribeMessage("activesensor");
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -55,7 +54,7 @@ public class ContextDataProvider extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return mBinder;
+        return null;
     }
 
 
@@ -65,30 +64,34 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public void teste(String serviceName) {
-        ISubscriberListener subscriberStartSensor;
-        subscriberStartSensor = busSystem.getInstance().subscriberStartSensor;
-        Subscriber sub = SubscriberFactory.createSubscriber();
-            sub.addConnection(busSystem.getInstance().getInstanceCDDL().getConnection());
-            sub.subscribeServiceByName(serviceName);
-            //sub.subscribeServiceByName("Location");
-
-            sub.setSubscriberListener(subscriberStartSensor);
+    public void subscribeMessage(String serviceName) {
+        sub.subscribeServiceByName(serviceName);
+        sub.setSubscriberListener(subscriberStart);
     }
 
-//    public void subscribeMessage(String serviceName){
-//       busSystem.getInstance().subscribeMessage(serviceName);
-//    }
-//
-//
-//    public synchronized void subscribeMessage2(String serviceName){
-//        Object o = busSystem.getInstance().subscribeMessageCDP(serviceName);
-//        String mensagemRecebida = StringUtils.join(o, ", ");
-//        String[] separated = mensagemRecebida.split(",");
-//        String activeSensor = String.valueOf(separated[0]);
-//
-//        startVirtualSensor(activeSensor);
-//    }
+
+    public ISubscriberListener subscriberStart = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+//                    if (message.getServiceName().equals("Meu serviço")) {
+//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+//                    }
+            Log.d(TAG, "#### Read messages:  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+
+            if(isInternalSensor(atividade) || isVirtualSensor(atividade)){
+                Log.d(TAG, "#### Sensor monitoring---->  " + atividade);
+                startVirtualSensor(atividade);
+            }
+            else{
+                Log.d(TAG, "#### Invalid sensor name---->" + atividade);
+            }
+        }
+    };
 
 
     public synchronized void publishMessage(String service, String text){
@@ -96,14 +99,44 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public List<String> listInternalSensor(){
-        List<String> s = null;
-        List<Sensor> sensorInternal = busSystem.getInstanceCDDL().getInternalSensorList();
+    private Boolean isInternalSensor(String sensor){
+        if (listInternalSensor().contains(sensor)) {
+            return true;
+        }
+        return false;
+    }
 
-        Log.i(TAG,"\n #### Sensores internos disponíveis: \n");
-        for(int i=0; i < sensorInternal.size(); i++){
-            s.add(sensorInternal.get(i).getName());
-            Log.i(TAG,"#### (" + i + "): " + sensorInternal.get(i).toString());
+
+    private Boolean isVirtualSensor(String sensor){
+        if (listVirtualSensor().contains(sensor)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public List<String> listVirtualSensor(){
+        List<String> s = busSystem.getInstance().getInstanceCDDL().getSensorVirtualList();
+
+        Log.i(TAG,"\n #### Sensores virtuais disponíveis, Tamanho: \n" + s.size());
+        for(int i=0; i < s.size(); i++){
+            Log.i(TAG,"#### (" + i + "): " + s.get(i).toString());
+        }
+        return s;
+    }
+
+
+    public List<String> listInternalSensor(){
+        List<String> s = new ArrayList();
+        List<Sensor> sensorInternal = busSystem.getInstance().getInstanceCDDL().getInternalSensorList();
+
+        Log.i(TAG,"\n #### Sensores internos disponíveis, Tamanho: \n" + s.size());
+        if(s.size() != 0) {
+            for (int i = 0; i < sensorInternal.size(); i++) {
+                s.add(sensorInternal.get(i).getName());
+                //Log.i(TAG,"#### (" + i + "): " + sensorInternal.get(i).toString());
+            }
+            return s;
         }
         return s;
     }

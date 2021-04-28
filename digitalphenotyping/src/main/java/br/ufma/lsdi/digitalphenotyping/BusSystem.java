@@ -321,16 +321,16 @@ public class BusSystem extends Application {
         return text;
     }
 
-    public ISubscriberListener subscriberStartSensor = new ISubscriberListener() {
-        @Override
-        public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### Read messages -----" + message);
-//                    cddl.getInstance().startSensor(message.getServiceValue().toString());
-        }
-    };
+//    public ISubscriberListener subscriberStartSensor = new ISubscriberListener() {
+//        @Override
+//        public void onMessageArrived(Message message) {
+////                    if (message.getServiceName().equals("Meu serviço")) {
+////                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+////                    }
+//            Log.d(TAG, "#### Read messages -----" + message);
+////                    cddl.getInstance().startSensor(message.getServiceValue().toString());
+//        }
+//    };
 
 //    public void subscribeMessage(String serviceName) {
 //        try {
