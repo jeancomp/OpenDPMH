@@ -13,8 +13,8 @@ O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem D
 Sumário
 =================
 <!--ts-->
-   * [Instalação](##Instalação)
-   * [Tabela de Conteudo](#tabela-de-conteudo)
+   * [Instalação](#Instalação)
+   * [Exemplo de uso](#Exemplo de uso)
    * [Instalação](#instalacao)
    * [Como usar](#como-usar)
       * [Pre Requisitos](#pre-requisitos)
@@ -28,7 +28,8 @@ Sumário
 
 ![](header.png)
 
-## Instalação
+Instalação
+=================
 
 OS X & Linux:
 
@@ -42,7 +43,8 @@ Windows:
 edit autoexec.bat
 ```
 
-## Usage example
+Exemplo de uso
+=================
 
 A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
 
