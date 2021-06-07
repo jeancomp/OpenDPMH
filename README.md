@@ -14,6 +14,15 @@ O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem D
   <img alt="Arquitetura-framework" title="#Arquitetura" src="framework.png" />
 </h1>
 
+Componentes:
+* DigitalPhenotypingManager: responsável por gerenciar o framework (e.g., start, stop).
+* BusSytem: barramento responsável por garantir a troca de mensagens entres os componentes do framework.
+* InferenceProcessorManager: gerencia os rawcontextdataprocessor (e.g., start rawcontextdataprocessor, stop rawcontextdataprocessor).
+* RawContextDataProcessor: detecta eventos comportamentais dos usuários monitorados (e.g., sociabilidade, mobilidade, sono, atividade física).
+* ContextDataProvider: responsável por receber os dados dos sensores físicos e virtuais, além de gerenciá-los (e.g., start sensor, stop sensor)
+* PhenotypeCompose: compõe fentótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
+* DataController: gerencia a privacidade e controle dos dados, libera acesso aos plugins para se comunicarem com o framework.
+
 Sumário
 =================
 <!--ts-->
@@ -26,33 +35,32 @@ Sumário
       * [Remote files](#remote-files)
       * [Multiple files](#multiple-files)
       * [Combo](#combo)
-   * [Tests](#testes)
-   * [Tecnologias](#tecnologias)
+   * [Contribuição](#Contribuição)
+   * [Autor](#Autor)
 <!--te-->
 
 ![](header.png)
 
+
 Instalação
 =================
 
-OS X & Linux:
+Linux & Windows:
 
 ```sh
-npm install my-crazy-module --save
+1º opção (projeto github): faça o download do projeto zip, descompacta-o, depois abra com no Android Studio "Open an Existing Project", pronto.
 ```
-
-Windows:
-
 ```sh
-edit autoexec.bat
+2º opção (arquivos aar): em construção... 
+```
+```sh
+3º opção (apk): em construção... 
 ```
 
 Exemplo-de-uso
 =================
 
-A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
-
-_For more examples and usage, please refer to the [Wiki][wiki]._
+A s
 
 
 Status-do-projeto
@@ -104,7 +112,8 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 
 [https://github.com/yourname/github-link](https://github.com/dbader/)
 
-## Contributing
+Contribuição
+=================
 
 1. Fork it (<https://github.com/yourname/yourproject/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
@@ -119,4 +128,20 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 [travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
 [wiki]: https://github.com/yourname/yourproject/wiki
+
+
+Autor
+=================
+---
+<a href="https://blog.rocketseat.com.br/author/thiago/">
+ <img style="border-radius: 50%;" src="https://github.com/jeancomp" width="100px;" alt=""/>
+ <br />
+ <sub><b>Jean Pablo</b></sub></a> <a href="https://blog.rocketseat.com.br/author/thiago//" title="Rocketseat">🚀</a>
+
+
+Feito por Jean Pablo 👋🏽 Entre em contato!
+
+[![Twitter](https://img.shields.io/twitter/url?label=%40jeancomp&style=social&url=https%3A%2F%2Ftwitter.com%2Fjeancomp)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Ftwitter.com%2Fjeancomp)
+[![Linkedin Badge](https://img.shields.io/badge/-Jean-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/jean-pablo-marques-mendes/)](https://www.linkedin.com/in/jean-pablo-marques-mendes/) 
+[![Gmail Badge](https://img.shields.io/badge/-jeancomp@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:jeancomp@gmail.com)](mailto:jeancomp@gmail.com)
 
