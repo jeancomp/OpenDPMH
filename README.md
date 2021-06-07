@@ -15,7 +15,7 @@ Sumário
 <!--ts-->
    * [Instalação](#Instalação)
    * [Exemplo de uso](#Exemplo-de-uso)
-   * [Instalação](#instalacao)
+   * [Status do projeto](#Status-do-projeto)
    * [Como usar](#como-usar)
       * [Pre Requisitos](#pre-requisitos)
       * [Local files](#local-files)
@@ -49,6 +49,24 @@ Exemplo-de-uso
 A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
 
 _For more examples and usage, please refer to the [Wiki][wiki]._
+
+
+Status-do-projeto
+=================
+
+<h4 align="center"> 
+	🚧  Framework - Em desenvolvimento...  🚧
+</h4>
+
+### Features
+
+- [x] DiditalPhenotypingManager
+- [x] InferenceProcessorManager
+- [x] ContextDataProvider
+- [x] BusSystem
+- [ ] PhenotypeComposer
+- [ ] DataController
+- [ ] RawContextDataProcessor
 
 ## Development setup
 
