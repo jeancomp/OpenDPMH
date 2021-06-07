@@ -26,43 +26,18 @@ Componentes:
 Sumário
 =================
 <!--ts-->
-   * [Instalação](#Instalação)
-   * [Exemplo de uso](#Exemplo-de-uso)
    * [Status do projeto](#Status-do-projeto)
    * [Histórico de lançamento](#Histórico-de-Lançamento)
    * [Como usar](#como-usar)
       * [Pre Requisitos](#Pré-requisitos)
-      * [Local files](#local-files)
-      * [Remote files](#remote-files)
-      * [Multiple files](#multiple-files)
-      * [Combo](#combo)
+      * [Instalação](#Instalação)
+      * [Exemplo-de-uso](#Exemplo-de-uso)
    * [Licença](#Licença)
    * [Contribuição](#Contribuição)
    * [Autor](#Autor)
 <!--te-->
 
 ![](header.png)
-
-
-Instalação
-=================
-
-Linux & Windows:
-
-```sh
-1º opção (projeto github): faça o download do projeto zip, descompacta-o, depois abra com no Android Studio "Open an Existing Project", pronto.
-```
-```sh
-2º opção (arquivos aar): em construção... 
-```
-```sh
-3º opção (apk): em construção... 
-```
-
-Exemplo-de-uso
-=================
-
-Em andamento (prints de tela).
 
 
 Status-do-projeto
@@ -86,14 +61,12 @@ Status-do-projeto
 Histórico-de-Lançamento
 =================
 
-* 0.2.1
-    * -
 * 0.2.0
     * -
 * 0.1.1
     * -
 * 0.1.0
-    * Adaptação de segurança (uso certificados digitais), em progresso.
+    * Adaptação de segurança (certificados digitais), em progresso.
 * 0.0.1
     * Adaptação dos sensores virtuais ao M-HUB
 
@@ -104,6 +77,26 @@ Pré-requisitos
 -----
 * Versão android: 6
 * Versão API android: minSdkVersion > 26
+
+Instalação
+-----
+
+Linux & Windows:
+
+```sh
+1º opção (projeto github): faça o download do projeto zip, descompacta-o, depois abra com no Android Studio "Open an Existing Project", pronto.
+```
+```sh
+2º opção (arquivos aar): em construção... 
+```
+```sh
+3º opção (apk): em construção... 
+```
+
+Exemplo-de-uso
+-----
+
+Em andamento (prints de tela).
 
 
 Licença
