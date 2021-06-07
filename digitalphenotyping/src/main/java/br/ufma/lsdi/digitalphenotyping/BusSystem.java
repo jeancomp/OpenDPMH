@@ -2,17 +2,26 @@ package br.ufma.lsdi.digitalphenotyping;
 
 import android.app.Activity;
 import android.app.Application;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,13 +38,16 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
+import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
 
-public class BusSystem extends Application {
+import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+
+// Extends SERVICE e que seja em primeiro plano
+public class BusSystem extends Service {
     private CDDL cddl;
     private String clientID;
     private ConnectionImpl con;
-//    public Subscriber subscriber;
-//    public Handler handler = new Handler();
     private Context context;
     private Activity activity;
     private TextView messageTextView;
@@ -44,25 +56,134 @@ public class BusSystem extends Application {
     private String nameCaCertificate = "rootCA.crt";
     private String nameClientCertificate = "client.crt";
     private static final String TAG = BusSystem.class.getName();
-    private static BusSystem instance = null;
-    //public List<String> listViewMessages;
-    //public ListViewAdapter listViewAdapter;
+    //private static BusSystem instance = null;
+    Subscriber subActive;
     Publisher publisher = PublisherFactory.createPublisher();
+    // Constants
+    private static final int ID_SERVICE = 101;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
+        //instance = this;
+        context = this;
+        messageTextView = new TextView(context);
+
+        subActive = SubscriberFactory.createSubscriber();
+
+        // Create the Foreground Service
+        Log.i(TAG,"#### criando notificação");
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+        Notification notification = notificationBuilder.setOngoing(true)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("Behavior Viewer")
+                .setContentText("Behavior monitoring application")
+                .setPriority(PRIORITY_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .build();
+
+        startForeground(ID_SERVICE, notification);
     }
 
 
-    public static BusSystem getInstance() {
-        if (instance == null) {
-            instance = new BusSystem();
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(NotificationManager notificationManager){
+        String channelId = "my_service_channelid";
+        String channelName = "Service BusSystem";
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        // omitted the LED color
+        //channel.setImportance(NotificationManager.IMPORTANCE_NONE);
+        //channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        notificationManager.createNotificationChannel(channel);
+        Log.i(TAG,"#### channelId: " + channelId);
+        return channelId;
+    }
+
+
+    public final IBinder mBinder = new LocalBinder();
+
+
+    public class LocalBinder extends Binder {
+        public BusSystem getService() {
+            //return mBinder;
+            return BusSystem.this;
         }
-        return instance;
     }
+
+
+    @Override
+    public IBinder onBind(Intent intent) { return mBinder; }
+
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // código
+        Log.i(TAG,"#### onStartCommand BusSystem");
+
+        if(intent != null){
+            String clientID = intent.getStringExtra("clientID");
+            int communicationTechnology = intent.getIntExtra("communicationTechnology", 0);
+
+            Log.i(TAG,"#### clientID: " + clientID);
+            Log.i(TAG,"#### communicationTechnology: " + communicationTechnology);
+
+            setClientID(clientID);
+            setCommunicationTechnology(communicationTechnology);
+
+            initCDDL();
+            configSubActive("activesensor");
+        }
+
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+
+    @Override
+    public void onDestroy() {
+        // PUBLICAR MENSAGEM NO BROKER PARA INFORMAR QUE CDDL-BROKER PAROU DE FUNCIONAR.
+        cddl.stopAllCommunicationTechnologies();
+        cddl.stopService();
+        con.disconnect();
+        CDDL.stopMicroBroker();
+        onDestroy();
+    }
+
+
+//    public static BusSystem getInstance() {
+//        if (instance == null) {
+//            instance = new BusSystem();
+//        }
+//        return instance;
+//    }
+
+
+    public void configSubActive(String serviceName){
+        Log.i(TAG,"#### Subscribe: " + serviceName);
+        subActive.addConnection(getInstanceCDDL().getConnection());
+        subActive.subscribeServiceByName(serviceName);
+        subActive.setSubscriberListener(subscriberStart);
+    }
+
+
+    public ISubscriberListener subscriberStart = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+//                    if (message.getServiceName().equals("Meu serviço")) {
+//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+//                    }
+            Log.d(TAG, "#### Read messages:  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.d(TAG, "#### " + mensagemRecebida);
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+        }
+    };
 
 
     public void start(Context context, Activity activity, String clientID, int communicationTechnology){
@@ -77,7 +198,9 @@ public class BusSystem extends Application {
 
     public void initCDDL(){
         try {
-            String host = CDDL.startMicroBroker();
+            //String host = CDDL.startMicroBroker();
+            String host = "10.0.2.3";
+            Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
             //val host = "broker.hivemq.com";
             con = ConnectionFactory.createConnection();
             con.setClientId(getClientID());
@@ -86,6 +209,7 @@ public class BusSystem extends Application {
             con.connect();
             cddl = CDDL.getInstance();
             cddl.setConnection(con);
+            //cddl.setContext(getContext());
             cddl.setContext(getContext());
             cddl.startService();
 
@@ -176,40 +300,6 @@ public class BusSystem extends Application {
     };
 
 
-    public CDDL getInstanceCDDL(){
-        return cddl.getInstance();
-    }
-
-
-    public Context getContext() {
-        return context;
-    }
-
-
-    public void setContext(Context context) {
-        this.context= context;
-    }
-
-
-    public String getStatusCon(){ return statusConnection; }
-
-
-    public void setNameCaCertificate(String name){
-        this.nameCaCertificate = name;
-    }
-
-
-    public String getNameCaCertificate(){ return nameCaCertificate; }
-
-
-    public void setnameClientCertificate(String name){
-        this.nameClientCertificate = name;
-    }
-
-
-    public String getNameClientCertificate(){ return nameClientCertificate;}
-
-
     public List<String> listInternalSensor(){
         List<String> s = null;
         List<Sensor> sensorInternal = cddl.getInternalSensorList();
@@ -253,6 +343,40 @@ public class BusSystem extends Application {
     }
 
 
+    public CDDL getInstanceCDDL(){
+        return cddl.getInstance();
+    }
+
+
+    public Context getContext() {
+        return context;
+    }
+
+
+    public void setContext(Context context) {
+        this.context= context;
+    }
+
+
+    public String getStatusCon(){ return statusConnection; }
+
+
+    public void setNameCaCertificate(String name){
+        this.nameCaCertificate = name;
+    }
+
+
+    public String getNameCaCertificate(){ return nameCaCertificate; }
+
+
+    public void setnameClientCertificate(String name){
+        this.nameClientCertificate = name;
+    }
+
+
+    public String getNameClientCertificate(){ return nameClientCertificate;}
+
+
     public void setClientID(String clientID){
         this.clientID = clientID;
     }
@@ -264,7 +388,7 @@ public class BusSystem extends Application {
 
 
     public void setActivity(Activity a){
-        activity = a;
+        this.activity = a;
     }
 
 
@@ -273,13 +397,22 @@ public class BusSystem extends Application {
     }
 
 
-    public void onDestroy() {
-        //cddl.stopLocationSensor();
-        cddl.stopAllCommunicationTechnologies();
-        cddl.stopService();
-        con.disconnect();
-        CDDL.stopMicroBroker();
+    public void setCommunicationTechnology(int communicationTechnology){
+        this.communicationTechnology = communicationTechnology;
     }
+
+
+    public int getCommunicationTechnology(){
+        return communicationTechnology;
+    }
+
+
+//    public void onDestroy() {
+//        cddl.stopAllCommunicationTechnologies();
+//        cddl.stopService();
+//        con.disconnect();
+//        CDDL.stopMicroBroker();
+//    }
 
 //    public void configSubscrbe(){
 //        subscriber = SubscriberFactory.createSubscriber();
@@ -421,7 +554,7 @@ public class BusSystem extends Application {
     }
 
 
-    private void initAllPermissions() {
+    public void initAllPermissions() {
         // Checa as permissões para rodar os sensores virtuais
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {
@@ -444,7 +577,8 @@ public class BusSystem extends Application {
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
 
                 // Para usar o GPS
-                android.Manifest.permission.ACCESS_FINE_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
         };
 
         if (!hasPermissions(getActivity(), PERMISSIONS)) {

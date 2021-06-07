@@ -1,13 +1,22 @@
 package com.jp.myapplication;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import br.ufma.lsdi.digitalphenotyping.BusSystem;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -15,7 +24,9 @@ public class MainActivity extends AppCompatActivity {
     TextView textview_first;
     View button_first;
     View button_stop;
+    BusSystem myService;
     private static final String TAG = MainActivity.class.getName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +49,66 @@ public class MainActivity extends AppCompatActivity {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
 //            }
 //        });
-
-
         startFramework();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        try{
+            Intent intent = new Intent(this, BusSystem.class);
+            intent.putExtra("clientID","l");
+            intent.putExtra("communicationTechnology",4);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                //getActivity().startForegroundService(intent);
+
+//                bindIntent = new Intent(this, CalculatorService.class);
+                Log.i(TAG,"#### 111111111.");
+                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            }
+            else {
+                //getActivity().startService(intent);
+                Log.i(TAG,"#### 222222222.");
+                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            }
+//            Intent ipm = new Intent(busSystem.getInstance().getContext(), InferenceProcessorManager.class);
+//            busSystem.getContext().startService(ipm);
+//
+//            Intent cdp = new Intent(busSystem.getInstance().getContext(), ContextDataProvider.class);
+//            busSystem.getInstance().getContext().startService(cdp);
+        }catch (Exception e){
+            Log.e(TAG, "#### Error: " + e.getMessage());
+        }
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(serviceConnection);
+    }
+
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.i(TAG,"#### Connection service busSystem");
+            BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
+            myService = binder.getService();
+
+            digitalPhenotyping.getInstance().setBusSystem(myService);
+            //binder = (BusSystem.LocalBinder)iBinder;
+            //binder.getService().publisher();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Log.i(TAG,"#### Disconnection service busSystem");
+        }
+    };
+
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
@@ -49,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case  R.id.button_first: {
                     Log.i(TAG,"#### Publicando mensagem para start sensor");
-                    digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+                    digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
                     //digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"Goldfish 3-axis Accelerometer");
                     //digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"SMS");
                     break;
@@ -57,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.stop: {
                     Log.i(TAG, "#### Publicando mensagem para stop sensor");
-                    digitalPhenotyping.publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+                    digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
                     break;
                 }
 
@@ -73,8 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void startFramework(){
-        Log.i(TAG,"#### INICIANDO FRAMEWORK");
-        digitalPhenotyping = new DigitalPhenotypingManager(this, this,"lcmuniz@gmail.com", 4, false);
+        digitalPhenotyping = new DigitalPhenotypingManager(this, this,"l", 4, false);
         digitalPhenotyping.start();
         //textview_first.setText(digitalPhenotyping.getStatusCon());
     }
@@ -99,5 +165,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy(){
+        digitalPhenotyping.getInstance().stop();
+        super.onDestroy();
     }
 }
