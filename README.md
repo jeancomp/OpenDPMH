@@ -1,11 +1,11 @@
 # Behavior Viewer: Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital na Saúde Mental
-> O objetivo geral deste trabalho é fornecer um framework focado na Digital Phenotyping Mental Health(DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível.
+> Um framework focado em identificar padrões de comportamento de indivíduos monitorados através da coleta de dados de sensores físicos e virtuais.
 
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 
-One to two paragraph statement about your product and what it does.
+O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos.
 
 ![](header.png)
 
