@@ -132,9 +132,9 @@ Contribuição
 
 Autor
 =================
----
-<a href="https://blog.rocketseat.com.br/author/thiago/">
- <img style="border-radius: 50%;" src="https://github.com/jeancomp" width="100px;" alt=""/>
+
+<a href="https://github.com/jeancomp">
+ <img style="border-radius: 50%;" src="https://ibb.co/mG7ZX0Y" width="100px;" alt=""/>
  <br />
  <sub><b>Jean Pablo</b></sub></a> <a href="https://blog.rocketseat.com.br/author/thiago//" title="Rocketseat">🚀</a>
 
