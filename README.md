@@ -31,7 +31,7 @@ Sumário
    * [Status do projeto](#Status-do-projeto)
    * [Histórico de lançamento](#Histórico-de-Lançamento)
    * [Como usar](#como-usar)
-      * [Pre Requisitos](#pre-requisitos)
+      * [Pre Requisitos](#Pré-requisitos)
       * [Local files](#local-files)
       * [Remote files](#remote-files)
       * [Multiple files](#multiple-files)
@@ -62,7 +62,7 @@ Linux & Windows:
 Exemplo-de-uso
 =================
 
-A s
+Em andamento (prints de tela).
 
 
 Status-do-projeto
@@ -87,16 +87,24 @@ Histórico-de-Lançamento
 =================
 
 * 0.2.1
-    * 
+    * -
 * 0.2.0
-    *  
+    * -
 * 0.1.1
-    * 
+    * -
 * 0.1.0
     * Adaptação de segurança (uso certificados digitais), em progresso.
 * 0.0.1
     * Adaptação dos sensores virtuais ao M-HUB
-    
+
+Como-usar
+=================
+
+Pré-requisitos
+-----
+* Versão android: 6
+* Versão API android: minSdkVersion > 26
+
 
 Licença
 =================
