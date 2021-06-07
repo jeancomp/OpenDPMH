@@ -14,7 +14,7 @@ Sumário
 =================
 <!--ts-->
    * [Instalação](#Instalação)
-   * [Exemplo de uso](#Exemplo de uso)
+   * [Exemplo de uso](#Exemplo-de-uso)
    * [Instalação](#instalacao)
    * [Como usar](#como-usar)
       * [Pre Requisitos](#pre-requisitos)
@@ -43,7 +43,7 @@ Windows:
 edit autoexec.bat
 ```
 
-Exemplo de uso
+Exemplo-de-uso
 =================
 
 A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
