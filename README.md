@@ -1,5 +1,5 @@
-# Product Name
-> Short blurb about what your product does.
+# Behavior Viewer: Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital na Saúde Mental
+> O objetivo geral deste trabalho é fornecer um framework focado na DPMH. A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível.
 
 [![NPM Version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
