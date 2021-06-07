@@ -8,11 +8,27 @@
 [![GitHub license](https://img.shields.io/github/license/jeancomp/fenotipagem_digital_saude_vs_0_1)](https://github.com/jeancomp/fenotipagem_digital_saude_vs_0_1)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fjeancomp)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fjeancomp%2Ffenotipagem_digital_saude_vs_0_1)
 
-<p align="center">O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos.</p>
+O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos.
+
+Sumário
+=================
+<!--ts-->
+   * [Instalação](##Instalação)
+   * [Tabela de Conteudo](#tabela-de-conteudo)
+   * [Instalação](#instalacao)
+   * [Como usar](#como-usar)
+      * [Pre Requisitos](#pre-requisitos)
+      * [Local files](#local-files)
+      * [Remote files](#remote-files)
+      * [Multiple files](#multiple-files)
+      * [Combo](#combo)
+   * [Tests](#testes)
+   * [Tecnologias](#tecnologias)
+<!--te-->
 
 ![](header.png)
 
-## Installation
+## Instalação
 
 OS X & Linux:
 
