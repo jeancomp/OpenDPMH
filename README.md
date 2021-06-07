@@ -29,12 +29,14 @@ Sumário
    * [Instalação](#Instalação)
    * [Exemplo de uso](#Exemplo-de-uso)
    * [Status do projeto](#Status-do-projeto)
+   * [Histórico de lançamento](#Histórico-de-Lançamento)
    * [Como usar](#como-usar)
       * [Pre Requisitos](#pre-requisitos)
       * [Local files](#local-files)
       * [Remote files](#remote-files)
       * [Multiple files](#multiple-files)
       * [Combo](#combo)
+   * [Licença](#Licença)
    * [Contribuição](#Contribuição)
    * [Autor](#Autor)
 <!--te-->
@@ -80,37 +82,30 @@ Status-do-projeto
 - [ ] DataController
 - [ ] RawContextDataProcessor
 
-## Development setup
 
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
-
-```sh
-make install
-npm test
-```
-
-## Release History
+Histórico-de-Lançamento
+=================
 
 * 0.2.1
-    * CHANGE: Update docs (module code remains unchanged)
+    * 
 * 0.2.0
-    * CHANGE: Remove `setDefaultXYZ()`
-    * ADD: Add `init()`
+    *  
 * 0.1.1
-    * FIX: Crash when calling `baz()` (Thanks @GenerousContributorName!)
+    * 
 * 0.1.0
-    * The first proper release
-    * CHANGE: Rename `foo()` to `bar()`
+    * Adaptação de segurança (uso certificados digitais), em progresso.
 * 0.0.1
-    * Work in progress
+    * Adaptação dos sensores virtuais ao M-HUB
+    
 
-## Meta
+Licença
+=================
 
-Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
+Your Name – [@Twitter](https://twitter.com/jeancomp) – jean.marques@lsdi.ufma.br
 
 Distributed under the XYZ license. See ``LICENSE`` for more information.
 
-[https://github.com/yourname/github-link](https://github.com/dbader/)
+[https://github.com/](https://github.com/jeancomp)
 
 Contribuição
 =================
@@ -134,9 +129,9 @@ Autor
 =================
 
 <a href="https://github.com/jeancomp">
- <img style="border-radius: 50%;" src="https://ibb.co/mG7ZX0Y" width="100px;" alt=""/>
+       <a href="https://imgbb.com/"><img src="https://i.ibb.co/MsLwGfj/jp.jpg" alt="jp" border="0" width="80px;" /></a>
  <br />
- <sub><b>Jean Pablo</b></sub></a> <a href="https://blog.rocketseat.com.br/author/thiago//" title="Rocketseat">🚀</a>
+ <sub><b>Jean Pablo</b></sub></a>
 
 
 Feito por Jean Pablo 👋🏽 Entre em contato!
