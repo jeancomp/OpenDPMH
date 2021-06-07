@@ -8,6 +8,24 @@
 [![GitHub license](https://img.shields.io/github/license/jeancomp/fenotipagem_digital_saude_vs_0_1)](https://github.com/jeancomp/fenotipagem_digital_saude_vs_0_1)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Fjeancomp)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fjeancomp%2Ffenotipagem_digital_saude_vs_0_1)
 
+Sumário
+=================
+<!--ts-->
+   * [Objetivo](#Objetivo)
+   * [Status do projeto](#Status-do-projeto)
+   * [Histórico de lançamento](#Histórico-de-Lançamento)
+   * [Como usar](#como-usar)
+      * [Pre Requisitos](#Pré-requisitos)
+      * [Instalação](#Instalação)
+      * [Exemplo-de-uso](#Exemplo-de-uso)
+   * [Licença](#Licença)
+   * [Contribuição](#Contribuição)
+   * [Autor](#Autor)
+<!--te-->
+
+
+Objetivo
+=================
 O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos.
 
 <h1 align="center">
@@ -23,19 +41,6 @@ Componentes:
 * PhenotypeCompose: compõe fenótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
 * DataController: gerencia a privacidade e controle dos dados, libera acesso aos plugins para se comunicarem com o framework.
 
-Sumário
-=================
-<!--ts-->
-   * [Status do projeto](#Status-do-projeto)
-   * [Histórico de lançamento](#Histórico-de-Lançamento)
-   * [Como usar](#como-usar)
-      * [Pre Requisitos](#Pré-requisitos)
-      * [Instalação](#Instalação)
-      * [Exemplo-de-uso](#Exemplo-de-uso)
-   * [Licença](#Licença)
-   * [Contribuição](#Contribuição)
-   * [Autor](#Autor)
-<!--te-->
 
 ![](header.png)
 
