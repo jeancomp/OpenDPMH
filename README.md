@@ -106,7 +106,7 @@ Exemplo-de-uso
 Start framework:
 ```sh
 DigitalPhenotypingManager digitalPhenotyping;
-digitalPhenotyping = new DigitalPhenotypingManager(this, this,"l", 4, false);
+digitalPhenotyping = new DigitalPhenotypingManager(this, this,"ClientID", 4, false);
 digitalPhenotyping.start();
 digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
 digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
