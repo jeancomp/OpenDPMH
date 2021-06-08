@@ -15,7 +15,7 @@ Sumário
    * [Status do projeto](#Status-do-projeto)
    * [Histórico de lançamento](#Histórico-de-Lançamento)
    * [Como usar](#como-usar)
-      * [Pre Requisitos](#Pré-requisitos)
+      * [Pré Requisitos](#Pré-requisitos)
       * [Instalação](#Instalação)
       * [Exemplo-de-uso](#Exemplo-de-uso)
    * [Licença](#Licença)
@@ -38,7 +38,7 @@ Componentes:
 * InferenceProcessorManager: gerencia os rawcontextdataprocessor (e.g., start rawcontextdataprocessor, stop rawcontextdataprocessor).
 * RawContextDataProcessor: detecta eventos comportamentais dos usuários monitorados (e.g., sociabilidade, mobilidade, sono, atividade física).
 * ContextDataProvider: responsável por receber os dados dos sensores físicos e virtuais, além de gerenciá-los (e.g., start sensor, stop sensor)
-* PhenotypeCompose: compõe fenótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
+* PhenotypeComposer: compõe fenótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
 * DataController: gerencia a privacidade e controle dos dados, libera acesso aos plugins para se comunicarem com o framework.
 
 
@@ -101,7 +101,7 @@ Linux & Windows:
 Exemplo-de-uso
 -----
 
-Em andamento (prints de tela).
+
 
 
 Licença
