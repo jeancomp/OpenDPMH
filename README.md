@@ -89,7 +89,9 @@ Instalação
 Linux & Windows:
 
 ```sh
-1º opção (projeto github): faça o download do projeto zip, descompacta-o, depois abra com no Android Studio "Open an Existing Project", pronto.
+1º opção (projeto github):
+	* faça o download do projeto zip, descompacta-o.
+	* depois abra com no Android Studio "Open an Existing Project", pronto.
 ```
 ```sh
 2º opção (arquivos aar): em construção... 
