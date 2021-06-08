@@ -103,13 +103,17 @@ Linux & Windows:
 Exemplo-de-uso
 -----
 
-Start framework:
+Start-framework:
 ```sh
 DigitalPhenotypingManager digitalPhenotyping;
 digitalPhenotyping = new DigitalPhenotypingManager(this, this,"ClientID", 4, false);
 digitalPhenotyping.start();
 digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
 digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+```
+Stop-framework:
+```sh
+digitalPhenotyping.getInstance().stop();
 ```
 Start-sensor:
 ```sh
