@@ -55,9 +55,9 @@ Status-do-projeto
 ### Features
 
 - [x] DiditalPhenotypingManager
-- [x] InferenceProcessorManager
-- [x] ContextDataProvider
-- [x] BusSystem
+- [ ] InferenceProcessorManager
+- [ ] ContextDataProvider
+- [ ] BusSystem
 - [ ] PhenotypeComposer
 - [ ] DataController
 - [ ] RawContextDataProcessor
@@ -66,10 +66,6 @@ Status-do-projeto
 Histórico-de-Lançamento
 =================
 
-* 0.2.0
-    * -
-* 0.1.1
-    * -
 * 0.1.0
     * Adaptação de segurança (certificados digitais), em progresso.
 * 0.0.1
