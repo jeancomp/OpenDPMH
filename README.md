@@ -132,7 +132,7 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 Contribuição
 =================
 
-1. Fork it (<https://github.com/jeancomp>)
+1. Desenvolvedor principal (<https://github.com/jeancomp>)
 2. 
 
 <!-- Markdown link & img dfn's -->
