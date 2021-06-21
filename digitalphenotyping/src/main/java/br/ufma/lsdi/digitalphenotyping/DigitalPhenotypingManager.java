@@ -56,17 +56,6 @@ public class DigitalPhenotypingManager{
 
             DPApplication dpApplication = new DPApplication(activity);
 
-//        busSystem.getInstance().start(context, activity, clientID, communicationTechnology);
-//        if(secure) {
-//            busSystem.getInstance().initSecureCDDL();
-//            Log.i(TAG,"#### Iniciando busSystem com criptografia.");
-//        }
-//        else{
-//            busSystem.getInstance().initCDDL();
-//            Log.i(TAG,"#### Iniciando busSystem sem criptografia.");
-//        }
-//        setStatusCon(busSystem.getInstance().getStatusCon());
-
             initPermissionsRequired();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
@@ -84,8 +73,6 @@ public class DigitalPhenotypingManager{
 
     public void start(){
         startService();
-
-        //startBus();
     }
 
 
@@ -139,25 +126,6 @@ public class DigitalPhenotypingManager{
             Log.e(TAG,e.getMessage());
         }
     }
-
-
-//    ServiceConnection serviceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//            Log.i(TAG,"#### Connection service busSystem");
-//            BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
-//            myService = binder.getService();
-//
-//
-//            //binder = (BusSystem.LocalBinder)iBinder;
-//            //binder.getService().publisher();
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName componentName) {
-//            Log.i(TAG,"#### Connection service busSystem");
-//        }
-//    };
 
 
     public void publishMessage(String service, String message){
@@ -231,16 +199,6 @@ public class DigitalPhenotypingManager{
     }
 
 
-//    public void subscribeMessage(String serviceName){
-//        busSystem.getInstance().subscribeMessage(serviceName);
-//    }
-
-
-//    public void publishMessage(String service, String text){
-//        //busSystem.getInstance().publishMessage(service, text);
-//    }
-
-
     private static boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
             for (String permission : permissions) {
@@ -290,11 +248,9 @@ public class DigitalPhenotypingManager{
                 intent.putExtra("communicationTechnology",4);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Log.i(TAG,"#### 111111111.");
                     getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
                 }
                 else {
-                    Log.i(TAG,"#### 222222222.");
                     getActivity().startService(intent);
                 }
             }catch (Exception e){

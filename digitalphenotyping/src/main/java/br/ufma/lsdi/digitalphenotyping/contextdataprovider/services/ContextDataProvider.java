@@ -30,7 +30,6 @@ public class ContextDataProvider extends Service {
     private String statusCon = "undefined";
     Subscriber sub;
     Subscriber subDeactive;
-    //private StartBusSystem startBusSystem;
     private Context context;
     String clientID = "l";
     int communicationTechnology = 4;
@@ -66,9 +65,8 @@ public class ContextDataProvider extends Service {
 
         subscribeMessageDeactive("deactivatesensor");
 
-        //subscribeMessagePlugin("comunicationexternal");  // exemplo de topic: mhub/+/command_topic
-
         super.onStartCommand(intent, flags, startId);
+
         return START_STICKY;
     }
 
@@ -94,12 +92,6 @@ public class ContextDataProvider extends Service {
         subDeactive.subscribeServiceByName(serviceName);
         subDeactive.setSubscriberListener(subscriberStop);
     }
-
-
-//    public void subscribeMessagePlugin(String serviceName) {
-//        subDeactive.subscribeServiceByName(serviceName);
-//        subDeactive.setSubscriberListener(subscriberPlugins);
-//    }
 
 
     public ISubscriberListener subscriberStart = new ISubscriberListener() {
@@ -398,63 +390,5 @@ public class ContextDataProvider extends Service {
     public Context getContext(){
         return this.context;
     }
-
-
-//    public void startBus(){
-//        startBusSystem = new StartBusSystem();
-//        startBusSystem.onStart();
-//    }
-
-
-//    public class StartBusSystem {
-//        private BusSystem myService;
-//
-//        public StartBusSystem(){
-//            //this.activity = act;
-//        }
-//
-//        public BusSystem getMyService(){
-//            return myService;
-//        }
-//
-//        public void onStart() {
-//            try{
-//                Intent intent = new Intent(getContext(), BusSystem.class);
-//                intent.putExtra("clientID","l");
-//                intent.putExtra("communicationTechnology",4);
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                    Log.i(TAG,"#### 0000000000000000000000.");
-//                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-//                }
-//                else {
-//                    Log.i(TAG,"#### 6666666666666666.");
-//                    getContext().startService(intent);
-//                }
-//            }catch (Exception e){
-//                Log.e(TAG, "#### Error: " + e.getMessage());
-//            }
-//        }
-//
-//
-//        protected void onStop() {
-//            unbindService(serviceConnection);
-//        }
-//
-//        ServiceConnection serviceConnection = new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//                Log.i(TAG,"#### Connection service busSystem");
-//                BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
-//                myService = binder.getService();
-//                Log.i(TAG,"#### 777777777777777777777 NOME DO CLIENT:" + myService.getClientID());
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName componentName) {
-//                Log.i(TAG,"#### Disconnection service busSystem");
-//            }
-//        };
-//    }
 }
 

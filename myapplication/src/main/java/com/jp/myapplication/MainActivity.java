@@ -55,13 +55,10 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("communicationTechnology",4);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                Log.i(TAG,"#### 111111111.");
                 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
             }
             else {
-                //getActivity().startService(intent);
-                Log.i(TAG,"#### 222222222.");
-                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                startService(intent);
             }
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.getMessage());
@@ -84,8 +81,6 @@ public class MainActivity extends AppCompatActivity {
             myService = binder.getService();
 
             digitalPhenotyping.getInstance().setBusSystem(myService);
-            //binder = (BusSystem.LocalBinder)iBinder;
-            //binder.getService().publisher();
         }
 
         @Override
@@ -93,6 +88,12 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG,"#### Disconnection service busSystem");
         }
     };
+
+
+    public void startFramework(){
+        digitalPhenotyping = new DigitalPhenotypingManager(this, this,"l", 4, false);
+        digitalPhenotyping.start();
+    }
 
 
     private View.OnClickListener clickListener = new View.OnClickListener() {
@@ -124,23 +125,14 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    public void startFramework(){
-        digitalPhenotyping = new DigitalPhenotypingManager(this, this,"l", 4, false);
-        digitalPhenotyping.start();
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

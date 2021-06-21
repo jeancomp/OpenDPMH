@@ -26,8 +26,6 @@ public class DPApplication extends Application {
     private Activity activity;
     Subscriber subActive;
     Publisher publisher = PublisherFactory.createPublisher();
-    private static final String HOST_DIGITALPHENOTYPNGMANAGER = "10.0.2.3";
-    private static final String HOST_CONTEXTDATAPROVIDER = "10.0.2.2";
     private static final String TAG = DPApplication.class.getName();
 
 

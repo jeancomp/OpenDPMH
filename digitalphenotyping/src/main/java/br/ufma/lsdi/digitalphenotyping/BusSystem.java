@@ -152,14 +152,6 @@ public class BusSystem extends Service {
     }
 
 
-//    public static BusSystem getInstance() {
-//        if (instance == null) {
-//            instance = new BusSystem();
-//        }
-//        return instance;
-//    }
-
-
     public void configSubActive(String serviceName){
         Log.i(TAG,"#### Subscribe: " + serviceName);
         subActive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
@@ -359,10 +351,6 @@ public class BusSystem extends Service {
 
 
     public CDDL getInstanceCDDL(){
-//        if(true){
-//            Log.i(TAG,"***************************");
-//            initComunication(this, (Activity) getActivity(), "l", 4, false);
-//        }
         return dpApplication.getInstance().CDDLGetInstance();
     }
 
@@ -424,56 +412,6 @@ public class BusSystem extends Service {
     public int getCommunicationTechnology(){
         return communicationTechnology;
     }
-
-
-//    public void onDestroy() {
-//        cddl.stopAllCommunicationTechnologies();
-//        cddl.stopService();
-//        con.disconnect();
-//        CDDL.stopMicroBroker();
-//    }
-
-//    public void configSubscrbe(){
-//        subscriber = SubscriberFactory.createSubscriber();
-//        subscriber.addConnection(cddl.getConnection());
-//
-//        subscriber.subscribeServiceByName("Location");
-//        subscriber.setSubscriberListener(this::onMessage);
-//    }
-
-//    public ISubscriberListener subscriberStartSensor = new ISubscriberListener() {
-//        @Override
-//        public void onMessageArrived(Message message) {
-////                    if (message.getServiceName().equals("Meu serviço")) {
-////                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-////                    }
-//            Log.d(TAG, "#### Read messages -----" + message);
-////                    cddl.getInstance().startSensor(message.getServiceValue().toString());
-//        }
-//    };
-
-//    public void subscribeMessage(String serviceName) {
-//        try {
-//            Subscriber sub = SubscriberFactory.createSubscriber();
-//            sub.addConnection(cddl.getConnection());
-//            sub.subscribeServiceByName(serviceName);
-//            //sub.subscribeServiceByName("Location");
-//
-//            sub.setSubscriberListener(new ISubscriberListener() {
-//                @Override
-//                public void onMessageArrived(Message message) {
-////                    if (message.getServiceName().equals("Meu serviço")) {
-////                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-////                    }
-//                    Log.d(TAG, "#### Read messages -----" + message);
-////                    cddl.getInstance().startSensor(message.getServiceValue().toString());
-//                }
-//            });
-//        }catch (Exception e){
-//            Log.e(TAG,"#### Error: " + e.getMessage());
-//        }
-//
-//    }
 
 
     public void publishMessage(String service, String text) {
