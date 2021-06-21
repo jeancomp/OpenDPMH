@@ -1,4 +1,4 @@
-# Behavior Viewer: Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital na Saúde Mental
+# Debit: Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital na Saúde Mental
 > Um framework focado em identificar padrões de comportamento de indivíduos monitorados através da coleta de dados de sensores físicos e virtuais.
 
 
@@ -15,7 +15,7 @@ Sumário
    * [Status do projeto](#Status-do-projeto)
    * [Histórico de lançamento](#Histórico-de-Lançamento)
    * [Como usar](#como-usar)
-      * [Pre Requisitos](#Pré-requisitos)
+      * [Pré Requisitos](#Pré-requisitos)
       * [Instalação](#Instalação)
       * [Exemplo-de-uso](#Exemplo-de-uso)
    * [Licença](#Licença)
@@ -26,10 +26,10 @@ Sumário
 
 Objetivo
 =================
-O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos.
+O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos. Origem do nome DIBET significa 'Rastreamento de Comportamento Digital' (do inglês DIgital BEhavior Tracking).
 
 <h1 align="center">
-  <img alt="Arquitetura-framework" title="#Arquitetura" src="framework.png" />
+  <img alt="Arquitetura-framework" title="#Arquitetura" src="/framework.png" />
 </h1>
 
 Componentes:
@@ -38,7 +38,7 @@ Componentes:
 * InferenceProcessorManager: gerencia os rawcontextdataprocessor (e.g., start rawcontextdataprocessor, stop rawcontextdataprocessor).
 * RawContextDataProcessor: detecta eventos comportamentais dos usuários monitorados (e.g., sociabilidade, mobilidade, sono, atividade física).
 * ContextDataProvider: responsável por receber os dados dos sensores físicos e virtuais, além de gerenciá-los (e.g., start sensor, stop sensor)
-* PhenotypeCompose: compõe fenótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
+* PhenotypeComposer: compõe fenótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
 * DataController: gerencia a privacidade e controle dos dados, libera acesso aos plugins para se comunicarem com o framework.
 
 
@@ -55,9 +55,9 @@ Status-do-projeto
 ### Features
 
 - [x] DiditalPhenotypingManager
-- [x] InferenceProcessorManager
-- [x] ContextDataProvider
-- [x] BusSystem
+- [ ] InferenceProcessorManager
+- [ ] ContextDataProvider
+- [ ] BusSystem
 - [ ] PhenotypeComposer
 - [ ] DataController
 - [ ] RawContextDataProcessor
@@ -66,10 +66,6 @@ Status-do-projeto
 Histórico-de-Lançamento
 =================
 
-* 0.2.0
-    * -
-* 0.1.1
-    * -
 * 0.1.0
     * Adaptação de segurança (certificados digitais), em progresso.
 * 0.0.1
@@ -89,7 +85,9 @@ Instalação
 Linux & Windows:
 
 ```sh
-1º opção (projeto github): faça o download do projeto zip, descompacta-o, depois abra com no Android Studio "Open an Existing Project", pronto.
+1º opção (projeto github):
+	* faça o download do projeto zip, descompacta-o.
+	* depois abra com no Android Studio "Open an Existing Project", pronto.
 ```
 ```sh
 2º opção (arquivos aar): em construção... 
@@ -101,8 +99,26 @@ Linux & Windows:
 Exemplo-de-uso
 -----
 
-Em andamento (prints de tela).
-
+Start-framework:
+```sh
+DigitalPhenotypingManager digitalPhenotyping;
+digitalPhenotyping = new DigitalPhenotypingManager(this, this,"ClientID", 4, false);
+digitalPhenotyping.start();
+digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+```
+Stop-framework:
+```sh
+digitalPhenotyping.getInstance().stop();
+```
+Start-sensor:
+```sh
+digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+```
+Stop-sensor:
+```sh
+digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+```
 
 Licença
 =================
@@ -116,11 +132,8 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 Contribuição
 =================
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
-2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
+1. Desenvolvedor principal (<https://github.com/jeancomp>)
+2. 
 
 <!-- Markdown link & img dfn's -->
 [npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
