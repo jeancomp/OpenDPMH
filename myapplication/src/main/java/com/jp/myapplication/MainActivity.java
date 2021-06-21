@@ -42,13 +42,6 @@ public class MainActivity extends AppCompatActivity {
         button_first.setOnClickListener(clickListener);
         button_stop.setOnClickListener(clickListener);
 
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-//            }
-//        });
         startFramework();
     }
 
@@ -62,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("communicationTechnology",4);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                //getActivity().startForegroundService(intent);
-
-//                bindIntent = new Intent(this, CalculatorService.class);
                 Log.i(TAG,"#### 111111111.");
                 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
             }
@@ -73,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG,"#### 222222222.");
                 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
             }
-//            Intent ipm = new Intent(busSystem.getInstance().getContext(), InferenceProcessorManager.class);
-//            busSystem.getContext().startService(ipm);
-//
-//            Intent cdp = new Intent(busSystem.getInstance().getContext(), ContextDataProvider.class);
-//            busSystem.getInstance().getContext().startService(cdp);
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.getMessage());
         }
@@ -87,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(serviceConnection);
+        //unbindService(serviceConnection);
     }
 
 
@@ -124,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.stop: {
                     Log.i(TAG, "#### Publicando mensagem para stop sensor");
-                    digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+                    digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
                     break;
                 }
 
@@ -142,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
     public void startFramework(){
         digitalPhenotyping = new DigitalPhenotypingManager(this, this,"l", 4, false);
         digitalPhenotyping.start();
-        //textview_first.setText(digitalPhenotyping.getStatusCon());
     }
 
     @Override
@@ -169,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy(){
-        digitalPhenotyping.getInstance().stop();
+        //digitalPhenotyping.getInstance().stop();
         super.onDestroy();
     }
 }

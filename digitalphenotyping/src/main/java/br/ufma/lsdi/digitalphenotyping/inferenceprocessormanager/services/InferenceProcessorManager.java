@@ -17,11 +17,17 @@ public class InferenceProcessorManager extends Service {
     private static final String TAG = InferenceProcessorManager.class.getName();
     Context context;
 
+    @Override
+    public void onCreate() {
+        Log.i(TAG,"#### Starting InferenceProcessorManager");
+        startService();
+    }
+
     public synchronized void startService() {
         try {
             Intent s = new Intent(context, Sociability.class);
             context.startService(s);
-            Log.i(TAG,"Starting inference services: " + s.getPackage());
+            Log.i(TAG,"#### Starting inference services: " + s.getPackage());
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -32,7 +38,7 @@ public class InferenceProcessorManager extends Service {
         try {
             Intent s = new Intent(context, Sociability.class);
             context.stopService(s);
-            Log.i(TAG,"Stopping inference services: " + s.getPackage());
+            Log.i(TAG,"#### Stopping inference services: " + s.getPackage());
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }

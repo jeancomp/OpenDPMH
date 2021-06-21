@@ -61,6 +61,8 @@ public class BusSystem extends Service {
     Publisher publisher = PublisherFactory.createPublisher();
     // Constants
     private static final int ID_SERVICE = 101;
+    private static final String HOST_DIGITALPHENOTYPNGMANAGER = "10.0.2.3";
+    private static final String HOST_CONTEXTDATAPROVIDER = "10.0.2.2";
 
 
     @Override
@@ -81,7 +83,7 @@ public class BusSystem extends Service {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Behavior Viewer")
                 .setContentText("Behavior monitoring application")
-                .setPriority(PRIORITY_DEFAULT)
+                .setPriority(PRIORITY_MIN)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .build();
 
@@ -120,7 +122,6 @@ public class BusSystem extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // código
         Log.i(TAG,"#### onStartCommand BusSystem");
 
         if(intent != null){
@@ -144,7 +145,6 @@ public class BusSystem extends Service {
 
     @Override
     public void onDestroy() {
-        // PUBLICAR MENSAGEM NO BROKER PARA INFORMAR QUE CDDL-BROKER PAROU DE FUNCIONAR.
         cddl.stopAllCommunicationTechnologies();
         cddl.stopService();
         con.disconnect();
@@ -163,7 +163,7 @@ public class BusSystem extends Service {
 
     public void configSubActive(String serviceName){
         Log.i(TAG,"#### Subscribe: " + serviceName);
-        subActive.addConnection(getInstanceCDDL().getConnection());
+        subActive.addConnection(DPApplication.getInstance().CDDLGetInstance().getConnection());
         subActive.subscribeServiceByName(serviceName);
         subActive.setSubscriberListener(subscriberStart);
     }
@@ -207,7 +207,8 @@ public class BusSystem extends Service {
             con.setHost(host);
             con.addConnectionListener(connectionListener);
             con.connect();
-            cddl = CDDL.getInstance();
+            //cddl = CDDL.getInstance();
+            cddl = DPApplication.getInstance().CDDLGetInstance();
             cddl.setConnection(con);
             //cddl.setContext(getContext());
             cddl.setContext(getContext());
@@ -247,6 +248,21 @@ public class BusSystem extends Service {
         }catch (Exception e){
             Log.i(TAG,"#### Error: " + e.getMessage());
         }
+    }
+
+
+    public void initComunication(Context context, Activity activity, String clientID, int communicationTechnology, Boolean secure){
+        Log.i(TAG,"#### Iniciando a configuração do CDDL novamente.");
+        start(context, activity, clientID, communicationTechnology);
+        if(secure) {
+            initSecureCDDL();
+            Log.i(TAG,"#### Iniciando busSystem com criptografia.");
+        }
+        else{
+            initCDDL();
+            Log.i(TAG,"#### Iniciando busSystem sem criptografia.");
+        }
+        initAllPermissions();
     }
 
 
@@ -344,7 +360,11 @@ public class BusSystem extends Service {
 
 
     public CDDL getInstanceCDDL(){
-        return cddl.getInstance();
+//        if(true){
+//            Log.i(TAG,"***************************");
+//            initComunication(this, (Activity) getActivity(), "l", 4, false);
+//        }
+        return DPApplication.getInstance().CDDLGetInstance();
     }
 
 

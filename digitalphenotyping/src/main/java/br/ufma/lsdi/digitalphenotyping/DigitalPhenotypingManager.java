@@ -1,7 +1,9 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
+import android.app.ApplicationErrorReport;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +13,16 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
+import java.util.Iterator;
+import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.contextdataprovider.services.ContextDataProvider;
 import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
 
+import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class DigitalPhenotypingManager{
@@ -25,6 +32,7 @@ public class DigitalPhenotypingManager{
     //private final BusSystem busSystem = BusSystem.getInstance();
     private static final String TAG = DigitalPhenotypingManager.class.getName();
     private static DigitalPhenotypingManager instance = null;
+    private StartBusSystem startBusSystem;
 
     Context context;
     Activity activity;
@@ -74,6 +82,8 @@ public class DigitalPhenotypingManager{
 
     public void start(){
         startService();
+
+        //startBus();
     }
 
 
@@ -82,26 +92,30 @@ public class DigitalPhenotypingManager{
     }
 
 
+    public void startBus(){
+        startBusSystem = new StartBusSystem(instance, this.activity);
+        startBusSystem.onStart();
+    }
+
+
     private synchronized void startService() {
         try{
             Log.i(TAG,"#### Starts all framework services.");
-            Intent intent = new Intent(getContext(), BusSystem.class);
+            Intent intent = new Intent(getActivity(), BusSystem.class);
             intent.putExtra("clientID",getClientID());
             intent.putExtra("communicationTechnology",4);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 getActivity().startForegroundService(intent);
-
-
             }
             else {
                 getActivity().startService(intent);
             }
-//            Intent ipm = new Intent(busSystem.getInstance().getContext(), InferenceProcessorManager.class);
-//            busSystem.getContext().startService(ipm);
-//
-//            Intent cdp = new Intent(busSystem.getInstance().getContext(), ContextDataProvider.class);
-//            busSystem.getInstance().getContext().startService(cdp);
+            //Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
+            //getActivity().startService(ipm);
+
+            Intent cdp = new Intent(getContext(), ContextDataProvider.class);
+            getActivity().startService(cdp);
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.getMessage());
         }
@@ -114,13 +128,11 @@ public class DigitalPhenotypingManager{
             Intent intent = new Intent(getContext(), BusSystem.class);
             getActivity().stopService(intent);
 
-            //getActivity().unbindService(serviceConnection);
+            Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
+            getActivity().stopService(ipm);
 
-//            Intent ipm = new Intent(busSystem.getInstance().getContext(), InferenceProcessorManager.class);
-//            busSystem.getInstance().getContext().stopService(ipm);
-//
-//            Intent cdp = new Intent(busSystem.getInstance().getContext(), ContextDataProvider.class);
-//            busSystem.getInstance().getContext().stopService(cdp);
+            Intent cdp = new Intent(getContext(), ContextDataProvider.class);
+            getActivity().stopService(cdp);
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
@@ -260,5 +272,53 @@ public class DigitalPhenotypingManager{
         }
     }
 
+    public class StartBusSystem {
+        private DigitalPhenotypingManager digitalP;
+        private Activity activity;
 
+        public StartBusSystem(DigitalPhenotypingManager dP, Activity act){
+            this.digitalP = dP;
+            this.activity = act;
+        }
+
+        protected void onStart() {
+            try{
+                Intent intent = new Intent(activity, BusSystem.class);
+                intent.putExtra("clientID","l");
+                intent.putExtra("communicationTechnology",4);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Log.i(TAG,"#### 111111111.");
+                    getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                }
+                else {
+                    Log.i(TAG,"#### 222222222.");
+                    getActivity().startService(intent);
+                }
+            }catch (Exception e){
+                Log.e(TAG, "#### Error: " + e.getMessage());
+            }
+        }
+
+
+        protected void onStop() {
+            activity.unbindService(serviceConnection);
+        }
+
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                Log.i(TAG,"#### Connection service busSystem.");
+                BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
+                myService = binder.getService();
+
+                digitalP.getInstance().setBusSystem(myService);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                Log.i(TAG,"#### Disconnection service busSystem");
+            }
+        };
+    }
 }
