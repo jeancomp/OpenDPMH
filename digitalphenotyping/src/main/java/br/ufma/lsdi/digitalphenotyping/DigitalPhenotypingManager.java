@@ -54,6 +54,8 @@ public class DigitalPhenotypingManager{
             this.communicationTechnology = communicationTechnology;
             this.secure = secure;
 
+            DPApplication dpApplication = new DPApplication(activity);
+
 //        busSystem.getInstance().start(context, activity, clientID, communicationTechnology);
 //        if(secure) {
 //            busSystem.getInstance().initSecureCDDL();

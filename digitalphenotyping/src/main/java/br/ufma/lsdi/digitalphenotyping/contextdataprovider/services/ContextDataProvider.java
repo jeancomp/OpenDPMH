@@ -22,6 +22,7 @@ import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.BusSystem;
+import br.ufma.lsdi.digitalphenotyping.DPApplication;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
 public class ContextDataProvider extends Service {
@@ -29,10 +30,11 @@ public class ContextDataProvider extends Service {
     private String statusCon = "undefined";
     Subscriber sub;
     Subscriber subDeactive;
-    private StartBusSystem startBusSystem;
+    //private StartBusSystem startBusSystem;
     private Context context;
     String clientID = "l";
     int communicationTechnology = 4;
+    DPApplication dpApplication = DPApplication.getInstance();
 
     public ContextDataProvider() { }
 
@@ -41,14 +43,15 @@ public class ContextDataProvider extends Service {
     public void onCreate() {
         try {
             context = getApplicationContext();
-            startBus();
+            //startBus();
+            dpApplication.getInstance().initCDDL("10.0.2.2");
 
             sub = SubscriberFactory.createSubscriber();
 
-            sub.addConnection(startBusSystem.getMyService().getInstanceCDDL().getConnection());
+            sub.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
 
             subDeactive = SubscriberFactory.createSubscriber();
-            subDeactive.addConnection(startBusSystem.getMyService().getInstanceCDDL().getConnection());
+            subDeactive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -167,7 +170,7 @@ public class ContextDataProvider extends Service {
 
 
     public synchronized void publishMessage(String service, String text) {
-        startBusSystem.getMyService().publishMessage(service, text);
+        dpApplication.getInstance().publishMessage(service, text);
     }
 
 
@@ -188,7 +191,7 @@ public class ContextDataProvider extends Service {
 
 
     public List<String> listVirtualSensor() {
-        List<String> s = startBusSystem.getMyService().getInstanceCDDL().getSensorVirtualList();
+        List<String> s = dpApplication.getInstance().CDDLGetInstance().getSensorVirtualList();
 
         Log.i(TAG, "\n #### Sensores virtuais disponíveis, Tamanho: \n" + s.size());
         for (int i = 0; i < s.size(); i++) {
@@ -200,7 +203,7 @@ public class ContextDataProvider extends Service {
 
     public List<String> listInternalSensor() {
         List<String> s = new ArrayList();
-        List<Sensor> sensorInternal = startBusSystem.getMyService().getInstanceCDDL().getInternalSensorList();
+        List<Sensor> sensorInternal = dpApplication.getInstance().CDDLGetInstance().getInternalSensorList();
 
         Log.i(TAG, "\n #### Sensores internos disponíveis, Tamanho: \n" + sensorInternal.size());
         if (sensorInternal.size() != 0) {
@@ -218,10 +221,10 @@ public class ContextDataProvider extends Service {
         if (sensor.equalsIgnoreCase("TouchScreen")) {
             // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
             checkDrawOverlayPermission();
-            startBusSystem.getMyService().getInstanceCDDL().startSensor(sensor, 0);
+            dpApplication.getInstance().CDDLGetInstance().startSensor(sensor, 0);
         } else {
             initPermissions(sensor);
-            startBusSystem.getMyService().getInstanceCDDL().startSensor(sensor, 0);
+            dpApplication.getInstance().CDDLGetInstance().startSensor(sensor, 0);
         }
         //cddl.startSensor("SMS",0);
         //cddl.startSensor("Call",0);
@@ -230,7 +233,7 @@ public class ContextDataProvider extends Service {
 
 
     public void stoptSensor(String sensor) {
-        startBusSystem.getMyService().getInstanceCDDL().stopSensor(sensor);
+        dpApplication.getInstance().CDDLGetInstance().stopSensor(sensor);
     }
 
 
@@ -239,28 +242,28 @@ public class ContextDataProvider extends Service {
         initAllPermissions();
 
         //Start sensores virtuais pelo nome e delay
-        startBusSystem.getMyService().getInstanceCDDL().startSensor("SMS", 0);
-        startBusSystem.getMyService().getInstanceCDDL().startSensor("Call", 0);
-        startBusSystem.getMyService().getInstanceCDDL().startSensor("ScreenOnOff", 0);
+        dpApplication.getInstance().CDDLGetInstance().startSensor("SMS", 0);
+        dpApplication.getInstance().CDDLGetInstance().startSensor("Call", 0);
+        dpApplication.getInstance().CDDLGetInstance().startSensor("ScreenOnOff", 0);
 
         // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
         checkDrawOverlayPermission();
-        startBusSystem.getMyService().getInstanceCDDL().startSensor("TouchScreen", 0);
+        dpApplication.getInstance().CDDLGetInstance().startSensor("TouchScreen", 0);
     }
 
     private void checkDrawOverlayPermission() {
         Log.i(TAG, "#### Permissao para o sensor TouchScreen");
         // check if we already  have permission to draw over other apps
         if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(startBusSystem.getMyService().getContext())) {
+            if (!Settings.canDrawOverlays(dpApplication.getInstance().getContext())) {
                 // if not construct intent to request permission
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + startBusSystem.getMyService().getContext().getPackageName()));
+                        Uri.parse("package:" + dpApplication.getInstance().getContext().getPackageName()));
                 //ac.startService(intent);
                 // request permission via start activity for result
                 Log.i(TAG, "#### permissao dada pelo usuário");
 
-                startBusSystem.getMyService().getActivity().startActivityForResult(intent, 1);
+                dpApplication.getInstance().getActivity().startActivityForResult(intent, 1);
             }
         }
     }
@@ -294,9 +297,9 @@ public class ContextDataProvider extends Service {
                     // SMS saída
                     android.Manifest.permission.READ_EXTERNAL_STORAGE};
 
-            if (!hasPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
-                ActivityCompat.requestPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS, PERMISSION_ALL);
+                ActivityCompat.requestPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
             }
         } else if (sensor.equalsIgnoreCase("Call")) {
             String[] PERMISSIONS = {
@@ -307,9 +310,9 @@ public class ContextDataProvider extends Service {
                     android.Manifest.permission.WRITE_CALL_LOG,
                     android.Manifest.permission.ADD_VOICEMAIL};
 
-            if (!hasPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
-                ActivityCompat.requestPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS, PERMISSION_ALL);
+                ActivityCompat.requestPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
             }
         }
 //        String[] PERMISSIONS = {
@@ -364,9 +367,9 @@ public class ContextDataProvider extends Service {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
         };
 
-        if (!hasPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS)) {
+        if (!hasPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS)) {
             Log.i(TAG, "##### Permissão Ativada");
-            ActivityCompat.requestPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS, PERMISSION_ALL);
+            ActivityCompat.requestPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
         }
     }
 
@@ -384,9 +387,9 @@ public class ContextDataProvider extends Service {
                     // Outros services
             };
 
-            if (!hasPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for framework");
-                ActivityCompat.requestPermissions(startBusSystem.getMyService().getActivity(), PERMISSIONS, PERMISSION_ALL);
+                ActivityCompat.requestPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
             }
         }
     }
@@ -397,61 +400,61 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public void startBus(){
-        startBusSystem = new StartBusSystem();
-        startBusSystem.onStart();
-    }
+//    public void startBus(){
+//        startBusSystem = new StartBusSystem();
+//        startBusSystem.onStart();
+//    }
 
 
-    public class StartBusSystem {
-        private BusSystem myService;
-
-        public StartBusSystem(){
-            //this.activity = act;
-        }
-
-        public BusSystem getMyService(){
-            return myService;
-        }
-
-        public void onStart() {
-            try{
-                Intent intent = new Intent(getContext(), BusSystem.class);
-                intent.putExtra("clientID","l");
-                intent.putExtra("communicationTechnology",4);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Log.i(TAG,"#### 0000000000000000000000.");
-                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-                }
-                else {
-                    Log.i(TAG,"#### 6666666666666666.");
-                    getContext().startService(intent);
-                }
-            }catch (Exception e){
-                Log.e(TAG, "#### Error: " + e.getMessage());
-            }
-        }
-
-
-        protected void onStop() {
-            unbindService(serviceConnection);
-        }
-
-        ServiceConnection serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-                Log.i(TAG,"#### Connection service busSystem");
-                BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
-                myService = binder.getService();
-                Log.i(TAG,"#### 777777777777777777777 NOME DO CLIENT:" + myService.getClientID());
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName componentName) {
-                Log.i(TAG,"#### Disconnection service busSystem");
-            }
-        };
-    }
+//    public class StartBusSystem {
+//        private BusSystem myService;
+//
+//        public StartBusSystem(){
+//            //this.activity = act;
+//        }
+//
+//        public BusSystem getMyService(){
+//            return myService;
+//        }
+//
+//        public void onStart() {
+//            try{
+//                Intent intent = new Intent(getContext(), BusSystem.class);
+//                intent.putExtra("clientID","l");
+//                intent.putExtra("communicationTechnology",4);
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    Log.i(TAG,"#### 0000000000000000000000.");
+//                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+//                }
+//                else {
+//                    Log.i(TAG,"#### 6666666666666666.");
+//                    getContext().startService(intent);
+//                }
+//            }catch (Exception e){
+//                Log.e(TAG, "#### Error: " + e.getMessage());
+//            }
+//        }
+//
+//
+//        protected void onStop() {
+//            unbindService(serviceConnection);
+//        }
+//
+//        ServiceConnection serviceConnection = new ServiceConnection() {
+//            @Override
+//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+//                Log.i(TAG,"#### Connection service busSystem");
+//                BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
+//                myService = binder.getService();
+//                Log.i(TAG,"#### 777777777777777777777 NOME DO CLIENT:" + myService.getClientID());
+//            }
+//
+//            @Override
+//            public void onServiceDisconnected(ComponentName componentName) {
+//                Log.i(TAG,"#### Disconnection service busSystem");
+//            }
+//        };
+//    }
 }
 

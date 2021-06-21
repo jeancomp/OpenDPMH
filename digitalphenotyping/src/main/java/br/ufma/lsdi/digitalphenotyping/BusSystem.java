@@ -61,8 +61,7 @@ public class BusSystem extends Service {
     Publisher publisher = PublisherFactory.createPublisher();
     // Constants
     private static final int ID_SERVICE = 101;
-    private static final String HOST_DIGITALPHENOTYPNGMANAGER = "10.0.2.3";
-    private static final String HOST_CONTEXTDATAPROVIDER = "10.0.2.2";
+    DPApplication dpApplication = DPApplication.getInstance();
 
 
     @Override
@@ -163,7 +162,7 @@ public class BusSystem extends Service {
 
     public void configSubActive(String serviceName){
         Log.i(TAG,"#### Subscribe: " + serviceName);
-        subActive.addConnection(DPApplication.getInstance().CDDLGetInstance().getConnection());
+        subActive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
         subActive.subscribeServiceByName(serviceName);
         subActive.setSubscriberListener(subscriberStart);
     }
@@ -208,7 +207,7 @@ public class BusSystem extends Service {
             con.addConnectionListener(connectionListener);
             con.connect();
             //cddl = CDDL.getInstance();
-            cddl = DPApplication.getInstance().CDDLGetInstance();
+            cddl = dpApplication.getInstance().CDDLGetInstance();
             cddl.setConnection(con);
             //cddl.setContext(getContext());
             cddl.setContext(getContext());
@@ -364,7 +363,7 @@ public class BusSystem extends Service {
 //            Log.i(TAG,"***************************");
 //            initComunication(this, (Activity) getActivity(), "l", 4, false);
 //        }
-        return DPApplication.getInstance().CDDLGetInstance();
+        return dpApplication.getInstance().CDDLGetInstance();
     }
 
 
