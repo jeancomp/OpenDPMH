@@ -98,7 +98,10 @@ Linux & Windows:
 
 Exemplo-de-uso
 -----
-
+DigitalPhenotypingManager
+```sh
+public DigitalPhenotypingManager(Context context, Activity activity, String clientID, int communicationTechnology, Boolean secure);
+```
 Start-framework:
 ```sh
 DigitalPhenotypingManager digitalPhenotyping;
