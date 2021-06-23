@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextView textview_first;
     View button_first;
     View button_stop;
+    View button_closeFramework;
     BusSystem myService;
     private static final String TAG = MainActivity.class.getName();
 
@@ -38,9 +39,11 @@ public class MainActivity extends AppCompatActivity {
         textview_first = findViewById(R.id.textview_first);
         button_first = findViewById(R.id.button_first);
         button_stop = findViewById(R.id.stop);
+        button_closeFramework = findViewById(R.id.closeFramework);
 
         button_first.setOnClickListener(clickListener);
         button_stop.setOnClickListener(clickListener);
+        button_closeFramework.setOnClickListener(clickListener);
 
         startFramework();
     }
@@ -114,8 +117,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 }
 
-                case R.id.button_second: {
-                    // do something for button 2 click
+                case R.id.closeFramework: {
+                    Log.i(TAG, "#### Parando o framework");
+                    digitalPhenotyping.getInstance().stop();
+                    finish();
                     break;
                 }
 

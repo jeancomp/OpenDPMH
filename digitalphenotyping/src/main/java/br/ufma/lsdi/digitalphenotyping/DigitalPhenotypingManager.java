@@ -77,6 +77,9 @@ public class DigitalPhenotypingManager{
 
 
     public void stop(){
+        // PARA O SERVICE PRIMEIRO PLANO
+        myService.stopForeground(true);
+
         stopService();
     }
 
