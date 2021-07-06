@@ -66,9 +66,8 @@ Status-do-projeto
 Histórico-de-Lançamento
 =================
 
-* 0.1.0
-    * Adaptação de segurança (certificados digitais), em progresso.
 * 0.0.1
+    * Adaptação de segurança (certificados digitais), em progresso.
     * Adaptação dos sensores virtuais ao M-HUB
 
 Como-usar
