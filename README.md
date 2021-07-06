@@ -1,5 +1,5 @@
-# Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital na Saúde Mental
-> Um framework focado em identificar padrões de comportamento de indivíduos monitorados através da coleta de dados de sensores físicos e virtuais.
+# Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital
+> Um framework focado em identificar padrões de comportamento, hábitos, costumes de indivíduos monitorados através da coleta de dados de sensores físicos e virtuais.
 
 
 [![GitHub issues](https://img.shields.io/github/issues/jeancomp/fenotipagem_digital_saude_vs_0_1)](https://github.com/jeancomp/fenotipagem_digital_saude_vs_0_1/issues)
