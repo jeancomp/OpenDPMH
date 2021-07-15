@@ -67,6 +67,7 @@ public class BusSystem extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.i(TAG,"#### Starting service BusSystem");
         //instance = this;
         context = this;
         messageTextView = new TextView(context);
@@ -409,11 +410,21 @@ public class BusSystem extends Service {
     }
 
 
+    /**
+     *
+     * @return
+     */
     public int getCommunicationTechnology(){
         return communicationTechnology;
     }
 
 
+    /**
+     * Responsável por publicar a mensagem
+     * <p>
+     * @param service Nome do tópico
+     * @param text Conteúdo 
+     */
     public void publishMessage(String service, String text) {
         publisher.addConnection(cddl.getInstance().getConnection());
 

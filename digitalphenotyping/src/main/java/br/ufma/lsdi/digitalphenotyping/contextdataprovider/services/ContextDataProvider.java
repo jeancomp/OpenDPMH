@@ -136,7 +136,7 @@ public class ContextDataProvider extends Service {
 
             if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
                 Log.d(TAG, "#### Stop sensor monitoring->  " + atividade);
-                stoptSensor(atividade);
+                stopSensor(atividade);
             } else {
                 Log.d(TAG, "#### Invalid sensor name: " + atividade);
             }
@@ -224,7 +224,7 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public void stoptSensor(String sensor) {
+    public void stopSensor(String sensor) {
         dpApplication.getInstance().CDDLGetInstance().stopSensor(sensor);
     }
 
