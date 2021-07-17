@@ -1,11 +1,11 @@
-package br.ufma.lsdi.digitalphenotyping.rawcontextdataprocessor.processors;
+package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
-import br.ufma.lsdi.digitalphenotyping.rawcontextdataprocessor.base.RawContextData;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessors;
 
 //implementar o código que vai processar os dados de áudio e gerar SociabilityEvent
 //acessar via cddl os dados de áudio e processar/identificar informações de alto nível de sociabilidade
 //resultado: SociabilityEvent
-public class Sociability extends RawContextData {
+public class Sociability extends DataProcessors {
 
 //    @Override
 //    public IBinder asBinder(IBinder iBinder) {

@@ -1,29 +1,14 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Application;
-import android.app.ApplicationErrorReport;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Log;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
-import java.util.Iterator;
-import java.util.List;
-
-import br.ufma.lsdi.digitalphenotyping.contextdataprovider.services.ContextDataProvider;
-import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
-
-import static android.content.Context.ACTIVITY_SERVICE;
-import static android.content.Context.BIND_AUTO_CREATE;
+import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.InferenceProcessorManager;
 
 public class DigitalPhenotypingManager{
     public static final String ACTIVE_SENSOR = "activesensor";
@@ -39,12 +24,23 @@ public class DigitalPhenotypingManager{
     String clientID;
     int communicationTechnology;
     Boolean secure;
-    BusSystem myService;
+    Bus myService;
 
 
+    /**
+     *
+     */
     public DigitalPhenotypingManager(){ }
 
 
+    /**
+     *
+     * @param context
+     * @param activity
+     * @param clientID
+     * @param communicationTechnology
+     * @param secure
+     */
     public DigitalPhenotypingManager(Context context, Activity activity, String clientID, int communicationTechnology, Boolean secure){
         try {
             Log.i(TAG, "#### INICIANDO FRAMEWORK");
@@ -93,9 +89,10 @@ public class DigitalPhenotypingManager{
     private synchronized void startService() {
         try{
             Log.i(TAG,"#### Starts all framework services.");
-            Intent intent = new Intent(getActivity(), BusSystem.class);
+            Intent intent = new Intent(getActivity(), Bus.class);
             intent.putExtra("clientID",getClientID());
             intent.putExtra("communicationTechnology",4);
+            intent.putExtra("secure", getSecure());
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 getActivity().startForegroundService(intent);
@@ -117,7 +114,7 @@ public class DigitalPhenotypingManager{
     private synchronized void stopService() {
         Log.i(TAG,"#### Stop all framework services.");
         try {
-            Intent intent = new Intent(getContext(), BusSystem.class);
+            Intent intent = new Intent(getContext(), Bus.class);
             getActivity().stopService(intent);
 
             Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
@@ -181,6 +178,10 @@ public class DigitalPhenotypingManager{
         this.secure = secure;
     }
 
+    public Boolean getSecure() {
+        return this.secure;
+    }
+
 
     public void setStatusCon(String statusCon){
         this.statusCon = statusCon;
@@ -192,12 +193,12 @@ public class DigitalPhenotypingManager{
     }
 
 
-    public void setBusSystem(BusSystem busSystem){
-        this.myService = busSystem;
+    public void setBusSystem(Bus bus){
+        this.myService = bus;
     }
 
 
-    public BusSystem getBusSystem(){
+    public Bus getBusSystem(){
         return myService;
     }
 

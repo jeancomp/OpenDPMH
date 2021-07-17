@@ -13,9 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fenotipagem_digital_saude_vs_0_1">
 
-        <service android:name=".inferenceprocessormanager.services.InferenceProcessorManager"/>
-        <service android:name=".contextdataprovider.services.ContextDataProvider" />
-        <service android:name=".BusSystem" />
+        <service android:name=".processormanager.services.InferenceProcessorManager"/>
+        <service android:name=".dataprovider.services.ContextDataProvider" />
+        <service android:name=".Bus" />
     </application>
 
 </manifest>

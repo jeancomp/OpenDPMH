@@ -19,6 +19,7 @@ public class DPApplication extends Application {
     private ConnectionImpl con;
     private String clientID;
     private int communicationTechnology = 4;
+    private Boolean secure;
     private static DPApplication instance = null;
     private String statusConnection = "";
     private TextView messageTextView;
@@ -138,6 +139,15 @@ public class DPApplication extends Application {
 
     public Activity getActivity(){
         return this.activity;
+    }
+
+
+    public void setSecure(Boolean secure) {
+        this.secure = secure;
+    }
+
+    public Boolean getSecure() {
+        return this.secure;
     }
 
 

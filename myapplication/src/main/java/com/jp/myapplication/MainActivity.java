@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import br.ufma.lsdi.digitalphenotyping.BusSystem;
+import br.ufma.lsdi.digitalphenotyping.Bus;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     View button_first;
     View button_stop;
     View button_closeFramework;
-    BusSystem myService;
+    Bus myService;
     private static final String TAG = MainActivity.class.getName();
 
 
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         try{
-            Intent intent = new Intent(this, BusSystem.class);
+            Intent intent = new Intent(this, Bus.class);
             intent.putExtra("clientID","l");
             intent.putExtra("communicationTechnology",4);
 
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.i(TAG,"#### Connection service busSystem");
-            BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
+            Bus.LocalBinder binder = (Bus.LocalBinder) iBinder;
             myService = binder.getService();
 
             digitalPhenotyping.getInstance().setBusSystem(myService);

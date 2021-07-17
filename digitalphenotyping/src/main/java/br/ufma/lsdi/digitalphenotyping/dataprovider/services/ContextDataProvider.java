@@ -1,11 +1,8 @@
-package br.ufma.lsdi.digitalphenotyping.contextdataprovider.services;
+package br.ufma.lsdi.digitalphenotyping.dataprovider.services;
 
-import android.app.Activity;
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.net.Uri;
@@ -21,9 +18,7 @@ import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.BusSystem;
 import br.ufma.lsdi.digitalphenotyping.DPApplication;
-import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
 public class ContextDataProvider extends Service {
     private static final String TAG = ContextDataProvider.class.getName();
@@ -33,6 +28,7 @@ public class ContextDataProvider extends Service {
     private Context context;
     String clientID = "l";
     int communicationTechnology = 4;
+    List<String> sensorOn = null;
     DPApplication dpApplication = DPApplication.getInstance();
 
     public ContextDataProvider() { }
@@ -111,7 +107,7 @@ public class ContextDataProvider extends Service {
 
             if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
                 Log.d(TAG, "#### Start sensor monitoring->  " + atividade);
-                startVirtualSensor(atividade);
+                startSensor(atividade);
             } else {
                 Log.d(TAG, "#### Invalid sensor name: " + atividade);
             }
@@ -209,7 +205,7 @@ public class ContextDataProvider extends Service {
     }
 
 
-    public void startVirtualSensor(String sensor) {
+    public void startSensor(String sensor) {
         if (sensor.equalsIgnoreCase("TouchScreen")) {
             // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
             checkDrawOverlayPermission();

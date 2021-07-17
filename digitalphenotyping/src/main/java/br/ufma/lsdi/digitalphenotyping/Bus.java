@@ -1,7 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,7 +12,6 @@ import android.hardware.Sensor;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
@@ -38,24 +36,25 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.inferenceprocessormanager.services.InferenceProcessorManager;
 
-import static androidx.core.app.NotificationCompat.PRIORITY_DEFAULT;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
-// Extends SERVICE e que seja em primeiro plano
-public class BusSystem extends Service {
+/**
+ * Extends SERVICE e que seja em primeiro plano
+ */
+public class Bus extends Service {
     private CDDL cddl;
     private String clientID;
     private ConnectionImpl con;
     private Context context;
     private Activity activity;
+    private Boolean secure;
     private TextView messageTextView;
     private String statusConnection = "";
     private int communicationTechnology = 4;
     private String nameCaCertificate = "rootCA.crt";
     private String nameClientCertificate = "client.crt";
-    private static final String TAG = BusSystem.class.getName();
+    private static final String TAG = Bus.class.getName();
     //private static BusSystem instance = null;
     Subscriber subActive;
     Publisher publisher = PublisherFactory.createPublisher();
@@ -81,7 +80,7 @@ public class BusSystem extends Service {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
         Notification notification = notificationBuilder.setOngoing(true)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Behavior Viewer")
+                .setContentTitle("OpenDPMH")
                 .setContentText("Behavior monitoring application")
                 .setPriority(PRIORITY_MIN)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
@@ -109,9 +108,9 @@ public class BusSystem extends Service {
 
 
     public class LocalBinder extends Binder {
-        public BusSystem getService() {
+        public Bus getService() {
             //return mBinder;
-            return BusSystem.this;
+            return Bus.this;
         }
     }
 
@@ -127,12 +126,14 @@ public class BusSystem extends Service {
         if(intent != null){
             String clientID = intent.getStringExtra("clientID");
             int communicationTechnology = intent.getIntExtra("communicationTechnology", 0);
+            Boolean secure = intent.getBooleanExtra("secure", false);
 
             Log.i(TAG,"#### clientID: " + clientID);
             Log.i(TAG,"#### communicationTechnology: " + communicationTechnology);
 
             setClientID(clientID);
             setCommunicationTechnology(communicationTechnology);
+            setSecure(secure);
 
             initCDDL();
             configSubActive("activesensor");
@@ -402,6 +403,15 @@ public class BusSystem extends Service {
 
     public Activity getActivity(){
         return activity;
+    }
+
+
+    public void setSecure(Boolean secure) {
+        this.secure = secure;
+    }
+
+    public Boolean getSecure() {
+        return this.secure;
     }
 
 
