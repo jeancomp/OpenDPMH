@@ -24,7 +24,7 @@ public class InferenceProcessorManager extends Service {
         try {
             Intent s = new Intent(context, Sociability.class);
             context.startService(s);
-            Log.i(TAG,"#### Starting inference services: " + s.getPackage());
+            Log.i(TAG,"#### Starting inference services");
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -35,7 +35,7 @@ public class InferenceProcessorManager extends Service {
         try {
             Intent s = new Intent(context, Sociability.class);
             context.stopService(s);
-            Log.i(TAG,"#### Stopping inference services: " + s.getPackage());
+            Log.i(TAG,"#### Stopping inference services");
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }

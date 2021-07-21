@@ -41,6 +41,8 @@ public class ContextDataProvider extends Service {
             //startBus();
             dpApplication.getInstance().initCDDL("10.0.2.2");
 
+            //context = dpApplication.getInstance().getContext();
+
             sub = SubscriberFactory.createSubscriber();
 
             sub.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
@@ -239,6 +241,12 @@ public class ContextDataProvider extends Service {
         dpApplication.getInstance().CDDLGetInstance().startSensor("TouchScreen", 0);
     }
 
+
+    public Context getContext(){
+        return this.context;
+    }
+
+
     private void checkDrawOverlayPermission() {
         Log.i(TAG, "#### Permissao para o sensor TouchScreen");
         // check if we already  have permission to draw over other apps
@@ -247,7 +255,7 @@ public class ContextDataProvider extends Service {
                 // if not construct intent to request permission
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + dpApplication.getInstance().getContext().getPackageName()));
-                //ac.startService(intent);
+                //startService(intent);
                 // request permission via start activity for result
                 Log.i(TAG, "#### permissao dada pelo usuário");
 
@@ -380,11 +388,6 @@ public class ContextDataProvider extends Service {
                 ActivityCompat.requestPermissions(dpApplication.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
             }
         }
-    }
-
-
-    public Context getContext(){
-        return this.context;
     }
 }
 

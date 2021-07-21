@@ -1,5 +1,6 @@
 package com.jp.myapplication;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_first);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
 
         try{
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         //unbindService(serviceConnection);
     }
@@ -94,26 +95,26 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void startFramework(){
-        digitalPhenotyping = new DigitalPhenotypingManager(this, this,"l", 4, false);
+        digitalPhenotyping = new DigitalPhenotypingManager(this,"l", 4, false);
         digitalPhenotyping.start();
     }
 
 
-    private View.OnClickListener clickListener = new View.OnClickListener() {
+    public View.OnClickListener clickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
                 case  R.id.button_first: {
                     Log.i(TAG,"#### Publicando mensagem para start sensor");
-                    digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
-                    //digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"Goldfish 3-axis Accelerometer");
-                    //digitalPhenotyping.publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"SMS");
+                    //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+                    digitalPhenotyping.getInstance().activaSensor("TouchScreen");
                     break;
                 }
 
                 case R.id.stop: {
                     Log.i(TAG, "#### Publicando mensagem para stop sensor");
-                    digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+                    //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+                    digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
                     break;
                 }
 

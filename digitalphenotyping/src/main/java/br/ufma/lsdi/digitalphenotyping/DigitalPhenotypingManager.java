@@ -5,52 +5,56 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
+
+import java.util.List;
+import java.util.UUID;
 import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.InferenceProcessorManager;
 
-public class DigitalPhenotypingManager{
+public class DigitalPhenotypingManager implements DigitalPhenotyping {
     public static final String ACTIVE_SENSOR = "activesensor";
     public static final String DEACTIVATE_SENSOR = "deactivatesensor";
     private String statusCon = "undefined";
-    //private final BusSystem busSystem = BusSystem.getInstance();
     private static final String TAG = DigitalPhenotypingManager.class.getName();
     private static DigitalPhenotypingManager instance = null;
-    //private StartBusSystem startBusSystem;
+    DPApplication dpApplication = DPApplication.getInstance();
+    Topic topic = Topic.J;
 
-    Context context;
-    Activity activity;
-    String clientID;
-    int communicationTechnology;
-    Boolean secure;
-    Bus myService;
+    private Context context;
+    private Activity activity;
+    private String clientID;
+    //private String clientID = UUID.randomUUID().toString();
+    private int communicationTechnology;
+    private Boolean secure;
+    private Bus myService;
+
+
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        this.context = getApplicationContext();
+//        //this.activity = this;
+//    }
 
 
     /**
-     *
+     * Construtor do DigitalPhenotypingManager
      */
     public DigitalPhenotypingManager(){ }
 
 
-    /**
-     *
-     * @param context
-     * @param activity
-     * @param clientID
-     * @param communicationTechnology
-     * @param secure
-     */
-    public DigitalPhenotypingManager(Context context, Activity activity, String clientID, int communicationTechnology, Boolean secure){
+    public DigitalPhenotypingManager(Activity activity, String clientID, int communicationTechnology, Boolean secure){
         try {
             Log.i(TAG, "#### INICIANDO FRAMEWORK");
-            this.context = context;
             this.activity = activity;
+            this.context = dpApplication.getInstance().getContext();
+            dpApplication.getInstance().setActivity(activity);
             this.clientID = clientID;
             this.communicationTechnology = communicationTechnology;
             this.secure = secure;
-
-            DPApplication dpApplication = new DPApplication(activity);
 
             initPermissionsRequired();
         }catch (Exception e){
@@ -66,27 +70,8 @@ public class DigitalPhenotypingManager{
         return instance;
     }
 
-
-    public void start(){
-        startService();
-    }
-
-
-    public void stop(){
-        // PARA O SERVICE PRIMEIRO PLANO
-        myService.stopForeground(true);
-
-        stopService();
-    }
-
-
-//    public void startBus(){
-//        startBusSystem = new StartBusSystem(instance, this.activity);
-//        startBusSystem.onStart();
-//    }
-
-
-    private synchronized void startService() {
+    @Override
+    public synchronized void start(){
         try{
             Log.i(TAG,"#### Starts all framework services.");
             Intent intent = new Intent(getActivity(), Bus.class);
@@ -111,8 +96,12 @@ public class DigitalPhenotypingManager{
     }
 
 
-    private synchronized void stopService() {
+    @Override
+    public void stop(){
         Log.i(TAG,"#### Stop all framework services.");
+        // PARA O SERVICE PRIMEIRO PLANO
+        myService.stopForeground(true);
+
         try {
             Intent intent = new Intent(getContext(), Bus.class);
             getActivity().stopService(intent);
@@ -128,11 +117,40 @@ public class DigitalPhenotypingManager{
     }
 
 
-    public void publishMessage(String service, String message){
-        Log.i(TAG,"#### Publicando mensagens");
-        myService.publishMessage(service, message);
+    @Override
+    public void startProcessor(String nameProcessor){
+        dpApplication.getInstance().publishMessage(topic.START_PROCESSOR, nameProcessor);
     }
 
+
+    @Override
+    public void stopProcessor(String nameProcessor){
+        dpApplication.getInstance().publishMessage(topic.STOP_PROCESSOR, nameProcessor);
+    }
+
+
+    @Override
+    public void activaSensor(String nameSensor){
+        dpApplication.getInstance().publishMessage(topic.ACTIVE_SENSOR, nameSensor);
+    }
+
+
+    @Override
+    public void deactivateSensor(String nameSensor){
+        dpApplication.getInstance().publishMessage(topic.DEACTIVATE_SENSOR, nameSensor);
+    }
+
+
+    @Override
+    public synchronized void publish(String service, String text) {
+        dpApplication.getInstance().publishMessage(service, text);
+    }
+
+
+    @Override
+    public void subscriber(){
+
+    }
 
     public Context getContext() {
         return context;
@@ -215,7 +233,8 @@ public class DigitalPhenotypingManager{
     }
 
 
-    private void initPermissionsRequired() {
+    @Override
+    public void initPermissionsRequired() {
         // Checa as permissões para rodar os sensores virtuais
         int PERMISSION_ALL = 1;
 
@@ -235,54 +254,4 @@ public class DigitalPhenotypingManager{
             }
         }
     }
-
-//    public class StartBusSystem {
-//        private DigitalPhenotypingManager digitalP;
-//        private Activity activity;
-//
-//        public StartBusSystem(DigitalPhenotypingManager dP, Activity act){
-//            this.digitalP = dP;
-//            this.activity = act;
-//        }
-//
-//        protected void onStart() {
-//            try{
-//                Log.i(TAG,"#### TTTTTTTTTT ClientID: " + getClientID());
-//                Log.i(TAG,"#### TTTTTTTTTT CommunicationTechnology: " + getCommunicationTechnology());
-//                Intent intent = new Intent(activity, BusSystem.class);
-//                intent.putExtra("clientID","l");
-//                intent.putExtra("communicationTechnology",4);
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                    getActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-//                }
-//                else {
-//                    getActivity().startService(intent);
-//                }
-//            }catch (Exception e){
-//                Log.e(TAG, "#### Error: " + e.getMessage());
-//            }
-//        }
-//
-//
-//        protected void onStop() {
-//            activity.unbindService(serviceConnection);
-//        }
-//
-//        ServiceConnection serviceConnection = new ServiceConnection() {
-//            @Override
-//            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//                Log.i(TAG,"#### Connection service busSystem.");
-//                BusSystem.LocalBinder binder = (BusSystem.LocalBinder) iBinder;
-//                myService = binder.getService();
-//
-//                digitalP.getInstance().setBusSystem(myService);
-//            }
-//
-//            @Override
-//            public void onServiceDisconnected(ComponentName componentName) {
-//                Log.i(TAG,"#### Disconnection service busSystem");
-//            }
-//        };
-//    }
 }

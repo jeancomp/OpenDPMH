@@ -3,6 +3,7 @@ package br.ufma.lsdi.digitalphenotyping;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -14,7 +15,7 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 
-public class DPApplication extends Application {
+public class DPApplication extends Application{
     private static CDDL cddl;
     private ConnectionImpl con;
     private String clientID;
@@ -41,9 +42,10 @@ public class DPApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         instance = this;
 
-        context = this;
+        this.context = this;
 
         messageTextView = new TextView(context);
     }
@@ -139,6 +141,11 @@ public class DPApplication extends Application {
 
     public Activity getActivity(){
         return this.activity;
+    }
+
+
+    public void setActivity(Activity activity){
+        this.activity = activity;
     }
 
 

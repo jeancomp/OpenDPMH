@@ -1,16 +1,14 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 public enum Topic {
-    J;
-    private final String ACTIVE_SENSOR;
-    private final String DEACTIVATE_SENSOR;
-    private final String RAW_DATA;
-    private final String DATA_INFERENCE;
-
-    Topic() {
-        this.ACTIVE_SENSOR= "activesensor";
-        this.DEACTIVATE_SENSOR = "deactivatesensor";
-        this.RAW_DATA = "rawdata";
-        this.DATA_INFERENCE = "datainference";
-    }
+    J();
+    public String NEW_PROCESSOR = "newprocessor";
+    public String REMOVE_PROCESSOR = "removeprocessor";
+    public String START_PROCESSOR = "startprocessor";
+    public String STOP_PROCESSOR = "stoprocessor";
+    public String ACTIVE_SENSOR = "activesensor";
+    public String DEACTIVATE_SENSOR = "deactivatesensor";
+    public String RAW_DATA;
+    public String DATA_INFERENCE;
+    public String DATA_COMPOSER;
 }
