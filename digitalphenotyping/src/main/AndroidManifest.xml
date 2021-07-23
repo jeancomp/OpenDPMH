@@ -17,6 +17,7 @@
         <service android:name=".processormanager.services.InferenceProcessorManager"/>
         <service android:name=".dataprovider.services.ContextDataProvider" />
         <service android:name=".Bus" />
+        <service android:name=".dataprocessor.processors.Sociability" />
     </application>
 
 </manifest>

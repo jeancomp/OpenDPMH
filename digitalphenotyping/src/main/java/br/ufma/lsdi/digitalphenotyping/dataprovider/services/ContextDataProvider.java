@@ -23,13 +23,14 @@ import br.ufma.lsdi.digitalphenotyping.DPApplication;
 public class ContextDataProvider extends Service {
     private static final String TAG = ContextDataProvider.class.getName();
     private String statusCon = "undefined";
-    Subscriber sub;
+    Subscriber subActive;
     Subscriber subDeactive;
     private Context context;
     String clientID = "l";
     int communicationTechnology = 4;
     List<String> sensorOn = null;
     DPApplication dpApplication = DPApplication.getInstance();
+
 
     public ContextDataProvider() { }
 
@@ -43,9 +44,8 @@ public class ContextDataProvider extends Service {
 
             //context = dpApplication.getInstance().getContext();
 
-            sub = SubscriberFactory.createSubscriber();
-
-            sub.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
+            subActive = SubscriberFactory.createSubscriber();
+            subActive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
 
             subDeactive = SubscriberFactory.createSubscriber();
             subDeactive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
@@ -82,8 +82,8 @@ public class ContextDataProvider extends Service {
 
 
     public void subscribeMessageActive(String serviceName) {
-        sub.subscribeServiceByName(serviceName);
-        sub.setSubscriberListener(subscriberStart);
+        subActive.subscribeServiceByName(serviceName);
+        subActive.setSubscriberListener(subscriberStart);
     }
 
     public void subscribeMessageDeactive(String serviceName) {
@@ -105,7 +105,6 @@ public class ContextDataProvider extends Service {
             Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
-
 
             if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
                 Log.d(TAG, "#### Start sensor monitoring->  " + atividade);

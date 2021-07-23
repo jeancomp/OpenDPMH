@@ -32,14 +32,6 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
     private Bus myService;
 
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        this.context = getApplicationContext();
-//        //this.activity = this;
-//    }
-
-
     /**
      * Construtor do DigitalPhenotypingManager
      */
@@ -85,8 +77,9 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
             else {
                 getActivity().startService(intent);
             }
-            //Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
-            //getActivity().startService(ipm);
+
+            Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
+            getActivity().startService(ipm);
 
             Intent cdp = new Intent(getContext(), ContextDataProvider.class);
             getActivity().startService(cdp);

@@ -105,16 +105,25 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case  R.id.button_first: {
-                    Log.i(TAG,"#### Publicando mensagem para start sensor");
+                    //Log.i(TAG,"#### Publicando mensagem para start sensor");
                     //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
-                    digitalPhenotyping.getInstance().activaSensor("TouchScreen");
+                    //digitalPhenotyping.getInstance().activaSensor("TouchScreen");
+
+                    //Log.i(TAG,"#### Publicando mensagem para start sensor");
+                    //digitalPhenotyping.getInstance().activaSensor("Call");
+
+                    Log.i(TAG,"#### Publicando mensagem para start processor: Sociability");
+                    digitalPhenotyping.getInstance().startProcessor("Sociability");
                     break;
                 }
 
                 case R.id.stop: {
-                    Log.i(TAG, "#### Publicando mensagem para stop sensor");
+                    //Log.i(TAG, "#### Publicando mensagem para stop sensor");
                     //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
-                    digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
+                    //digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
+
+                    Log.i(TAG, "#### Publicando mensagem para stop processor");
+                    digitalPhenotyping.getInstance().stopProcessor("Sociability");
                     break;
                 }
 

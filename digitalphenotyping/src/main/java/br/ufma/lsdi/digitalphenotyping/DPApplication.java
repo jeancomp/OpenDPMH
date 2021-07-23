@@ -3,13 +3,13 @@ package br.ufma.lsdi.digitalphenotyping;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
-
+import java.util.UUID;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.listeners.IConnectionListener;
+import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
@@ -18,7 +18,8 @@ import br.ufma.lsdi.cddl.pubsub.Subscriber;
 public class DPApplication extends Application{
     private static CDDL cddl;
     private ConnectionImpl con;
-    private String clientID;
+    //private String clientID = UUID.randomUUID().toString();
+    private String clientID = "l";
     private int communicationTechnology = 4;
     private Boolean secure;
     private static DPApplication instance = null;
@@ -165,5 +166,12 @@ public class DPApplication extends Application{
         message.setServiceName(service);
         message.setServiceByteArray(text);
         publisher.publish(message);
+    }
+
+    public void publish(Message message) {
+        publisher.addConnection(cddl.getInstance().getConnection());
+
+        MyMessage msg = (MyMessage) message;
+        publisher.publish(msg);
     }
 }
