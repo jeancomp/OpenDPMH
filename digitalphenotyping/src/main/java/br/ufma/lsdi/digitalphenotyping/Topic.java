@@ -10,7 +10,7 @@ public enum Topic {
     public String DEACTIVATE_SENSOR = "deactivatesensor";
     public String SUB_AUDIO = "/service_topic/Audio";
     public String SUB_CALL = "Call";
-    public String SUB_SMS = "/service_topic/SMS";
+    public String SUB_SMS = "SMS";
     public String RAW_DATA;
     public String DATA_INFERENCE;
     public String DATA_COMPOSER;

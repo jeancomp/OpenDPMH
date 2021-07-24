@@ -1,6 +1,5 @@
 package com.jp.myapplication;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -9,14 +8,12 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import br.ufma.lsdi.digitalphenotyping.Bus;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
@@ -122,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
                     //digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
 
-                    Log.i(TAG, "#### Publicando mensagem para stop processor");
+                    Log.i(TAG, "#### Publicando mensagem para stop processor: Sociability");
                     digitalPhenotyping.getInstance().stopProcessor("Sociability");
                     break;
                 }

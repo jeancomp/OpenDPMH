@@ -52,7 +52,7 @@ public class Sociability extends Service implements ProcessorsModel {
 
             //startSensor("Audio");
             startSensor("Call");
-            //startSensor("SMS");
+            startSensor("SMS");
 
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
@@ -74,11 +74,11 @@ public class Sociability extends Service implements ProcessorsModel {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        subscribeMessageAudio("mhub/" + dpApplication.getInstance().getClientID() + topic.SUB_AUDIO);
+        subscribeMessageAudio(topic.SUB_AUDIO);
 
         subscribeMessageCall(topic.SUB_CALL);
 
-        subscribeMessageSMS("mhub/" + dpApplication.getInstance().getClientID() + topic.SUB_SMS);
+        subscribeMessageSMS(topic.SUB_SMS);
 
         return START_STICKY;
     }

@@ -241,6 +241,7 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
                     // Outros services
             };
 
+
             if (!hasPermissions(getActivity(), PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for framework");
                 ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
