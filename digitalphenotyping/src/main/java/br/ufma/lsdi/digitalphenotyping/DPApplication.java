@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 import android.widget.TextView;
+
+import java.util.List;
 import java.util.UUID;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
@@ -16,6 +18,19 @@ import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 
 public class DPApplication extends Application{
+    //TOPIC
+    public static String NEW_PROCESSOR_TOPIC = "newprocessor";
+    public static String REMOVE_PROCESSOR_TOPIC = "removeprocessor";
+    public static String START_PROCESSOR_TOPIC = "startprocessor";
+    public static String STOP_PROCESSOR_TOPIC = "stoprocessor";
+    public static String ACTIVE_SENSOR_TOPIC = "activesensor";
+    public static String DEACTIVATE_SENSOR_TOPIC = "deactivatesensor";
+    public List<String> SUBSCRIBER_SENSOR_TOPIC = null;
+    public static String SUB_AUDIO_TOPIC = "Audio";
+    public static String SUB_CALL_TOPIC = "Call";
+    public static String SUB_SMS_TOPIC = "SMS";
+    public static String DATA_COMPOSER_TOPIC;
+
     private static CDDL cddl;
     private ConnectionImpl con;
     //private String clientID = UUID.randomUUID().toString();
@@ -66,68 +81,6 @@ public class DPApplication extends Application{
         }
         return cddl;
     }
-
-    public void initCDDL(String newHost){
-        try {
-            //String host = CDDL.startMicroBroker();
-            String host = newHost;
-            Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
-            //val host = "broker.hivemq.com";
-            con = ConnectionFactory.createConnection();
-            con.setClientId(getClientID());
-            con.setHost(host);
-            con.addConnectionListener(connectionListener);
-            con.connect();
-            //cddl = CDDL.getInstance();
-            cddl = DPApplication.getInstance().CDDLGetInstance();
-            cddl.setConnection(con);
-            //cddl.setContext(getContext());
-            cddl.setContext(getContext());
-            cddl.startService();
-
-            // Para todas as tecnologias, para entao iniciar apenas a que temos interresse
-            cddl.stopAllCommunicationTechnologies();
-
-            // Para todas os sensores, para entao iniciar apenas a que temos interresse
-            cddl.stopAllSensors();
-
-            //cddl.startCommunicationTechnology(CDDL.INTERNAL_TECHNOLOGY_VIRTUAL_ID);
-            cddl.startCommunicationTechnology(this.communicationTechnology);
-        }catch (Exception e){
-            Log.i(TAG,"#### Error: " + e.getMessage());
-        }
-    }
-
-
-    private IConnectionListener connectionListener = new IConnectionListener() {
-        @Override
-        public void onConnectionEstablished() {
-            statusConnection = "Established connection.";
-            messageTextView.setText("Conexão estabelecida.");
-            Log.i(TAG,"#### Status CDDL: " + statusConnection);
-        }
-
-        @Override
-        public void onConnectionEstablishmentFailed() {
-            statusConnection = "Failed connection.";
-            messageTextView.setText("Falha na conexão.");
-            Log.i(TAG,"#### Status MQTT: " + statusConnection);
-        }
-
-        @Override
-        public void onConnectionLost() {
-            statusConnection = "Lost connection.";
-            messageTextView.setText("Conexão perdida.");
-            Log.i(TAG,"#### Status MQTT: " + statusConnection);
-        }
-
-        @Override
-        public void onDisconnectedNormally() {
-            statusConnection = "A normal disconnect has occurred.";
-            messageTextView.setText("Uma disconexão normal ocorreu.");
-            Log.i(TAG,"#### Status MQTT: " + statusConnection);
-        }
-    };
 
 
     public String getClientID(){

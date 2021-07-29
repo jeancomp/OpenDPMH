@@ -5,6 +5,12 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#BDB9B9</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Código extraído do VAD-->
+    <color name="colorPrimary">#BDB9B9</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorPrimaryText">#FFFFFF</color>
 </resources>

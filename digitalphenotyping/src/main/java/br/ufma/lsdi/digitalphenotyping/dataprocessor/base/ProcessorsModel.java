@@ -7,6 +7,5 @@ public interface ProcessorsModel {
     public void stopSensor(String nameSensor);
     public void publish(Message message);
     public String subscribe();
-    public Boolean isValid();
     public void inference();
 }

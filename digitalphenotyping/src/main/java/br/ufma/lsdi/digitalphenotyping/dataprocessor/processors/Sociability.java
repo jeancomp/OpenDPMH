@@ -9,6 +9,7 @@ import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
@@ -16,7 +17,6 @@ import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.DPApplication;
-import br.ufma.lsdi.digitalphenotyping.Topic;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.ProcessorsModel;
 
 public class Sociability extends Service implements ProcessorsModel {
@@ -30,9 +30,7 @@ public class Sociability extends Service implements ProcessorsModel {
     Subscriber subAudio;
     Subscriber subCall;
     Subscriber subSMS;
-    Topic topic = Topic.J;
     DPApplication dpApplication = DPApplication.getInstance();
-
 
     @Override
     public void onCreate() {
@@ -50,10 +48,14 @@ public class Sociability extends Service implements ProcessorsModel {
             subSMS = SubscriberFactory.createSubscriber();
             subSMS.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
 
+            dpApplication.getInstance().SUBSCRIBER_SENSOR_TOPIC = new ArrayList();
+            dpApplication.getInstance().SUBSCRIBER_SENSOR_TOPIC.add("Call");
+            dpApplication.getInstance().SUBSCRIBER_SENSOR_TOPIC.add("SMS");
+            Log.i(TAG, "############################: " + dpApplication.getInstance().SUBSCRIBER_SENSOR_TOPIC.get(0));
+
             //startSensor("Audio");
             startSensor("Call");
             startSensor("SMS");
-
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
         }
@@ -72,14 +74,13 @@ public class Sociability extends Service implements ProcessorsModel {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        subscribeMessageAudio(dpApplication.getInstance().SUB_AUDIO_TOPIC);
+
+        subscribeMessageCall(dpApplication.getInstance().SUB_CALL_TOPIC);
+
+        subscribeMessageSMS(dpApplication.getInstance().SUB_SMS_TOPIC);
+
         super.onStartCommand(intent, flags, startId);
-
-        subscribeMessageAudio(topic.SUB_AUDIO);
-
-        subscribeMessageCall(topic.SUB_CALL);
-
-        subscribeMessageSMS(topic.SUB_SMS);
-
         return START_STICKY;
     }
 
@@ -91,6 +92,10 @@ public class Sociability extends Service implements ProcessorsModel {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        stopSensor("Audio");
+        stopSensor("Call");
+        stopSensor("SMS");
     }
 
 
@@ -183,7 +188,7 @@ public class Sociability extends Service implements ProcessorsModel {
         }
     };
 
-// --- Código ProcessorsModel ----------------------------------------------------------------------
+// --- Código to ProcessorsModel ----------------------------------------------------------------------
 
     @Override
     public void publish(Message message) {
@@ -198,23 +203,20 @@ public class Sociability extends Service implements ProcessorsModel {
 
 
     @Override
-    public Boolean isValid() {
-        return null;
-    }
-
-
-    @Override
     public void startSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(topic.ACTIVE_SENSOR, nameSensor);
+        dpApplication.getInstance().publishMessage(dpApplication.getInstance().ACTIVE_SENSOR_TOPIC, nameSensor);
     }
 
 
     @Override
     public void stopSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(topic.DEACTIVATE_SENSOR, nameSensor);
+        dpApplication.getInstance().publishMessage(dpApplication.getInstance().DEACTIVATE_SENSOR_TOPIC, nameSensor);
     }
 
 
     @Override
-    public void inference() { }
+    public void inference() {
+
+        //boolean isSpeech =
+    }
 }

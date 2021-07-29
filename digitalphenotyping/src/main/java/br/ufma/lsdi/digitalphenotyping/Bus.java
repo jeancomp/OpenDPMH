@@ -16,13 +16,10 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-
 import org.apache.commons.lang3.StringUtils;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
@@ -36,11 +33,10 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
- * Extends SERVICE e que seja em primeiro plano
+ * System Bus to framework
  */
 public class Bus extends Service {
     private CDDL cddl;
@@ -55,10 +51,7 @@ public class Bus extends Service {
     private String nameCaCertificate = "rootCA.crt";
     private String nameClientCertificate = "client.crt";
     private static final String TAG = Bus.class.getName();
-    //private static BusSystem instance = null;
-    Subscriber subActive;
     Publisher publisher = PublisherFactory.createPublisher();
-    // Constants
     private static final int ID_SERVICE = 101;
     DPApplication dpApplication = DPApplication.getInstance();
 
@@ -70,8 +63,6 @@ public class Bus extends Service {
         //instance = this;
         context = this;
         messageTextView = new TextView(context);
-
-        subActive = SubscriberFactory.createSubscriber();
 
         // Create the Foreground Service
         Log.i(TAG,"#### criando notificação");
@@ -136,7 +127,6 @@ public class Bus extends Service {
             setSecure(secure);
 
             initCDDL();
-            configSubActive("activesensor");
         }
 
         super.onStartCommand(intent, flags, startId);
@@ -154,45 +144,10 @@ public class Bus extends Service {
     }
 
 
-    public void configSubActive(String serviceName){
-        Log.i(TAG,"#### Subscribe: " + serviceName);
-        subActive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
-        subActive.subscribeServiceByName(serviceName);
-        subActive.setSubscriberListener(subscriberStart);
-    }
-
-
-    public ISubscriberListener subscriberStart = new ISubscriberListener() {
-        @Override
-        public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### Read messages:  " + message);
-
-            Object[] valor = message.getServiceValue();
-            String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
-            String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
-        }
-    };
-
-
-    public void start(Context context, Activity activity, String clientID, int communicationTechnology){
-        this.context = context;
-        this.activity = activity;
-        this.clientID = clientID;
-        this.communicationTechnology = communicationTechnology;
-
-        messageTextView = new TextView(context);
-    }
-
-
     public void initCDDL(){
         try {
-            //String host = CDDL.startMicroBroker();
-            String host = "10.0.2.3";
+            String host = CDDL.startMicroBroker();
+            //String host = "10.0.2.3";
             Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
             //val host = "broker.hivemq.com";
             con = ConnectionFactory.createConnection();
@@ -244,22 +199,8 @@ public class Bus extends Service {
     }
 
 
-    public void initComunication(Context context, Activity activity, String clientID, int communicationTechnology, Boolean secure){
-        Log.i(TAG,"#### Iniciando a configuração do CDDL novamente.");
-        start(context, activity, clientID, communicationTechnology);
-        if(secure) {
-            initSecureCDDL();
-            Log.i(TAG,"#### Iniciando busSystem com criptografia.");
-        }
-        else{
-            initCDDL();
-            Log.i(TAG,"#### Iniciando busSystem sem criptografia.");
-        }
-        initAllPermissions();
-    }
-
-
     public void initSecure(){
+        //Configuração para executar com secure
         // Android 9-10
         // Versão 26
         //Parte de segurança - Certificados Digitais
@@ -319,36 +260,6 @@ public class Bus extends Service {
             Log.i(TAG,"#### (" + i + "): " + sensorInternal.get(i).toString());
         }
         return s;
-    }
-
-
-    public void startVirtualSensor(String sensor){
-        if(sensor.equalsIgnoreCase("TouchScreen")) {
-            // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
-            checkDrawOverlayPermission();
-            cddl.startSensor(sensor, 0);
-        }
-        else{
-            initPermissions(sensor);
-            cddl.startSensor(sensor, 0);
-        }
-        //cddl.startSensor("SMS",0);
-        //cddl.startSensor("Call",0);
-        //cddl.startSensor("ScreenOnOff",0);
-    }
-
-    public void startAllVirtualSensors(){
-        // solicita permissão ao  usuário
-        initAllPermissions();
-
-        //Start sensores virtuais pelo nome e delay
-        cddl.startSensor("SMS",0);
-        cddl.startSensor("Call",0);
-        cddl.startSensor("ScreenOnOff",0);
-
-        // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
-        checkDrawOverlayPermission();
-        cddl.startSensor("TouchScreen", 0);
     }
 
 
@@ -426,142 +337,5 @@ public class Bus extends Service {
      */
     public int getCommunicationTechnology(){
         return communicationTechnology;
-    }
-
-
-    /**
-     * Responsável por publicar a mensagem
-     * <p>
-     * @param service Nome do tópico
-     * @param text Conteúdo 
-     */
-    public void publishMessage(String service, String text) {
-        publisher.addConnection(cddl.getInstance().getConnection());
-
-        MyMessage message = new MyMessage();
-        message.setServiceName(service);
-        message.setServiceByteArray(text);
-        publisher.publish(message);
-    }
-
-
-    private void checkDrawOverlayPermission() {
-        Log.i(TAG, "#### Permissao para o sensor TouchScreen");
-        // check if we already  have permission to draw over other apps
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(getContext()) ){
-                // if not construct intent to request permission
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + getContext().getPackageName()));
-                //ac.startService(intent);
-                // request permission via start activity for result
-                Log.i(TAG, "#### permissao dada pelo usuário");
-
-                getActivity().startActivityForResult(intent, 1);
-            }
-        }
-    }
-
-
-    private static boolean hasPermissions(Context context, String... permissions) {
-        if (context != null && permissions != null) {
-            for (String permission : permissions) {
-                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-
-    private void initPermissions(String sensor) {
-        // Checa as permissões para rodar os sensores virtuais
-        int PERMISSION_ALL = 1;
-
-        if(sensor.equalsIgnoreCase("SMS")){
-            String[] PERMISSIONS = {
-                    // SMS entrada
-                    android.Manifest.permission.SEND_SMS,
-                    android.Manifest.permission.RECEIVE_SMS,
-                    android.Manifest.permission.READ_SMS,
-                    // SMS saída
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE};
-
-            if (!hasPermissions(getActivity(), PERMISSIONS)) {
-                Log.i(TAG,"##### Permission enabled for the sensor: " + sensor);
-                ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
-            }
-        }
-        else if(sensor.equalsIgnoreCase("Call")){
-            String[] PERMISSIONS = {
-                    //Call
-                    android.Manifest.permission.READ_PHONE_STATE,
-                    android.Manifest.permission.CALL_PHONE,
-                    android.Manifest.permission.READ_CALL_LOG,
-                    android.Manifest.permission.WRITE_CALL_LOG,
-                    android.Manifest.permission.ADD_VOICEMAIL};
-
-            if (!hasPermissions(getActivity(), PERMISSIONS)) {
-                Log.i(TAG,"##### Permission enabled for the sensor: " + sensor);
-                ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
-            }
-        }
-//        String[] PERMISSIONS = {
-//                // SMS entrada
-//                android.Manifest.permission.SEND_SMS,
-//                android.Manifest.permission.RECEIVE_SMS,
-//                android.Manifest.permission.READ_SMS,
-//
-//                // SMS saída
-//                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-//
-//                //Call
-//                android.Manifest.permission.READ_PHONE_STATE,
-//                android.Manifest.permission.CALL_PHONE,
-//                android.Manifest.permission.READ_CALL_LOG,
-//                android.Manifest.permission.WRITE_CALL_LOG,
-//                android.Manifest.permission.ADD_VOICEMAIL,
-//
-//                // Escrita no storage Certificado Digital
-//                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//
-//                // Para usar o GPS
-//                android.Manifest.permission.ACCESS_FINE_LOCATION
-//        };
-    }
-
-
-    public void initAllPermissions() {
-        // Checa as permissões para rodar os sensores virtuais
-        int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {
-                // SMS
-                android.Manifest.permission.SEND_SMS,
-                android.Manifest.permission.RECEIVE_SMS,
-                android.Manifest.permission.READ_SMS,
-
-                //Call
-                android.Manifest.permission.READ_PHONE_STATE,
-                android.Manifest.permission.CALL_PHONE,
-                android.Manifest.permission.READ_CALL_LOG,
-                android.Manifest.permission.WRITE_CALL_LOG,
-                android.Manifest.permission.ADD_VOICEMAIL,
-
-                // SMS saída
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-
-                // Escrita no storage Certificado Digital
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-
-                // Para usar o GPS
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-        };
-
-        if (!hasPermissions(getActivity(), PERMISSIONS)) {
-            Log.i(TAG,"##### Permissão Ativada");
-            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
-        }
     }
 }

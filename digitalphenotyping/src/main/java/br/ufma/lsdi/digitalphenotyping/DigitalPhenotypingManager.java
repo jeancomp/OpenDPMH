@@ -15,13 +15,10 @@ import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.InferenceProcessorManager;
 
 public class DigitalPhenotypingManager implements DigitalPhenotyping {
-    public static final String ACTIVE_SENSOR = "activesensor";
-    public static final String DEACTIVATE_SENSOR = "deactivatesensor";
     private String statusCon = "undefined";
     private static final String TAG = DigitalPhenotypingManager.class.getName();
     private static DigitalPhenotypingManager instance = null;
     DPApplication dpApplication = DPApplication.getInstance();
-    Topic topic = Topic.J;
 
     private Context context;
     private Activity activity;
@@ -66,23 +63,23 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
     public synchronized void start(){
         try{
             Log.i(TAG,"#### Starts all framework services.");
-            Intent intent = new Intent(getActivity(), Bus.class);
+            Intent intent = new Intent(this.context, Bus.class);
             intent.putExtra("clientID",getClientID());
             intent.putExtra("communicationTechnology",4);
             intent.putExtra("secure", getSecure());
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                getActivity().startForegroundService(intent);
+                getContext().startForegroundService(intent);
             }
             else {
-                getActivity().startService(intent);
+                getContext().startService(intent);
             }
 
             Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
-            getActivity().startService(ipm);
+            getContext().startService(ipm);
 
             Intent cdp = new Intent(getContext(), ContextDataProvider.class);
-            getActivity().startService(cdp);
+            getContext().startService(cdp);
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.getMessage());
         }
@@ -97,13 +94,13 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
 
         try {
             Intent intent = new Intent(getContext(), Bus.class);
-            getActivity().stopService(intent);
+            getContext().stopService(intent);
 
             Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
-            getActivity().stopService(ipm);
+            getContext().stopService(ipm);
 
             Intent cdp = new Intent(getContext(), ContextDataProvider.class);
-            getActivity().stopService(cdp);
+            getContext().stopService(cdp);
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
@@ -112,25 +109,25 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
 
     @Override
     public void startProcessor(String nameProcessor){
-        dpApplication.getInstance().publishMessage(topic.START_PROCESSOR, nameProcessor);
+        dpApplication.getInstance().publishMessage(dpApplication.getInstance().START_PROCESSOR_TOPIC, nameProcessor);
     }
 
 
     @Override
     public void stopProcessor(String nameProcessor){
-        dpApplication.getInstance().publishMessage(topic.STOP_PROCESSOR, nameProcessor);
+        dpApplication.getInstance().publishMessage(dpApplication.getInstance().STOP_PROCESSOR_TOPIC, nameProcessor);
     }
 
 
     @Override
     public void activaSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(topic.ACTIVE_SENSOR, nameSensor);
+        dpApplication.getInstance().publishMessage(dpApplication.getInstance().ACTIVE_SENSOR_TOPIC, nameSensor);
     }
 
 
     @Override
     public void deactivateSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(topic.DEACTIVATE_SENSOR, nameSensor);
+        dpApplication.getInstance().publishMessage(dpApplication.getInstance().DEACTIVATE_SENSOR_TOPIC, nameSensor);
     }
 
 
@@ -242,7 +239,7 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
             };
 
 
-            if (!hasPermissions(getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(getContext(), PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for framework");
                 ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
             }

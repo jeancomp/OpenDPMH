@@ -14,6 +14,9 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import java.util.function.IntToDoubleFunction;
+
 import br.ufma.lsdi.digitalphenotyping.Bus;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     View button_first;
     View button_stop;
     View button_closeFramework;
+    View button_recorder;
     Bus myService;
     private static final String TAG = MainActivity.class.getName();
 
@@ -36,12 +40,14 @@ public class MainActivity extends AppCompatActivity {
 
         textview_first = findViewById(R.id.textview_first);
         button_first = findViewById(R.id.button_first);
-        button_stop = findViewById(R.id.stop);
+        button_stop = findViewById(R.id.stop2);
         button_closeFramework = findViewById(R.id.closeFramework);
+        button_recorder = findViewById(R.id.recorder);
 
         button_first.setOnClickListener(clickListener);
         button_stop.setOnClickListener(clickListener);
         button_closeFramework.setOnClickListener(clickListener);
+        button_recorder.setOnClickListener(clickListener);
 
         startFramework();
     }
@@ -128,6 +134,12 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "#### Parando o framework");
                     digitalPhenotyping.getInstance().stop();
                     finish();
+                    break;
+                }
+                case R.id.recorder: {
+                    Log.i(TAG, "#### Função recorder");
+                    Intent startRecorder = new Intent(getApplicationContext(), MainActivityRecorder.class);
+                    startActivity(startRecorder);
                     break;
                 }
 

@@ -15,9 +15,7 @@ import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.DPApplication;
-import br.ufma.lsdi.digitalphenotyping.Topic;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
-import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
 
 public class InferenceProcessorManager extends Service {
     private static final String TAG = InferenceProcessorManager.class.getName();
@@ -26,7 +24,6 @@ public class InferenceProcessorManager extends Service {
     Subscriber subStartProcessor;
     Subscriber subStopProcessor;
     DPApplication dpApplication = DPApplication.getInstance();
-    Topic topic = Topic.J;
 
     @Override
     public void onCreate() {
@@ -88,9 +85,9 @@ public class InferenceProcessorManager extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        subscribeMessageStartProcessor(topic.START_PROCESSOR);
+        subscribeMessageStartProcessor(dpApplication.getInstance().START_PROCESSOR_TOPIC);
 
-        subscribeMessageStopProcessor(topic.STOP_PROCESSOR);
+        subscribeMessageStopProcessor(dpApplication.getInstance().STOP_PROCESSOR_TOPIC);
 
         super.onStartCommand(intent, flags, startId);
 

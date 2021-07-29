@@ -28,7 +28,7 @@ public class ContextDataProvider extends Service {
     private Context context;
     String clientID = "l";
     int communicationTechnology = 4;
-    List<String> sensorOn = null;
+    List<String> activeSensor = null;
     DPApplication dpApplication = DPApplication.getInstance();
 
 
@@ -38,11 +38,8 @@ public class ContextDataProvider extends Service {
     @Override
     public void onCreate() {
         try {
-            context = getApplicationContext();
-            //startBus();
-            dpApplication.getInstance().initCDDL("10.0.2.2");
-
-            //context = dpApplication.getInstance().getContext();
+            context = dpApplication.getInstance().getContext();
+            //dpApplication.getInstance().initCDDL("10.0.2.2");
 
             subActive = SubscriberFactory.createSubscriber();
             subActive.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
@@ -59,9 +56,9 @@ public class ContextDataProvider extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "#### Iniciando ContextDataProvider");
 
-        subscribeMessageActive("activesensor");
+        subscribeMessageActive(dpApplication.getInstance().ACTIVE_SENSOR_TOPIC);
 
-        subscribeMessageDeactive("deactivatesensor");
+        subscribeMessageDeactive(dpApplication.getInstance().DEACTIVATE_SENSOR_TOPIC);
 
         super.onStartCommand(intent, flags, startId);
 

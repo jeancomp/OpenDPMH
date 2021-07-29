@@ -64,4 +64,6 @@ dependencies {
 //
     implementation 'androidx.core:core:1.6.0-alpha02'
 //    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'org.permissionsdispatcher:permissionsdispatcher:4.8.0'
+    annotationProcessor 'org.permissionsdispatcher:permissionsdispatcher-processor:4.8.0'
 }

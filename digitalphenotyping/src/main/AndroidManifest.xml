@@ -4,6 +4,7 @@
     package="br.ufma.lsdi.digitalphenotyping">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".DPApplication"
