@@ -26,7 +26,7 @@ public class ContextDataProvider extends Service {
     Subscriber subActive;
     Subscriber subDeactive;
     private Context context;
-    String clientID = "l";
+    String clientID;
     int communicationTechnology = 4;
     List<String> activeSensor = null;
     DPApplication dpApplication = DPApplication.getInstance();

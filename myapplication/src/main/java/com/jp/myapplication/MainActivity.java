@@ -14,9 +14,6 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import java.util.function.IntToDoubleFunction;
-
 import br.ufma.lsdi.digitalphenotyping.Bus;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
@@ -98,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void startFramework(){
-        digitalPhenotyping = new DigitalPhenotypingManager(this,"l", 4, false);
+        digitalPhenotyping = new DigitalPhenotypingManager(this);
         digitalPhenotyping.start();
     }
 

@@ -1,11 +1,11 @@
 package br.ufma.lsdi.digitalphenotyping;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
 
@@ -15,15 +15,14 @@ import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.InferenceProcessorManager;
 
 public class DigitalPhenotypingManager implements DigitalPhenotyping {
-    private String statusCon = "undefined";
     private static final String TAG = DigitalPhenotypingManager.class.getName();
+    private String statusCon = "undefined";
     private static DigitalPhenotypingManager instance = null;
     DPApplication dpApplication = DPApplication.getInstance();
 
     private Context context;
     private Activity activity;
     private String clientID;
-    //private String clientID = UUID.randomUUID().toString();
     private int communicationTechnology;
     private Boolean secure;
     private Bus myService;
@@ -35,15 +34,17 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
     public DigitalPhenotypingManager(){ }
 
 
-    public DigitalPhenotypingManager(Activity activity, String clientID, int communicationTechnology, Boolean secure){
+    public DigitalPhenotypingManager(Activity activity){
         try {
             Log.i(TAG, "#### INICIANDO FRAMEWORK");
             this.activity = activity;
             this.context = dpApplication.getInstance().getContext();
             dpApplication.getInstance().setActivity(activity);
-            this.clientID = clientID;
-            this.communicationTechnology = communicationTechnology;
-            this.secure = secure;
+            this.clientID = UUID.randomUUID().toString().replaceAll("-","");
+            this.clientID = this.clientID.toString().replaceAll("[0-9]","");
+            dpApplication.getInstance().setClientID(this.clientID);
+            this.communicationTechnology = 4;   // Pré-configuramos o communicationTechnology inicia por 4
+            this.secure = false;                // True==Certificado digitais, False==Não usa Cert. Digitais
 
             initPermissionsRequired();
         }catch (Exception e){
@@ -65,7 +66,7 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
             Log.i(TAG,"#### Starts all framework services.");
             Intent intent = new Intent(this.context, Bus.class);
             intent.putExtra("clientID",getClientID());
-            intent.putExtra("communicationTechnology",4);
+            intent.putExtra("communicationTechnology",this.communicationTechnology);
             intent.putExtra("secure", getSecure());
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -233,7 +234,8 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
                     // Service location
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                    android.Manifest.permission.FOREGROUND_SERVICE
+                    android.Manifest.permission.FOREGROUND_SERVICE,
+                    Manifest.permission.RECORD_AUDIO
 
                     // Outros services
             };

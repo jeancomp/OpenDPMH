@@ -25,16 +25,11 @@ public class DPApplication extends Application{
     public static String STOP_PROCESSOR_TOPIC = "stoprocessor";
     public static String ACTIVE_SENSOR_TOPIC = "activesensor";
     public static String DEACTIVATE_SENSOR_TOPIC = "deactivatesensor";
-    public List<String> SUBSCRIBER_SENSOR_TOPIC = null;
-    public static String SUB_AUDIO_TOPIC = "Audio";
-    public static String SUB_CALL_TOPIC = "Call";
-    public static String SUB_SMS_TOPIC = "SMS";
-    public static String DATA_COMPOSER_TOPIC;
+    public static String DATA_COMPOSER_TOPIC = "data_composer";
 
     private static CDDL cddl;
     private ConnectionImpl con;
-    //private String clientID = UUID.randomUUID().toString();
-    private String clientID = "l";
+    private String clientID;
     private int communicationTechnology = 4;
     private Boolean secure;
     private static DPApplication instance = null;
@@ -88,6 +83,11 @@ public class DPApplication extends Application{
     }
 
 
+    public void setClientID(String clientID){
+        this.clientID = clientID;
+    }
+
+
     public Context getContext(){
         return context;
     }
@@ -107,8 +107,19 @@ public class DPApplication extends Application{
         this.secure = secure;
     }
 
+
     public Boolean getSecure() {
         return this.secure;
+    }
+
+
+    public void setCommunicationTechnology(int communicationTechnology) {
+        this.communicationTechnology = communicationTechnology;
+    }
+
+
+    public int getCommunicationTechnology() {
+        return communicationTechnology;
     }
 
 
