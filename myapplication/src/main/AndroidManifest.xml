@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Fenotipagem_digital_saude_vs_0_1">
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

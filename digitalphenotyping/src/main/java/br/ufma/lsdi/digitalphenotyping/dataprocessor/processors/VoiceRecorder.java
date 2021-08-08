@@ -12,6 +12,9 @@ import com.konovalov.vad.VadListener;
 import static android.media.AudioFormat.CHANNEL_IN_MONO;
 import static android.media.AudioFormat.CHANNEL_IN_STEREO;
 
+/**
+ * Class responsável por identificar se o áudio possui voz humana
+ */
 public class VoiceRecorder {
     private static final int PCM_CHANNEL = CHANNEL_IN_MONO;
     private static final int PCM_ENCODING_BIT = AudioFormat.ENCODING_PCM_16BIT;

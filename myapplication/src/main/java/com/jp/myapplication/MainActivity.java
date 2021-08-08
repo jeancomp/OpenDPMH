@@ -18,6 +18,7 @@ import br.ufma.lsdi.digitalphenotyping.Bus;
 import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getName();
     DigitalPhenotypingManager digitalPhenotyping;
     TextView textview_first;
     View button_first;
@@ -25,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     View button_closeFramework;
     View button_recorder;
     Bus myService;
-    private static final String TAG = MainActivity.class.getName();
 
 
     @Override

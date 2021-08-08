@@ -8,8 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
-
-import java.util.List;
 import java.util.UUID;
 import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.InferenceProcessorManager;

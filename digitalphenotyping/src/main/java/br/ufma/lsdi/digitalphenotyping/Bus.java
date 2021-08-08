@@ -7,32 +7,23 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import org.apache.commons.lang3.StringUtils;
 import java.io.FileNotFoundException;
 import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.listeners.IConnectionListener;
-import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
-import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.network.SecurityService;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
-import br.ufma.lsdi.cddl.pubsub.Subscriber;
-import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 
 /**
@@ -60,12 +51,11 @@ public class Bus extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG,"#### Starting service BusSystem");
-        //instance = this;
         context = this;
         messageTextView = new TextView(context);
 
         // Create the Foreground Service
-        Log.i(TAG,"#### criando notificação");
+        Log.i(TAG,"#### Criando notificação");
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
@@ -112,8 +102,6 @@ public class Bus extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG,"#### onStartCommand BusSystem");
-
         if(intent != null){
             String clientID = intent.getStringExtra("clientID");
             int communicationTechnology = intent.getIntExtra("communicationTechnology", 0);
@@ -169,7 +157,8 @@ public class Bus extends Service {
             cddl.stopAllSensors();
 
             //cddl.startCommunicationTechnology(CDDL.INTERNAL_TECHNOLOGY_VIRTUAL_ID);
-            cddl.startCommunicationTechnology(this.communicationTechnology);
+            cddl.startAllCommunicationTechnologies();
+            //cddl.startCommunicationTechnology(this.communicationTechnology);
         }catch (Exception e){
             Log.i(TAG,"#### Error: " + e.getMessage());
         }
