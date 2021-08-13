@@ -14,18 +14,21 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import br.ufma.lsdi.digitalphenotyping.Bus;
-import br.ufma.lsdi.digitalphenotyping.DigitalPhenotypingManager;
+
+import java.util.Collections;
+
+import br.ufma.lsdi.digitalphenotyping.MainService;
+import br.ufma.lsdi.digitalphenotyping.DPManager;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
-    DigitalPhenotypingManager digitalPhenotyping;
+    DPManager digitalPhenotypingManager;
     TextView textview_first;
     View button_first;
     View button_stop;
     View button_closeFramework;
     View button_recorder;
-    Bus myService;
+    MainService myService;
 
 
     @Override
@@ -49,12 +52,19 @@ public class MainActivity extends AppCompatActivity {
         startFramework();
     }
 
+
+    public void startFramework(){
+        digitalPhenotypingManager = new DPManager();
+        digitalPhenotypingManager.start(this, "", 8000, "", "", "", 1);
+    }
+
+
     @Override
     public void onStart() {
         super.onStart();
 
         try{
-            Intent intent = new Intent(this, Bus.class);
+            Intent intent = new Intent(this, MainService.class);
             intent.putExtra("clientID","l");
             intent.putExtra("communicationTechnology",4);
 
@@ -81,10 +91,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.i(TAG,"#### Connection service busSystem");
-            Bus.LocalBinder binder = (Bus.LocalBinder) iBinder;
+            MainService.LocalBinder binder = (MainService.LocalBinder) iBinder;
             myService = binder.getService();
 
-            digitalPhenotyping.getInstance().setBusSystem(myService);
+            digitalPhenotypingManager.getInstance().setBusSystem(myService);
         }
 
         @Override
@@ -92,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG,"#### Disconnection service busSystem");
         }
     };
-
-
-    public void startFramework(){
-        digitalPhenotyping = new DigitalPhenotypingManager(this);
-        digitalPhenotyping.start();
-    }
 
 
     public View.OnClickListener clickListener = new View.OnClickListener() {
@@ -113,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     //digitalPhenotyping.getInstance().activaSensor("Call");
 
                     Log.i(TAG,"#### Publicando mensagem para start processor: Sociability");
-                    digitalPhenotyping.getInstance().startProcessor("Sociability");
+                    digitalPhenotypingManager.getInstance().startDataProcessors(Collections.singletonList("Sociability"));
                     break;
                 }
 
@@ -123,13 +127,13 @@ public class MainActivity extends AppCompatActivity {
                     //digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
 
                     Log.i(TAG, "#### Publicando mensagem para stop processor: Sociability");
-                    digitalPhenotyping.getInstance().stopProcessor("Sociability");
+                    digitalPhenotypingManager.getInstance().stopDataProcessors(Collections.singletonList("Sociability"));
                     break;
                 }
 
                 case R.id.closeFramework: {
                     Log.i(TAG, "#### Parando o framework");
-                    digitalPhenotyping.getInstance().stop();
+                    digitalPhenotypingManager.getInstance().stop();
                     finish();
                     break;
                 }

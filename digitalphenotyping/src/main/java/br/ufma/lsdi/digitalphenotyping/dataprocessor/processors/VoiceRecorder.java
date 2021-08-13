@@ -1,5 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
+import android.Manifest;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -11,6 +12,8 @@ import com.konovalov.vad.VadListener;
 
 import static android.media.AudioFormat.CHANNEL_IN_MONO;
 import static android.media.AudioFormat.CHANNEL_IN_STEREO;
+
+import androidx.annotation.RequiresPermission;
 
 /**
  * Class responsável por identificar se o áudio possui voz humana
@@ -28,6 +31,7 @@ public class VoiceRecorder {
 
     private static final String TAG = VoiceRecorder.class.getSimpleName();
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     public VoiceRecorder(Listener callback, VadConfig config) {
         this.callback = callback;
         this.vad = new Vad(config);

@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.ContextAttribute;
 
+//https://developer.android.com/studio/write/annotations?hl=pt-br#thread-annotations
 public abstract class DigitalPhenotype {
     private long id;
     private String uid;

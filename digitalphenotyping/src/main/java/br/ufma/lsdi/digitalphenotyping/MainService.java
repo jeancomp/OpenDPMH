@@ -1,5 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -14,22 +15,30 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.listeners.IConnectionListener;
+import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
+import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.network.SecurityService;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
+import br.ufma.lsdi.cddl.pubsub.Subscriber;
+import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManager;
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * System Bus to framework
+ * System Bus to framework, MainService
  */
-public class Bus extends Service {
+public class MainService extends Service {
     private CDDL cddl;
     private String clientID;
     private ConnectionImpl con;
@@ -41,40 +50,55 @@ public class Bus extends Service {
     private int communicationTechnology = 4;
     private String nameCaCertificate = "rootCA.crt";
     private String nameClientCertificate = "client.crt";
-    private static final String TAG = Bus.class.getName();
+    private static final String TAG = MainService.class.getName();
     Publisher publisher = PublisherFactory.createPublisher();
     private static final int ID_SERVICE = 101;
-    DPApplication dpApplication = DPApplication.getInstance();
+    Configurations configurations = Configurations.getInstance();
+    private boolean servicesStarted = false;
+    private Subscriber subAddPlugin;
+    private List<String> processors = null;
 
 
+    @RequiresPermission(allOf = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.FOREGROUND_SERVICE,
+            Manifest.permission.RECEIVE_BOOT_COMPLETED
+    })
     @Override
     public void onCreate() {
-        super.onCreate();
-        Log.i(TAG,"#### Starting service BusSystem");
-        context = this;
-        messageTextView = new TextView(context);
+        try {
+            super.onCreate();
+            Log.i(TAG, "#### Starting service BusSystem");
+            context = this;
+            messageTextView = new TextView(context);
 
-        // Create the Foreground Service
-        Log.i(TAG,"#### Criando notificação");
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
-        Notification notification = notificationBuilder.setOngoing(true)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("OpenDPMH")
-                .setContentText("Behavior monitoring application")
-                .setPriority(PRIORITY_MIN)
-                .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                .build();
+            // Create the Foreground Service
+            Log.i(TAG, "#### Criando notificação");
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+            Notification notification = notificationBuilder.setOngoing(true)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("OpenDPMH")
+                    .setContentText("Behavior monitoring application")
+                    .setPriority(PRIORITY_MIN)
+                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                    .build();
 
-        startForeground(ID_SERVICE, notification);
+            startForeground(ID_SERVICE, notification);
+
+            this.processors = new ArrayList();
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
+        }
     }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
     private String createNotificationChannel(NotificationManager notificationManager){
         String channelId = "my_service_channelid";
-        String channelName = "Service BusSystem";
+        String channelName = "Service OpenDPMH";
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
         // omitted the LED color
         //channel.setImportance(NotificationManager.IMPORTANCE_NONE);
@@ -89,9 +113,9 @@ public class Bus extends Service {
 
 
     public class LocalBinder extends Binder {
-        public Bus getService() {
+        public MainService getService() {
             //return mBinder;
-            return Bus.this;
+            return MainService.this;
         }
     }
 
@@ -114,12 +138,49 @@ public class Bus extends Service {
             setCommunicationTechnology(communicationTechnology);
             setSecure(secure);
 
-            initCDDL();
+            startCDDL();
+            startServices();
+
+            // Subscribe subAddPlugin a primeira vez serve para atualizar a List de processors, depois,
+            //  serve para atualizar qualquer processors adicionado ao frameworwk.
+            subAddPlugin = SubscriberFactory.createSubscriber();
+            subAddPlugin.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
+            subscribeMessageAddPlugin(configurations.getInstance().ADD_PLUGIN_TOPIC);
         }
 
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
+
+
+    public void subscribeMessageAddPlugin(String serviceName) {
+        subAddPlugin.subscribeServiceByName(serviceName);
+        subAddPlugin.setSubscriberListener(subscriberAddPlugin);
+    }
+
+
+    public ISubscriberListener subscriberAddPlugin = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+//                    if (message.getServiceName().equals("Meu serviço")) {
+//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
+//                    }
+            Log.d(TAG, "#### Read messages (Add Plugin):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.d(TAG, "#### " + mensagemRecebida);
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+
+            if (!processors.contains(atividade)) {
+                processors.add(atividade);
+
+            } else {
+                Log.d(TAG, "#### Processor already exists: " + atividade);
+            }
+        }
+    };
 
 
     @Override
@@ -128,11 +189,12 @@ public class Bus extends Service {
         cddl.stopService();
         con.disconnect();
         CDDL.stopMicroBroker();
+        stopServices();
         onDestroy();
     }
 
 
-    public void initCDDL(){
+    public void startCDDL(){
         try {
             String host = CDDL.startMicroBroker();
             //String host = "10.0.2.3";
@@ -144,7 +206,7 @@ public class Bus extends Service {
             con.addConnectionListener(connectionListener);
             con.connect();
             //cddl = CDDL.getInstance();
-            cddl = dpApplication.getInstance().CDDLGetInstance();
+            cddl = configurations.getInstance().CDDLGetInstance();
             cddl.setConnection(con);
             //cddl.setContext(getContext());
             cddl.setContext(getContext());
@@ -160,7 +222,38 @@ public class Bus extends Service {
             cddl.startAllCommunicationTechnologies();
             //cddl.startCommunicationTechnology(this.communicationTechnology);
         }catch (Exception e){
-            Log.i(TAG,"#### Error: " + e.getMessage());
+            Log.e(TAG,"#### Error: " + e.getMessage());
+        }
+    }
+
+
+    private void startServices(){
+        try{
+            if(!servicesStarted) {
+                Log.i(TAG, "#### Starts all framework services.");
+                Intent ipm = new Intent(getContext(), ProcessorManager.class);
+                getContext().startService(ipm);
+
+                //Add PhenotypeComposer.class
+
+                servicesStarted = true;
+            }
+        }catch (Exception e){
+            Log.e(TAG, "#### Error: " + e.getMessage());
+        }
+    }
+
+
+    private void stopServices(){
+        try {
+            if(servicesStarted) {
+                Intent ipm = new Intent(getContext(), ProcessorManager.class);
+                getContext().stopService(ipm);
+
+                servicesStarted = false;
+            }
+        }catch (Exception e){
+            Log.e(TAG,e.getMessage());
         }
     }
 
@@ -183,7 +276,7 @@ public class Bus extends Service {
 
             cddl.startCommunicationTechnology(CDDL.INTERNAL_TECHNOLOGY_VIRTUAL_ID);
         }catch (Exception e){
-            Log.i(TAG,"#### Error: " + e.getMessage());
+            Log.e(TAG,"#### Error: " + e.getMessage());
         }
     }
 
@@ -253,7 +346,7 @@ public class Bus extends Service {
 
 
     public CDDL getInstanceCDDL(){
-        return dpApplication.getInstance().CDDLGetInstance();
+        return configurations.getInstance().CDDLGetInstance();
     }
 
 
@@ -326,5 +419,10 @@ public class Bus extends Service {
      */
     public int getCommunicationTechnology(){
         return communicationTechnology;
+    }
+
+
+    public List<String> getProcessors(){
+        return this.processors;
     }
 }

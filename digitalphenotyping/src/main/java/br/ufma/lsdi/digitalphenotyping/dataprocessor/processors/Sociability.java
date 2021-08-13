@@ -9,14 +9,13 @@ import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.DPApplication;
+import br.ufma.lsdi.digitalphenotyping.Configurations;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.ProcessorModel;
 
 public class Sociability extends Service implements ProcessorModel {
@@ -30,23 +29,23 @@ public class Sociability extends Service implements ProcessorModel {
     Subscriber subAudio;
     Subscriber subCall;
     Subscriber subSMS;
-    DPApplication dpApplication = DPApplication.getInstance();
+    Configurations configurations = Configurations.getInstance();
 
     @Override
     public void onCreate() {
         try {
             Log.i(TAG, "#### Running processor Sociability");
 
-            context = dpApplication.getInstance().getContext();
+            context = configurations.getInstance().getContext();
 
             subAudio = SubscriberFactory.createSubscriber();
-            subAudio.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
+            subAudio.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
 
             subCall = SubscriberFactory.createSubscriber();
-            subCall.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
+            subCall.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
 
             subSMS = SubscriberFactory.createSubscriber();
-            subSMS.addConnection(dpApplication.getInstance().CDDLGetInstance().getConnection());
+            subSMS.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
 
             //startSensor("Audio");
             startSensor("Call");
@@ -178,7 +177,7 @@ public class Sociability extends Service implements ProcessorModel {
 
             if(isValidSMS(valor)){
                 Message msg = new Message();
-                msg.setServiceName(dpApplication.getInstance().DATA_COMPOSER_TOPIC);
+                msg.setServiceName(configurations.getInstance().DATA_COMPOSER_TOPIC);
                 msg.setServiceValue(valor);
                 publish(msg);
             }
@@ -195,7 +194,7 @@ public class Sociability extends Service implements ProcessorModel {
 
     @Override
     public void publish(Message message) {
-        dpApplication.getInstance().publish(message);
+        configurations.getInstance().publish(message);
     }
 
 
@@ -207,13 +206,13 @@ public class Sociability extends Service implements ProcessorModel {
 
     @Override
     public void startSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(dpApplication.getInstance().ACTIVE_SENSOR_TOPIC, nameSensor);
+        configurations.getInstance().publishMessage(configurations.getInstance().ACTIVE_SENSOR_TOPIC, nameSensor);
     }
 
 
     @Override
     public void stopSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(dpApplication.getInstance().DEACTIVATE_SENSOR_TOPIC, nameSensor);
+        configurations.getInstance().publishMessage(configurations.getInstance().DEACTIVATE_SENSOR_TOPIC, nameSensor);
     }
 
 

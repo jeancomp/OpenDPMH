@@ -3,49 +3,53 @@ package br.ufma.lsdi.digitalphenotyping;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 import android.widget.TextView;
 
-import java.util.List;
-import java.util.UUID;
 import br.ufma.lsdi.cddl.CDDL;
-import br.ufma.lsdi.cddl.ConnectionFactory;
-import br.ufma.lsdi.cddl.listeners.IConnectionListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 
-public class DPApplication extends Application{
-    //TOPIC
-    public static String NEW_PROCESSOR_TOPIC = "newprocessor";
-    public static String REMOVE_PROCESSOR_TOPIC = "removeprocessor";
+public class Configurations extends Application{
+    //ALL TOPIC
+    public static String ADD_PLUGIN_TOPIC = "addplugin";
+    public static String REMOVE_PLUGIN_TOPIC = "removeplugin";
     public static String START_PROCESSOR_TOPIC = "startprocessor";
     public static String STOP_PROCESSOR_TOPIC = "stoprocessor";
+    public static String DATA_PROCESSORS_LIST_TOPIC[] = {"dataprocessorlist","ok"};
+    public static String ACTIVE_DATA_PROCESSORS_LIST_TOPIC = "activedataprocessorlist";
     public static String ACTIVE_SENSOR_TOPIC = "activesensor";
     public static String DEACTIVATE_SENSOR_TOPIC = "deactivatesensor";
     public static String DATA_COMPOSER_TOPIC = "data_composer";
+
+    //External Server Address for PhenotypeComposer
+    private String hostServer;
+    private int port;
+    private String username;
+    private String password;
+    private String topic;
 
     private static CDDL cddl;
     private ConnectionImpl con;
     private String clientID;
     private int communicationTechnology = 4;
     private Boolean secure;
-    private static DPApplication instance = null;
+    private static Configurations instance = null;
     private String statusConnection = "";
     private TextView messageTextView;
     private Context context;
     private Activity activity;
     Subscriber subActive;
     Publisher publisher = PublisherFactory.createPublisher();
-    private static final String TAG = DPApplication.class.getName();
+    private static final String TAG = Configurations.class.getName();
 
 
-    public DPApplication(){ }
+    public Configurations(){ }
 
 
-    public DPApplication(Activity a){
+    public Configurations(Activity a){
         this.activity = a;
     }
 
@@ -62,9 +66,9 @@ public class DPApplication extends Application{
     }
 
 
-    public static DPApplication getInstance() {
+    public static Configurations getInstance() {
         if (instance == null) {
-            instance = new DPApplication();
+            instance = new Configurations();
         }
         return instance;
     }
@@ -120,6 +124,15 @@ public class DPApplication extends Application{
 
     public int getCommunicationTechnology() {
         return communicationTechnology;
+    }
+
+
+    public void setExternalServer(String hostServer, int port, String username, String password, String topic){
+        this.hostServer = hostServer;
+        this.port = port;
+        this.username = username;
+        this.password = password;
+        this.topic = topic;
     }
 
 

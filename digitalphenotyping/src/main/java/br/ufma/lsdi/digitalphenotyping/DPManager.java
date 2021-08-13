@@ -8,61 +8,61 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
-import java.util.UUID;
-import br.ufma.lsdi.digitalphenotyping.dataprovider.services.ContextDataProvider;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.InferenceProcessorManager;
 
-public class DigitalPhenotypingManager implements DigitalPhenotyping {
-    private static final String TAG = DigitalPhenotypingManager.class.getName();
+import java.util.List;
+import java.util.UUID;
+
+public class DPManager implements DPInterface {
+    private static final String TAG = DPManager.class.getName();
     private String statusCon = "undefined";
-    private static DigitalPhenotypingManager instance = null;
-    DPApplication dpApplication = DPApplication.getInstance();
+    private static DPManager instance = null;
+    Configurations configurations = Configurations.getInstance();
 
     private Context context;
     private Activity activity;
     private String clientID;
     private int communicationTechnology;
     private Boolean secure;
-    private Bus myService;
+    private MainService myService;
 
 
     /**
-     * Construtor do DigitalPhenotypingManager
+     * Construtor do DPManager
      */
-    public DigitalPhenotypingManager(){ }
-
-
-    public DigitalPhenotypingManager(Activity activity){
-        try {
-            Log.i(TAG, "#### INICIANDO FRAMEWORK");
-            this.activity = activity;
-            this.context = dpApplication.getInstance().getContext();
-            dpApplication.getInstance().setActivity(activity);
-            this.clientID = UUID.randomUUID().toString().replaceAll("-","");
-            this.clientID = this.clientID.toString().replaceAll("[0-9]","");
-            dpApplication.getInstance().setClientID(this.clientID);
-            this.communicationTechnology = 4;   // Pré-configuramos o communicationTechnology inicia por 4
-            this.secure = false;                // True==Certificado digitais, False==Não usa Cert. Digitais
-
-            initPermissionsRequired();
-        }catch (Exception e){
-            Log.e(TAG,"Error: " + e.toString());
-        }
+    public DPManager(){
     }
 
 
-    public static DigitalPhenotypingManager getInstance() {
+    public static DPManager getInstance() {
         if (instance == null) {
-            instance = new DigitalPhenotypingManager();
+            instance = new DPManager();
         }
         return instance;
     }
 
     @Override
-    public synchronized void start(){
+    public void start(Activity activity, String host, int port, String username, String password, String topic, int conf){
         try{
-            Log.i(TAG,"#### Starts all framework services.");
-            Intent intent = new Intent(this.context, Bus.class);
+            Log.i(TAG, "#### INICIANDO FRAMEWORK");
+
+            this.activity = activity;
+            this.context = configurations.getInstance().getContext();
+            configurations.getInstance().setActivity(activity);
+
+            // configura endereço do servidor externo para o PhenotypeComposer
+            configurations.getInstance().setExternalServer(host, port, username, password, topic);
+
+            this.clientID = UUID.randomUUID().toString().replaceAll("-","");
+            this.clientID = this.clientID.toString().replaceAll("[0-9]","");
+            configurations.getInstance().setClientID(this.clientID);
+
+            this.communicationTechnology = 4;   // Pré-configuramos o communicationTechnology inicia por 4
+            this.secure = false;                // True==Certificado digitais, False==Não usa Cert. Digitais
+
+            initPermissionsRequired();
+
+            Log.i(TAG,"#### Started framework MainService.");
+            Intent intent = new Intent(this.context, MainService.class);
             intent.putExtra("clientID",getClientID());
             intent.putExtra("communicationTechnology",this.communicationTechnology);
             intent.putExtra("secure", getSecure());
@@ -73,12 +73,6 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
             else {
                 getContext().startService(intent);
             }
-
-            Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
-            getContext().startService(ipm);
-
-            Intent cdp = new Intent(getContext(), ContextDataProvider.class);
-            getContext().startService(cdp);
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.getMessage());
         }
@@ -87,19 +81,13 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
 
     @Override
     public void stop(){
-        Log.i(TAG,"#### Stop all framework services.");
+        Log.i(TAG,"#### Stopped framework MainService.");
         // PARA O SERVICE PRIMEIRO PLANO
         myService.stopForeground(true);
 
         try {
-            Intent intent = new Intent(getContext(), Bus.class);
+            Intent intent = new Intent(getContext(), MainService.class);
             getContext().stopService(intent);
-
-            Intent ipm = new Intent(getContext(), InferenceProcessorManager.class);
-            getContext().stopService(ipm);
-
-            Intent cdp = new Intent(getContext(), ContextDataProvider.class);
-            getContext().stopService(cdp);
         }catch (Exception e){
             Log.e(TAG,e.getMessage());
         }
@@ -107,39 +95,56 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
 
 
     @Override
-    public void startProcessor(String nameProcessor){
-        dpApplication.getInstance().publishMessage(dpApplication.getInstance().START_PROCESSOR_TOPIC, nameProcessor);
+    public void startDataProcessors(List<String> nameProcessors){
+        Log.i(TAG, "#### Started processors");
+        if(!nameProcessors.isEmpty()) {
+            for (int i = 0; i < nameProcessors.size(); i++) {
+                configurations.getInstance().publishMessage(configurations.getInstance().START_PROCESSOR_TOPIC, nameProcessors.get(i).toString());
+            }
+        }
     }
 
 
     @Override
-    public void stopProcessor(String nameProcessor){
-        dpApplication.getInstance().publishMessage(dpApplication.getInstance().STOP_PROCESSOR_TOPIC, nameProcessor);
+    public void stopDataProcessors(List<String> nameProcessors){
+        Log.i(TAG, "#### Stopped processors");
+        if(!nameProcessors.isEmpty()) {
+            for (int i = 0; i < nameProcessors.size(); i++) {
+                configurations.getInstance().publishMessage(configurations.getInstance().STOP_PROCESSOR_TOPIC, nameProcessors.get(i).toString());
+            }
+        }
     }
 
 
     @Override
-    public void activaSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(dpApplication.getInstance().ACTIVE_SENSOR_TOPIC, nameSensor);
+    public List<String> getDataProcessorsList(){
+        List<String> processors = null;
+
+        processors = myService.getProcessors();
+        return processors;
     }
 
 
     @Override
-    public void deactivateSensor(String nameSensor){
-        dpApplication.getInstance().publishMessage(dpApplication.getInstance().DEACTIVATE_SENSOR_TOPIC, nameSensor);
+    public List<String> getActiveDataProcessorsList(){
+        List<String> processors = null;
+        List<String> activeProcessors = null;
+
+        return activeProcessors;
     }
 
 
     @Override
-    public synchronized void publish(String service, String text) {
-        dpApplication.getInstance().publishMessage(service, text);
+    public void setExternalServer(String hostServer, int port, String username, String password, String topic){
+
     }
 
 
     @Override
-    public void subscriber(){
+    public void setConfiguration(int number){
 
     }
+
 
     public Context getContext() {
         return context;
@@ -200,12 +205,12 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
     }
 
 
-    public void setBusSystem(Bus bus){
+    public void setBusSystem(MainService bus){
         this.myService = bus;
     }
 
 
-    public Bus getBusSystem(){
+    public MainService getBusSystem(){
         return myService;
     }
 
@@ -222,7 +227,6 @@ public class DigitalPhenotypingManager implements DigitalPhenotyping {
     }
 
 
-    @Override
     public void initPermissionsRequired() {
         // Checa as permissões para rodar os sensores virtuais
         int PERMISSION_ALL = 1;
