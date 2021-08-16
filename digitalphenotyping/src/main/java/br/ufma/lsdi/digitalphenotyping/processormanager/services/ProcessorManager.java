@@ -22,21 +22,26 @@ import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
+import br.ufma.lsdi.cddl.pubsub.Publisher;
+import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.Configurations;
+import br.ufma.lsdi.digitalphenotyping.MyMessage;
+import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
 
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
     Configurations configurations = Configurations.getInstance();
     Context context;
+    Publisher publisher = PublisherFactory.createPublisher();
+
     // Variáveis dos processors
     List<String> activeProcessors = null;
     List<String> processors = null;
     Subscriber subStartProcessor;
     Subscriber subStopProcessor;
-    Subscriber subDataProcessorsList;
 
     // Variáveis dos sensores
     private String statusCon = "undefined";
@@ -52,25 +57,22 @@ public class ProcessorManager extends Service {
         try {
             Log.i(TAG,"#### Starting ProcessorManager Service");
 
-            context = configurations.getInstance().getContext();
+            context = this;
 
             subStartProcessor = SubscriberFactory.createSubscriber();
-            subStartProcessor.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
+            subStartProcessor.addConnection(CDDL.getInstance().getConnection());
 
             subStopProcessor = SubscriberFactory.createSubscriber();
-            subStopProcessor.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
-
-            subDataProcessorsList = SubscriberFactory.createSubscriber();
-            subDataProcessorsList.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
+            subStopProcessor.addConnection(CDDL.getInstance().getConnection());
 
             startProcessorsList();
             copyProcessorsList();
 
             subActive = SubscriberFactory.createSubscriber();
-            subActive.addConnection(CDDL.getInstance().getConnection()); // Primeira forma obter instancia do CDDL
+            subActive.addConnection(CDDL.getInstance().getConnection());
 
             subDeactive = SubscriberFactory.createSubscriber();
-            subDeactive.addConnection(configurations.getInstance().CDDLGetInstance().getConnection()); // Segunda forma obter instancia do CDDL
+            subDeactive.addConnection(CDDL.getInstance().getConnection());
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -115,12 +117,11 @@ public class ProcessorManager extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        subscribeMessageStartProcessor(configurations.getInstance().START_PROCESSOR_TOPIC);
-        subscribeMessageStopProcessor(configurations.getInstance().STOP_PROCESSOR_TOPIC);
-        subscribeMessageDataProcessorsList(configurations.getInstance().DATA_PROCESSORS_LIST_TOPIC[0]);
+        subscribeMessageStartProcessor(Topics.START_PROCESSOR_TOPIC.toString());
+        subscribeMessageStopProcessor(Topics.STOP_PROCESSOR_TOPIC.toString());
 
-        subscribeMessageActive(configurations.getInstance().ACTIVE_SENSOR_TOPIC);
-        subscribeMessageDeactive(configurations.getInstance().DEACTIVATE_SENSOR_TOPIC);
+        subscribeMessageActive(Topics.ACTIVE_SENSOR_TOPIC.toString());
+        subscribeMessageDeactive(Topics.DEACTIVATE_SENSOR_TOPIC.toString().toString());
 
         super.onStartCommand(intent, flags, startId);
 
@@ -148,7 +149,7 @@ public class ProcessorManager extends Service {
         Log.i(TAG, "#### Copy of processors sent to MainService");
         if(!processors.isEmpty()) {
             for (int i = 0; i < processors.size(); i++) {
-                configurations.getInstance().publishMessage(configurations.getInstance().ADD_PLUGIN_TOPIC, processors.get(i).toString());
+                publishMessage(Topics.ADD_PLUGIN_TOPIC.toString(), processors.get(i).toString());
             }
         }
     }
@@ -168,12 +169,6 @@ public class ProcessorManager extends Service {
     public void subscribeMessageStopProcessor(String serviceName) {
         subStopProcessor.subscribeServiceByName(serviceName);
         subStopProcessor.setSubscriberListener(subscriberStopProcessors);
-    }
-
-
-    public void subscribeMessageDataProcessorsList(String serviceName) {
-        subDataProcessorsList.subscribeServiceByName(serviceName);
-        subDataProcessorsList.setSubscriberListener(subscriberDataProcessorsList);
     }
 
 
@@ -222,32 +217,6 @@ public class ProcessorManager extends Service {
                 stopProcessor(atividade);
             } else {
                 Log.i(TAG, "#### Invalid processor name: " + atividade);
-            }
-        }
-    };
-
-
-    public ISubscriberListener subscriberDataProcessorsList = new ISubscriberListener() {
-        @Override
-        public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### Read messages (getDataProcessorsList):  ");
-
-            Object[] valor = message.getServiceValue();
-            String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
-            String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
-
-
-            if (atividade.equals("ok")) {
-                for (int i = 0; i < processors.size(); i++) {
-                    configurations.getInstance().publishMessage(configurations.getInstance().DATA_PROCESSORS_LIST_TOPIC[0], processors.get(i).toString());
-                }
-            } else {
-                Log.d(TAG, "#### Invalid processor name: " + atividade);
             }
         }
     };
@@ -348,7 +317,7 @@ public class ProcessorManager extends Service {
 
 
     public List<String> listVirtualSensor() {
-        List<String> s = configurations.getInstance().CDDLGetInstance().getSensorVirtualList();
+        List<String> s = CDDL.getInstance().getSensorVirtualList();
 
         Log.i(TAG, "\n #### Sensores virtuais disponíveis, Tamanho: \n" + s.size());
         for (int i = 0; i < s.size(); i++) {
@@ -360,7 +329,7 @@ public class ProcessorManager extends Service {
 
     public List<String> listInternalSensor() {
         List<String> s = new ArrayList();
-        List<Sensor> sensorInternal = configurations.getInstance().CDDLGetInstance().getInternalSensorList();
+        List<Sensor> sensorInternal = CDDL.getInstance().getInternalSensorList();
 
         Log.i(TAG, "\n #### Sensores internos disponíveis, Tamanho: \n" + sensorInternal.size());
         if (sensorInternal.size() != 0) {
@@ -378,19 +347,19 @@ public class ProcessorManager extends Service {
         if (sensor.equalsIgnoreCase("TouchScreen")) {
             // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
             checkDrawOverlayPermission();
-            configurations.getInstance().CDDLGetInstance().startSensor(sensor, 0);
+            CDDL.getInstance().startSensor(sensor, 0);
         } else {
             initPermissions(sensor);
-            configurations.getInstance().CDDLGetInstance().startSensor(sensor, 0);
+            CDDL.getInstance().startSensor(sensor, 0);
         }
-        //cddl.startSensor("SMS",0);
-        //cddl.startSensor("Call",0);
-        //cddl.startSensor("ScreenOnOff",0);
+        //cddl.onStartSensor("SMS",0);
+        //cddl.onStartSensor("Call",0);
+        //cddl.onStartSensor("ScreenOnOff",0);
     }
 
 
     public void stopSensor(String sensor) {
-        configurations.getInstance().CDDLGetInstance().stopSensor(sensor);
+        CDDL.getInstance().stopSensor(sensor);
     }
 
 
@@ -399,13 +368,31 @@ public class ProcessorManager extends Service {
         initAllPermissions();
 
         //Start sensores virtuais pelo nome e delay
-        configurations.getInstance().CDDLGetInstance().startSensor("SMS", 0);
-        configurations.getInstance().CDDLGetInstance().startSensor("Call", 0);
-        configurations.getInstance().CDDLGetInstance().startSensor("ScreenOnOff", 0);
+        CDDL.getInstance().startSensor("SMS", 0);
+        CDDL.getInstance().startSensor("Call", 0);
+        CDDL.getInstance().startSensor("ScreenOnOff", 0);
 
         // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
         checkDrawOverlayPermission();
-        configurations.getInstance().CDDLGetInstance().startSensor("TouchScreen", 0);
+        CDDL.getInstance().startSensor("TouchScreen", 0);
+    }
+
+
+    public void publishMessage(String service, String text) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        MyMessage message = new MyMessage();
+        message.setServiceName(service);
+        message.setServiceValue(text);
+        publisher.publish(message);
+    }
+
+
+    private Boolean isProcessor(String nameProcessor) {
+        if (listProcessors().contains(nameProcessor)) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -413,10 +400,10 @@ public class ProcessorManager extends Service {
         Log.i(TAG, "#### Permissao para o sensor TouchScreen");
         // check if we already  have permission to draw over other apps
         if (Build.VERSION.SDK_INT >= 23) {
-            if (!Settings.canDrawOverlays(configurations.getInstance().getContext())) {
+            if (!Settings.canDrawOverlays(this.context)) {
                 // if not construct intent to request permission
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + configurations.getInstance().getContext().getPackageName()));
+                        Uri.parse("package:" + this.context.getPackageName()));
                 //startService(intent);
                 // request permission via start activity for result
                 Log.i(TAG, "#### permissao dada pelo usuário");
@@ -436,19 +423,6 @@ public class ProcessorManager extends Service {
             }
         }
         return true;
-    }
-
-
-    public synchronized void publishMessage(String service, String text) {
-        configurations.getInstance().publishMessage(service, text);
-    }
-
-
-    private Boolean isProcessor(String nameProcessor) {
-        if (listProcessors().contains(nameProcessor)) {
-            return true;
-        }
-        return false;
     }
 
 
@@ -577,6 +551,7 @@ public class ProcessorManager extends Service {
     }
 
 
+    //Implementar
     public void startAllProcessors() {
     }
 

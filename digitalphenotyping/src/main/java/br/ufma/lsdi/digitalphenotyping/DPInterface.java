@@ -10,7 +10,7 @@ import java.util.List;
  * Interface do framework
  */
 public interface DPInterface {
-    public void start(Activity activity, String host, int port, String username, String password, String topic, @IntRange(from=0,to=2) int configuration);
+    public void start(Activity activity, String host, int port, String username, String password, String topic, @IntRange(from=0,to=2) int compositionMode);
     public void stop();
     public void startDataProcessors(List<String> nameProcessors);
     public void stopDataProcessors(List<String> nameProcessors);

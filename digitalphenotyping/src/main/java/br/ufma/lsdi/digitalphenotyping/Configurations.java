@@ -22,7 +22,7 @@ public class Configurations extends Application{
     public static String ACTIVE_DATA_PROCESSORS_LIST_TOPIC = "activedataprocessorlist";
     public static String ACTIVE_SENSOR_TOPIC = "activesensor";
     public static String DEACTIVATE_SENSOR_TOPIC = "deactivatesensor";
-    public static String DATA_COMPOSER_TOPIC = "data_composer";
+    public static String INFERENCE_TOPIC = "inference";
 
     //External Server Address for PhenotypeComposer
     private String hostServer;

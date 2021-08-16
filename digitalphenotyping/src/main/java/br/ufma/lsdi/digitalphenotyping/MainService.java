@@ -1,5 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping;
 
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
+import org.apache.commons.lang3.StringUtils;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +29,10 @@ import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.network.SecurityService;
-import br.ufma.lsdi.cddl.pubsub.Publisher;
-import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.PhenotypeComposer;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManager;
-import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * System Bus to framework, MainService
@@ -51,19 +50,18 @@ public class MainService extends Service {
     private String nameCaCertificate = "rootCA.crt";
     private String nameClientCertificate = "client.crt";
     private static final String TAG = MainService.class.getName();
-    Publisher publisher = PublisherFactory.createPublisher();
     private static final int ID_SERVICE = 101;
-    Configurations configurations = Configurations.getInstance();
     private boolean servicesStarted = false;
     private Subscriber subAddPlugin;
     private List<String> processors = null;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @RequiresPermission(allOf = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.FOREGROUND_SERVICE,
-            Manifest.permission.RECEIVE_BOOT_COMPLETED
+            Manifest.permission.RECEIVE_BOOT_COMPLETED    // Na dúvida ainda se vai ter esse recurso no framework
     })
     @Override
     public void onCreate() {
@@ -89,6 +87,8 @@ public class MainService extends Service {
             startForeground(ID_SERVICE, notification);
 
             this.processors = new ArrayList();
+
+            createClientID();
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -106,6 +106,16 @@ public class MainService extends Service {
         notificationManager.createNotificationChannel(channel);
         Log.i(TAG,"#### channelId: " + channelId);
         return channelId;
+    }
+
+
+    public void createClientID(){
+//        this.clientID = UUID.randomUUID().toString().replaceAll("-","");
+//        this.clientID = this.clientID.toString().replaceAll("[0-9]","");
+//        configurations.getInstance().setClientID(this.clientID);
+
+        this.clientID = "febfcfbccaeabda";
+        Log.i(TAG,"#### ClientID: " + this.clientID);
     }
 
 
@@ -127,14 +137,12 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent != null){
-            String clientID = intent.getStringExtra("clientID");
+            //String clientID = intent.getStringExtra("clientID");
             int communicationTechnology = intent.getIntExtra("communicationTechnology", 0);
             Boolean secure = intent.getBooleanExtra("secure", false);
 
-            Log.i(TAG,"#### clientID: " + clientID);
             Log.i(TAG,"#### communicationTechnology: " + communicationTechnology);
 
-            setClientID(clientID);
             setCommunicationTechnology(communicationTechnology);
             setSecure(secure);
 
@@ -144,8 +152,8 @@ public class MainService extends Service {
             // Subscribe subAddPlugin a primeira vez serve para atualizar a List de processors, depois,
             //  serve para atualizar qualquer processors adicionado ao frameworwk.
             subAddPlugin = SubscriberFactory.createSubscriber();
-            subAddPlugin.addConnection(configurations.getInstance().CDDLGetInstance().getConnection());
-            subscribeMessageAddPlugin(configurations.getInstance().ADD_PLUGIN_TOPIC);
+            subAddPlugin.addConnection(CDDL.getInstance().getConnection());
+            subscribeMessageAddPlugin(Topics.ADD_PLUGIN_TOPIC.toString());
         }
 
         super.onStartCommand(intent, flags, startId);
@@ -198,15 +206,20 @@ public class MainService extends Service {
         try {
             String host = CDDL.startMicroBroker();
             //String host = "10.0.2.3";
-            Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
+            Log.i(TAG,"#### ENDEREÇO DO MICROBROKER: " + host);
             //val host = "broker.hivemq.com";
             con = ConnectionFactory.createConnection();
-            con.setClientId(getClientID());
+
+            if(this.clientID.isEmpty()) {
+                createClientID();
+            }
+
+            con.setClientId(this.clientID);
             con.setHost(host);
             con.addConnectionListener(connectionListener);
             con.connect();
             //cddl = CDDL.getInstance();
-            cddl = configurations.getInstance().CDDLGetInstance();
+            cddl = CDDL.getInstance();
             cddl.setConnection(con);
             //cddl.setContext(getContext());
             cddl.setContext(getContext());
@@ -234,7 +247,8 @@ public class MainService extends Service {
                 Intent ipm = new Intent(getContext(), ProcessorManager.class);
                 getContext().startService(ipm);
 
-                //Add PhenotypeComposer.class
+                Intent pc = new Intent(getContext(), PhenotypeComposer.class);
+                getContext().startService(pc);
 
                 servicesStarted = true;
             }
@@ -250,6 +264,9 @@ public class MainService extends Service {
                 Intent ipm = new Intent(getContext(), ProcessorManager.class);
                 getContext().stopService(ipm);
 
+                Intent pc = new Intent(getContext(), PhenotypeComposer.class);
+                getContext().startService(pc);
+
                 servicesStarted = false;
             }
         }catch (Exception e){
@@ -264,7 +281,7 @@ public class MainService extends Service {
             String host = CDDL.startSecureMicroBroker(getContext(), true);
             //val host = "broker.hivemq.com";
             con = ConnectionFactory.createConnection();
-            con.setClientId(getClientID());
+            con.setClientId(this.clientID);
             con.setHost(host);
             con.addConnectionListener(connectionListener);
             //con.connect();
@@ -345,11 +362,6 @@ public class MainService extends Service {
     }
 
 
-    public CDDL getInstanceCDDL(){
-        return configurations.getInstance().CDDLGetInstance();
-    }
-
-
     public Context getContext() {
         return context;
     }
@@ -377,16 +389,6 @@ public class MainService extends Service {
 
 
     public String getNameClientCertificate(){ return nameClientCertificate;}
-
-
-    public void setClientID(String clientID){
-        this.clientID = clientID;
-    }
-
-
-    public String getClientID(){
-        return clientID;
-    }
 
 
     public void setActivity(Activity a){

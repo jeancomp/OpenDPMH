@@ -6,19 +6,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.os.IBinder;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
-
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import java.util.Collections;
-
-import br.ufma.lsdi.digitalphenotyping.MainService;
 import br.ufma.lsdi.digitalphenotyping.DPManager;
+import br.ufma.lsdi.digitalphenotyping.MainService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -65,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             Intent intent = new Intent(this, MainService.class);
-            intent.putExtra("clientID","l");
+            //intent.putExtra("clientID","l");
             intent.putExtra("communicationTechnology",4);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -110,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case  R.id.button_first: {
                     //Log.i(TAG,"#### Publicando mensagem para start sensor");
-                    //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+                    //digitalPhenotyping.getInstance().publishInference(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
                     //digitalPhenotyping.getInstance().activaSensor("TouchScreen");
 
                     //Log.i(TAG,"#### Publicando mensagem para start sensor");
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
                 case R.id.stop: {
                     //Log.i(TAG, "#### Publicando mensagem para stop sensor");
-                    //digitalPhenotyping.getInstance().publish(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+                    //digitalPhenotyping.getInstance().publishInference(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
                     //digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
 
                     Log.i(TAG, "#### Publicando mensagem para stop processor: Sociability");

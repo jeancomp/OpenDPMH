@@ -1,19 +1,19 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
+import static android.media.AudioFormat.CHANNEL_IN_MONO;
+import static android.media.AudioFormat.CHANNEL_IN_STEREO;
+
 import android.Manifest;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
 
+import androidx.annotation.RequiresPermission;
+
 import com.konovalov.vad.Vad;
 import com.konovalov.vad.VadConfig;
 import com.konovalov.vad.VadListener;
-
-import static android.media.AudioFormat.CHANNEL_IN_MONO;
-import static android.media.AudioFormat.CHANNEL_IN_STEREO;
-
-import androidx.annotation.RequiresPermission;
 
 /**
  * Class responsável por identificar se o áudio possui voz humana
@@ -21,14 +21,11 @@ import androidx.annotation.RequiresPermission;
 public class VoiceRecorder {
     private static final int PCM_CHANNEL = CHANNEL_IN_MONO;
     private static final int PCM_ENCODING_BIT = AudioFormat.ENCODING_PCM_16BIT;
-
     private Vad vad;
     private AudioRecord audioRecord;
     private Listener callback;
     private Thread thread;
-
     private boolean isListening = false;
-
     private static final String TAG = VoiceRecorder.class.getSimpleName();
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)

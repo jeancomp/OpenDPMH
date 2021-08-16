@@ -8,22 +8,23 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 import androidx.core.app.ActivityCompat;
-
 import java.util.List;
-import java.util.UUID;
+import br.ufma.lsdi.cddl.CDDL;
+import br.ufma.lsdi.cddl.pubsub.Publisher;
+import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 
 public class DPManager implements DPInterface {
     private static final String TAG = DPManager.class.getName();
     private String statusCon = "undefined";
     private static DPManager instance = null;
     Configurations configurations = Configurations.getInstance();
-
     private Context context;
     private Activity activity;
-    private String clientID;
     private int communicationTechnology;
     private Boolean secure;
     private MainService myService;
+    private boolean servicesStarted = false;
+    Publisher publisher = PublisherFactory.createPublisher();
 
 
     /**
@@ -41,37 +42,35 @@ public class DPManager implements DPInterface {
     }
 
     @Override
-    public void start(Activity activity, String host, int port, String username, String password, String topic, int conf){
+    public void start(Activity activity, String host, int port, String username, String password, String topic, int compositionMode){
         try{
             Log.i(TAG, "#### INICIANDO FRAMEWORK");
 
             this.activity = activity;
-            this.context = configurations.getInstance().getContext();
+            this.context = (Context) activity;
             configurations.getInstance().setActivity(activity);
 
             // configura endereço do servidor externo para o PhenotypeComposer
             configurations.getInstance().setExternalServer(host, port, username, password, topic);
-
-            this.clientID = UUID.randomUUID().toString().replaceAll("-","");
-            this.clientID = this.clientID.toString().replaceAll("[0-9]","");
-            configurations.getInstance().setClientID(this.clientID);
 
             this.communicationTechnology = 4;   // Pré-configuramos o communicationTechnology inicia por 4
             this.secure = false;                // True==Certificado digitais, False==Não usa Cert. Digitais
 
             initPermissionsRequired();
 
-            Log.i(TAG,"#### Started framework MainService.");
-            Intent intent = new Intent(this.context, MainService.class);
-            intent.putExtra("clientID",getClientID());
-            intent.putExtra("communicationTechnology",this.communicationTechnology);
-            intent.putExtra("secure", getSecure());
+            if(!servicesStarted) {
+                Log.i(TAG, "#### Started framework MainService.");
+                Intent intent = new Intent(this.context, MainService.class);
+                //intent.putExtra("clientID",getClientID());
+                intent.putExtra("communicationTechnology", this.communicationTechnology);
+                intent.putExtra("secure", getSecure());
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                getContext().startForegroundService(intent);
-            }
-            else {
-                getContext().startService(intent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    getContext().startForegroundService(intent);
+                } else {
+                    getContext().startService(intent);
+                }
+                servicesStarted = true;
             }
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.getMessage());
@@ -86,41 +85,58 @@ public class DPManager implements DPInterface {
         myService.stopForeground(true);
 
         try {
-            Intent intent = new Intent(getContext(), MainService.class);
-            getContext().stopService(intent);
+            if(servicesStarted) {
+                Intent intent = new Intent(getContext(), MainService.class);
+                getContext().stopService(intent);
+
+                servicesStarted = false;
+            }
         }catch (Exception e){
-            Log.e(TAG,e.getMessage());
+            Log.e(TAG,e.toString());
         }
     }
 
 
     @Override
     public void startDataProcessors(List<String> nameProcessors){
-        Log.i(TAG, "#### Started processors");
-        if(!nameProcessors.isEmpty()) {
-            for (int i = 0; i < nameProcessors.size(); i++) {
-                configurations.getInstance().publishMessage(configurations.getInstance().START_PROCESSOR_TOPIC, nameProcessors.get(i).toString());
+        Log.i(TAG,"#### SSSSSSSSSSSSSSSSSSSSSservicesStarted: " + servicesStarted);
+        if(!servicesStarted) {
+            Log.i(TAG, "#### Started processors");
+            if (!nameProcessors.isEmpty()) {
+                for (int i = 0; i < nameProcessors.size(); i++) {
+                    publishMessage(Topics.START_PROCESSOR_TOPIC.toString(), nameProcessors.get(i).toString());
+                }
             }
+        }
+        else{
+            Log.e(TAG,"#### Error: Started MainService Service");
         }
     }
 
 
     @Override
     public void stopDataProcessors(List<String> nameProcessors){
-        Log.i(TAG, "#### Stopped processors");
-        if(!nameProcessors.isEmpty()) {
-            for (int i = 0; i < nameProcessors.size(); i++) {
-                configurations.getInstance().publishMessage(configurations.getInstance().STOP_PROCESSOR_TOPIC, nameProcessors.get(i).toString());
+        if(servicesStarted) {
+            Log.i(TAG, "#### Stopped processors");
+            if (!nameProcessors.isEmpty()) {
+                for (int i = 0; i < nameProcessors.size(); i++) {
+                    publishMessage(Topics.STOP_PROCESSOR_TOPIC.toString(), nameProcessors.get(i).toString());
+                }
             }
+        }
+        else{
+            Log.e(TAG,"#### Error: Started MainService Service");
         }
     }
 
 
     @Override
     public List<String> getDataProcessorsList(){
+        Log.i(TAG, "#### Processors list");
         List<String> processors = null;
 
         processors = myService.getProcessors();
+        Log.i(TAG, "#### Processors list: " + processors);
         return processors;
     }
 
@@ -153,16 +169,6 @@ public class DPManager implements DPInterface {
 
     public void setContext(Context context) {
         this.context= context;
-    }
-
-
-    public void setClientID(String clientID){
-        this.clientID = clientID;
-    }
-
-
-    public String getClientID(){
-        return clientID;
     }
 
 
@@ -215,6 +221,16 @@ public class DPManager implements DPInterface {
     }
 
 
+    public void publishMessage(String service, String text) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        MyMessage message = new MyMessage();
+        message.setServiceName(service);
+        message.setServiceValue(text);
+        publisher.publish(message);
+    }
+
+
     private static boolean hasPermissions(Context context, String... permissions) {
         if (context != null && permissions != null) {
             for (String permission : permissions) {
@@ -231,22 +247,20 @@ public class DPManager implements DPInterface {
         // Checa as permissões para rodar os sensores virtuais
         int PERMISSION_ALL = 1;
 
-        if (true) {
-            String[] PERMISSIONS = {
-                    // Service location
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                    android.Manifest.permission.FOREGROUND_SERVICE,
-                    Manifest.permission.RECORD_AUDIO
+        String[] PERMISSIONS = {
+                // Service location
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.FOREGROUND_SERVICE,
+                Manifest.permission.RECORD_AUDIO
 
-                    // Outros services
-            };
+                // Outros services
+        };
 
 
-            if (!hasPermissions(getContext(), PERMISSIONS)) {
-                Log.i(TAG, "##### Permission enabled for framework");
-                ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
-            }
+        if (!hasPermissions(getContext(), PERMISSIONS)) {
+            Log.i(TAG, "##### Permission enabled for framework");
+            ActivityCompat.requestPermissions(getActivity(), PERMISSIONS, PERMISSION_ALL);
         }
     }
 }
