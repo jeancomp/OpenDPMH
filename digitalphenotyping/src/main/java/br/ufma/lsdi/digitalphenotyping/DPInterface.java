@@ -1,23 +1,18 @@
 package br.ufma.lsdi.digitalphenotyping;
 
-import android.app.Activity;
-
-import androidx.annotation.IntRange;
-
 import java.util.List;
 
 /**
  * Interface do framework
  */
 public interface DPInterface {
-    public void start(Activity activity, String host, int port, String username, String password, String topic, @IntRange(from=0,to=2) int compositionMode);
+    public void start();
     public void stop();
     public void startDataProcessors(List<String> nameProcessors);
     public void stopDataProcessors(List<String> nameProcessors);
     public List<String> getDataProcessorsList();
     public List<String> getActiveDataProcessorsList();
-    public void setExternalServer(String hostServer, int port, String username, String password, String topic);
-    public void setConfiguration(int number);
+    public void setExternalServerAddress(String hostServer, int port, String clientID, String username, String password, String topic, int compositionMode);
 }
 
 // Annotations: força valores para variaveis

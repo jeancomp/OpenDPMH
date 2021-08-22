@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     defaultConfig {
 //        applicationId "br.ufma.lsdi.digitalphenotyping"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 30
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -59,4 +59,5 @@ dependencies {
 //    compileOnly 'org.projectlombok:lombok:1.18.18'
 //    annotationProcessor 'org.projectlombok:lombok:1.18.18'
 //    implementation project(path: ':myapplication')
+    implementation "androidx.work:work-runtime:2.5.0"
 }

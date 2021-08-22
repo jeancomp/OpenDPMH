@@ -7,9 +7,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
-
+import androidx.work.WorkManager;
+import androidx.work.WorkerParameters;
 import org.apache.commons.lang3.StringUtils;
-
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.listeners.IConnectionListener;
@@ -27,10 +27,10 @@ public class PhenotypeComposer extends Service {
     private static final String TAG = PhenotypeComposer.class.getName();
     Subscriber subRawDataInferenceResult;
     private Context context;
-    Publisher publisher = PublisherFactory.createPublisher();
+    WorkManager workManager;
+    DistributePhenotype distributePhenotype;
 
     //Data SERVIDOR
-    protected CDDL cddl;
     private ConnectionImpl connectionBroker;
     private TextView messageTextView;
     private String statusConnection = "";
@@ -55,8 +55,6 @@ public class PhenotypeComposer extends Service {
             subRawDataInferenceResult.addConnection(CDDL.getInstance().getConnection());
 
             messageTextView = new TextView(context);
-
-            //this.clientID = configurations.getInstance().CDDLGetInstance().getConnection().getClientId();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -101,7 +99,7 @@ public class PhenotypeComposer extends Service {
             connectionBroker = ConnectionFactory.createConnection();
             connectionBroker.setClientId("febfcfbccaeabda");
             Log.i(TAG,"#### clientID:  " + this.clientID);
-            Log.i(TAG,"#### clientID CDDLLLLLLLLLLLLLLLLLLLLL:  " + CDDL.getInstance().getConnection().getClientId());
+            //Log.i(TAG,"#### clientID CDDL:  " + CDDL.getInstance().getConnection().getClientId());
             connectionBroker.setHost(host);
             connectionBroker.setPort("1883");
             connectionBroker.addConnectionListener(connectionListener);
@@ -123,20 +121,7 @@ public class PhenotypeComposer extends Service {
                 connectionBroker.reconnect();
             }
 
-            //cddl.setConnection(con);
-            //cddl.setContext(getContext());
-            //cddl.setContext(this.context);
-            //cddl.startService();
-
-            // Para todas as tecnologias, para entao iniciar apenas a que temos interresse
-            //cddl.stopAllCommunicationTechnologies();
-
-            // Para todas os sensores, para entao iniciar apenas a que temos interresse
-            //cddl.stopAllSensors();
-
-            //cddl.startCommunicationTechnology(CDDL.INTERNAL_TECHNOLOGY_VIRTUAL_ID);
-            //cddl.startAllCommunicationTechnologies();
-            //cddl.startCommunicationTechnology(this.communicationTechnology);
+            distributePhenotype = new DistributePhenotype(connectionBroker, this.context);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.getMessage());
         }
@@ -195,7 +180,7 @@ public class PhenotypeComposer extends Service {
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            publishPhenotypeComposer(message);
+            distributePhenotype.publishPhenotypeComposer(message);
 
 //            if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
 //                Log.d(TAG, "#### Start sensor monitoring->  " + atividade);
@@ -207,20 +192,32 @@ public class PhenotypeComposer extends Service {
     };
 
 
-    public void publishPhenotypeComposer(Message message) {
-        Log.i(TAG,"#### Data Publish to Server");
-        publisher.addConnection(connectionBroker);
+    public class DistributePhenotype /*extends Worker*/ {
+        private Publisher publisher = PublisherFactory.createPublisher();
+        private ConnectionImpl connection;
+        WorkerParameters workerParameters;
 
-        MyMessage msg = new MyMessage();
-        msg.setServiceName("inference");
-        msg.setTopic("inference");
-        msg.setServiceValue(message.getServiceValue());
+        public DistributePhenotype(ConnectionImpl con, Context context){
+            //super(context, distributePhenotype.workerParameters);
+            this.connection = con;
+            publisher.addConnection(connection);
+        }
 
-        Log.i(TAG,"#### Data: " + msg);
+        public void publishPhenotypeComposer(Message message) {
+            Log.i(TAG, "#### Data Publish to Server");
+            MyMessage msg = new MyMessage();
+            msg.setServiceName("inference");
+            msg.setTopic("inference");
+            msg.setServiceValue(message.getServiceValue());
+            Log.i(TAG, "#### Data: " + msg);
 
-        publisher.publish(msg);
+            publisher.publish(msg);
+        }
 
-        //MyMessage msg = (MyMessage) message;
-        //publisher.publish(msg);
+//        @NonNull
+//        @Override
+//        public Result doWork() {
+//            return null;
+//        }
     }
 }

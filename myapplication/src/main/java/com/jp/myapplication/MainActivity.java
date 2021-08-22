@@ -52,8 +52,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void startFramework(){
-        digitalPhenotypingManager = new DPManager();
-        digitalPhenotypingManager.start(this, "", 8000, "", "", "", 1);
+        digitalPhenotypingManager = new DPManager.Builder(this)
+                .setExternalServer("broker.hivemq.com",1883,"febfcfbccaeabda","inference")
+                .setCompositionMode(1)
+                .build();
+        digitalPhenotypingManager.start();
     }
 
 
