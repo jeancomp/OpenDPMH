@@ -1,6 +1,9 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+import static br.ufma.lsdi.digitalphenotyping.CompositionMode.FREQUENCY;
+import static br.ufma.lsdi.digitalphenotyping.CompositionMode.SEND_WHEN_IT_ARRIVES;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
@@ -13,15 +16,20 @@ import android.hardware.Sensor;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
+
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.core.app.NotificationCompat;
+
 import org.apache.commons.lang3.StringUtils;
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.listeners.IConnectionListener;
@@ -29,6 +37,8 @@ import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.network.SecurityService;
+import br.ufma.lsdi.cddl.pubsub.Publisher;
+import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.PhenotypeComposer;
@@ -38,23 +48,26 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManage
  * System Bus to framework, MainService
  */
 public class MainService extends Service {
+    private static final String TAG = MainService.class.getName();
+    Publisher publisher = PublisherFactory.createPublisher();
     private CDDL cddl;
     private String clientID;
     private ConnectionImpl con;
     private Context context;
     private Activity activity;
-    private Boolean secure;
+    ActivityParcelable activityParcelable2;
+    private Boolean secure = false;
     private TextView messageTextView;
     private String statusConnection = "";
     private int communicationTechnology = 4;
     private String nameCaCertificate = "rootCA.crt";
     private String nameClientCertificate = "client.crt";
-    private static final String TAG = MainService.class.getName();
     private static final int ID_SERVICE = 101;
     private boolean servicesStarted = false;
-    private Subscriber subAddPlugin;
+    private Subscriber subCompositionMode;
     private List<String> processors = null;
-
+    private CompositionMode compositionmode = SEND_WHEN_IT_ARRIVES;
+    private int frequency = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @RequiresPermission(allOf = {
@@ -136,24 +149,30 @@ public class MainService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "#### CONFIGURATION MAINSERVICE");
         if(intent != null){
-            //String clientID = intent.getStringExtra("clientID");
-            int communicationTechnology = intent.getIntExtra("communicationTechnology", 0);
-            Boolean secure = intent.getBooleanExtra("secure", false);
-
-            Log.i(TAG,"#### communicationTechnology: " + communicationTechnology);
-
-            setCommunicationTechnology(communicationTechnology);
-            setSecure(secure);
+            setCommunicationTechnology(this.communicationTechnology);
+            setSecure(this.secure);
+            activityParcelable2 = new ActivityParcelable();
+            activityParcelable2 = (ActivityParcelable) intent.getParcelableExtra("activity");
 
             startCDDL();
             startServices();
 
-            // Subscribe subAddPlugin a primeira vez serve para atualizar a List de processors, depois,
-            //  serve para atualizar qualquer processors adicionado ao frameworwk.
-            subAddPlugin = SubscriberFactory.createSubscriber();
-            subAddPlugin.addConnection(CDDL.getInstance().getConnection());
-            subscribeMessageAddPlugin(Topics.ADD_PLUGIN_TOPIC.toString());
+            if(servicesStarted) {
+                //String clientID = intent.getStringExtra("clientID");
+                compositionmode = (CompositionMode) intent.getSerializableExtra("compositionmode");
+                frequency = 0;
+                if (compositionmode == FREQUENCY) {
+                    frequency = intent.getIntExtra("frequency", 1);
+                    Log.i(TAG, "#### MainService receives Frequency: " + frequency);
+                }
+                Log.i(TAG, "#### MainService receives CompositionMode: " + compositionmode.name().toString());
+            }
+
+            subCompositionMode = SubscriberFactory.createSubscriber();
+            subCompositionMode.addConnection(CDDL.getInstance().getConnection());
+            subscribeMessageCompositionMode(Topics.MAINSERVICE_COMPOSITIONMODE_TOPIC.toString());
         }
 
         super.onStartCommand(intent, flags, startId);
@@ -161,31 +180,29 @@ public class MainService extends Service {
     }
 
 
-    public void subscribeMessageAddPlugin(String serviceName) {
-        subAddPlugin.subscribeServiceByName(serviceName);
-        subAddPlugin.setSubscriberListener(subscriberAddPlugin);
+    public void subscribeMessageCompositionMode(String serviceName) {
+        subCompositionMode.subscribeServiceByName(serviceName);
+        subCompositionMode.setSubscriberListener(subscriberMainServiceCompositionMode);
     }
 
 
-    public ISubscriberListener subscriberAddPlugin = new ISubscriberListener() {
+    public ISubscriberListener subscriberMainServiceCompositionMode = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
 //                    if (message.getServiceName().equals("Meu serviço")) {
 //                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
 //                    }
-            Log.d(TAG, "#### Read messages (Add Plugin):  " + message);
+            Log.i(TAG, "#### Read messages (subscriber MainServiceCompositionMode):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
+            Log.i(TAG, "#### PhenotypeComposer: " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            if (!processors.contains(atividade)) {
-                processors.add(atividade);
-
-            } else {
-                Log.d(TAG, "#### Processor already exists: " + atividade);
+            if (atividade.equals("alive")) {
+                //publishMessage(Topics.COMPOSITIONMODE.toString(), String.valueOf(compositionmode.name().toString()), String.valueOf(frequency));
+                publishMessage(Topics.COMPOSITION_MODE_TOPIC.toString(), compositionmode, frequency);
             }
         }
     };
@@ -244,8 +261,9 @@ public class MainService extends Service {
         try{
             if(!servicesStarted) {
                 Log.i(TAG, "#### Starts all framework services.");
-                Intent ipm = new Intent(getContext(), ProcessorManager.class);
-                getContext().startService(ipm);
+                Intent pm = new Intent(getContext(), ProcessorManager.class);
+                pm.putExtra("activity", (Parcelable) activityParcelable2);
+                getContext().startService(pm);
 
                 Intent pc = new Intent(getContext(), PhenotypeComposer.class);
                 getContext().startService(pc);
@@ -424,7 +442,28 @@ public class MainService extends Service {
     }
 
 
+    /**
+     *
+     * @return
+     */
     public List<String> getProcessors(){
         return this.processors;
+    }
+
+
+    /**
+     *
+     * @param service
+     * @param compositionmode
+     * @param frequency
+     */
+    public void publishMessage(String service, CompositionMode compositionmode, int frequency) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+        Object[] valor = {compositionmode, frequency};
+
+        Message message = new Message();
+        message.setServiceName(service);
+        message.setServiceValue(valor);
+        publisher.publish(message);
     }
 }

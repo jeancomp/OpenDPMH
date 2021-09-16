@@ -1,15 +1,29 @@
 package br.ufma.lsdi.digitalphenotyping.phenotypecomposer;
 
+import static br.ufma.lsdi.digitalphenotyping.CompositionMode.FREQUENCY;
+import static br.ufma.lsdi.digitalphenotyping.CompositionMode.GROUP_ALL;
+import static br.ufma.lsdi.digitalphenotyping.CompositionMode.SEND_WHEN_IT_ARRIVES;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
+
+import androidx.room.Room;
+import androidx.work.BackoffPolicy;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkerParameters;
+
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.ConnectionFactory;
 import br.ufma.lsdi.cddl.listeners.IConnectionListener;
@@ -20,30 +34,31 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.MyMessage;
+import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabase;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
 public class PhenotypeComposer extends Service {
     private static final String TAG = PhenotypeComposer.class.getName();
+    Publisher publisher = PublisherFactory.createPublisher();
     Subscriber subRawDataInferenceResult;
+    Subscriber subCompositionMode;
+    Subscriber subActiveProcessor;
+    Subscriber subDeactivateProcessor;
     private Context context;
-    WorkManager workManager;
-    DistributePhenotype distributePhenotype;
-
-    //Data SERVIDOR
-    private ConnectionImpl connectionBroker;
+    PublishPhenotype publishPhenotype;
     private TextView messageTextView;
+    private ConnectionImpl connectionBroker;
     private String statusConnection = "";
-    private String host = "broker.hivemq.com";
-    private int port = 1883;
-    private String clientID="febfcfbccaeabda";
-    private String username;
-    private String password;
-    private String topic;
-
-    //enum compositionMode;
-
-    // instance WorkManager;
+    private CompositionMode lastCompositionMode = SEND_WHEN_IT_ARRIVES;
+    private int lastFrequency = 6;
+    private List<String> nameActiveProcessors = null;
+    private List<Boolean> activeProcessors = null;
+    AppDatabase db;
+    WorkManager workManager;
 
     @Override
     public void onCreate() {
@@ -51,39 +66,54 @@ public class PhenotypeComposer extends Service {
             Log.i(TAG, "#### Started PhenotypeComposer Service");
             context = this;
 
+            //Receives data inferred by DataProcessors
             subRawDataInferenceResult = SubscriberFactory.createSubscriber();
             subRawDataInferenceResult.addConnection(CDDL.getInstance().getConnection());
 
+            // Monitor the CompositionMode
+            subCompositionMode = SubscriberFactory.createSubscriber();
+            subCompositionMode.addConnection(CDDL.getInstance().getConnection());
+
+            // Monitor the Active Processors
+            subActiveProcessor = SubscriberFactory.createSubscriber();
+            subActiveProcessor.addConnection(CDDL.getInstance().getConnection());
+
+            // Monitor the Deactivate Processors
+            subDeactivateProcessor = SubscriberFactory.createSubscriber();
+            subDeactivateProcessor.addConnection(CDDL.getInstance().getConnection());
+
+            this.activeProcessors = new ArrayList();
+            this.nameActiveProcessors = new ArrayList();
+
             messageTextView = new TextView(context);
+
+            db = Room.databaseBuilder(getApplicationContext(),
+                    AppDatabase.class, "database-phenotype").build();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
     }
 
 
-    public final IBinder mBinder = new PhenotypeComposer.LocalBinder();
-
-
-    public class LocalBinder extends Binder {
-        public PhenotypeComposer getService() {
-            return PhenotypeComposer.this;
-        }
-    }
-
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "#### CONFIGURATION PHENOTYPECOMPOSER SERVICE");
+
         subscribeMessageRawDataInferenceResult(Topics.INFERENCE_TOPIC.toString());
+        subscribeMessageCompositionMode(Topics.COMPOSITION_MODE_TOPIC.toString());
+
+        subscribeMessageAtiveProcessor(Topics.ACTIVE_PROCESSOR_TOPIC.toString());
+        subscribeMessageDeactivateProcessor(Topics.DEACTIVATE_PROCESSOR_TOPIC.toString());
 
         startBroker();
+
+        //manager(lastCompositionMode, lastFrequency);
+
+        publishMessage(Topics.MAINSERVICE_COMPOSITIONMODE_TOPIC.toString(), "alive");
 
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
-
-
-    @Override
-    public IBinder onBind(Intent intent) { return mBinder; }
 
 
     @Override
@@ -92,13 +122,17 @@ public class PhenotypeComposer extends Service {
     }
 
 
+    @Override
+    public IBinder onBind(Intent intent) { return null; }
+
+
     public void startBroker(){
         try {
             String host = "broker.hivemq.com";
             Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
             connectionBroker = ConnectionFactory.createConnection();
             connectionBroker.setClientId("febfcfbccaeabda");
-            Log.i(TAG,"#### clientID:  " + this.clientID);
+            Log.i(TAG,"#### clientID:  " + connectionBroker.getClientId());
             //Log.i(TAG,"#### clientID CDDL:  " + CDDL.getInstance().getConnection().getClientId());
             connectionBroker.setHost(host);
             connectionBroker.setPort("1883");
@@ -121,10 +155,66 @@ public class PhenotypeComposer extends Service {
                 connectionBroker.reconnect();
             }
 
-            distributePhenotype = new DistributePhenotype(connectionBroker, this.context);
+            publishPhenotype = new PublishPhenotype(connectionBroker, context);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.getMessage());
         }
+    }
+
+
+    public void manager(CompositionMode compositionMode, int frequency){
+        Log.i(TAG,"#### Manager PhenotypeComposer");
+        if(lastCompositionModeDifferent()){
+            if(compositionMode == SEND_WHEN_IT_ARRIVES){
+
+            }
+            else if(compositionMode == GROUP_ALL){
+
+            }
+            else if(compositionMode == FREQUENCY){
+                startWorkManager();
+            }
+        }
+    }
+
+
+    public boolean lastCompositionModeDifferent(){
+        if(false){
+            return false;
+        }
+        return true;
+    }
+
+
+    public void startWorkManager(){
+        Log.i(TAG,"#### Started WorkManager");
+        // Adicionamos restrições ao Work: 1 - esteja conectado a internet,
+        //                                  2 - o nível de baterial não pode estar baixa.
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.UNMETERED)
+                .setRequiresBatteryNotLow(true)
+                .build();
+
+        // O Work executa periodicamente, caso uma das exigências não for atendida, tenta executar (exponencial ou linear) novamente o Work.
+        PeriodicWorkRequest saveRequest =
+                new PeriodicWorkRequest.Builder(DistributePhenotypeWork.class, this.lastFrequency, TimeUnit.MINUTES)
+                        .addTag("distributephenotypework")
+                        .setConstraints(constraints)
+                        .setBackoffCriteria(
+                                BackoffPolicy.EXPONENTIAL,
+                                PeriodicWorkRequest.MIN_BACKOFF_MILLIS,
+                                TimeUnit.SECONDS)
+                        .build();
+
+        WorkManager.getInstance(this.context)
+                .enqueue(saveRequest);
+
+        workManager = WorkManager.getInstance(this.context);
+    }
+
+
+    public void stopWorkManager(){
+        workManager.cancelAllWorkByTag("distributephenotypework");
     }
 
 
@@ -166,58 +256,165 @@ public class PhenotypeComposer extends Service {
     }
 
 
+    public void subscribeMessageCompositionMode(String serviceName) {
+        subCompositionMode.subscribeServiceByName(serviceName);
+        subCompositionMode.setSubscriberListener(subscriberCompositionModeListener);
+        subCompositionMode.subscribeTopic(Topics.COMPOSITION_MODE_TOPIC.toString());
+    }
+
+
+    public void subscribeMessageAtiveProcessor(String serviceName) {
+        subActiveProcessor.subscribeServiceByName(serviceName);
+        subActiveProcessor.setSubscriberListener(subscriberActiveProcessorsListener);
+    }
+
+
+    public void subscribeMessageDeactivateProcessor(String serviceName) {
+        subDeactivateProcessor.subscribeServiceByName(serviceName);
+        subDeactivateProcessor.setSubscriberListener(subscriberDeactivateProcessorsListener);
+    }
+
+
     public ISubscriberListener subscriberRawDataInferenceResultListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.i(TAG, "#### Read messages (RawDataInferenceResultListener):  " + message);
-
+            Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
+            Log.i(TAG,"#### nameProcessor: " + atividade);
 
-            distributePhenotype.publishPhenotypeComposer(message);
+            if(lastCompositionMode == SEND_WHEN_IT_ARRIVES){
+                publishPhenotype.getInstance().publishPhenotypeComposer(message);
+            }
+            else if(lastCompositionMode == GROUP_ALL){
+                int position = nameActiveProcessors.indexOf(atividade);
+                Log.i(TAG,"#### Posição: " + position);
+                activeProcessors.set(position,true);
+                Phenotypes phenotype = new Phenotypes();
 
-//            if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
-//                Log.d(TAG, "#### Start sensor monitoring->  " + atividade);
-//                onStartSensor(atividade);
-//            } else {
-//                Log.d(TAG, "#### Invalid sensor name: " + atividade);
-//            }
+                if(activeProcessors.size() != 0) {
+                    if (!activeProcessors.isEmpty()) {
+                        boolean all = true;
+                        for (int i = 0; i <= activeProcessors.size(); i++) {
+                            if (!activeProcessors.get(i).booleanValue()) {
+                                if (!activeProcessors.contains(false)) {
+                                    all = true;
+                                } else {
+                                    all = false;
+                                }
+                                break;
+                            }
+                            break;
+                        }
+                        if (all) {
+                            //publishPhenotype.getInstance().publishPhenotypeComposer(message);
+
+                            // Retrieve information
+                            phenotype = db.phenotypeDAO().findByPhenotypeAll();
+                            while (phenotype != null) {
+                                String stringPhenotype = phenotype.getPhenotype();
+                                int i = 0;
+                                Message msg = phenotype.getObjectFromString(stringPhenotype);
+                                Log.i(TAG, "#### Database Result: " + msg.getServiceValue());
+
+                                // Publish the information
+                                publishPhenotype.getInstance().publishPhenotypeComposer(msg);
+
+                                // Remove from database
+                                db.phenotypeDAO().delete(phenotype);
+
+                                phenotype = db.phenotypeDAO().findByPhenotypeAll();
+                            }
+
+                            for (int j = 0; j < activeProcessors.size(); j++) {
+                                activeProcessors.set(j, false);
+                            }
+                        } else {
+                            //Save phenotype
+                            Phenotypes phenotypes = new Phenotypes();
+                            phenotypes.stringFromObject(message);
+                            db.phenotypeDAO().insertAll(phenotypes);
+                        }
+                    }
+                }
+                else{
+                    //Publish phenotype
+                    publishPhenotype.getInstance().publishPhenotypeComposer(message);
+                }
+            }
+            else if(lastCompositionMode == FREQUENCY){
+                //Save phenotype
+                Phenotypes phenotypes = new Phenotypes();
+                phenotypes.stringFromObject(message);
+                db.phenotypeDAO().insertAll(phenotypes);
+            }
         }
     };
 
 
-    public class DistributePhenotype /*extends Worker*/ {
-        private Publisher publisher = PublisherFactory.createPublisher();
-        private ConnectionImpl connection;
-        WorkerParameters workerParameters;
+    public final ISubscriberListener subscriberCompositionModeListener = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Log.i(TAG, "#### Read messages (subscriber CompositionMode):  " + message);
 
-        public DistributePhenotype(ConnectionImpl con, Context context){
-            //super(context, distributePhenotype.workerParameters);
-            this.connection = con;
-            publisher.addConnection(connection);
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.i(TAG, "#### CompositionMode: " + mensagemRecebida);
+            String[] separated = mensagemRecebida.split(",");
+            String atividade1 = String.valueOf(separated[0]);
+
+            lastCompositionMode = CompositionMode.valueOf(atividade1);
+            Double n = (Double) valor[1];
+            lastFrequency = n.intValue();
+            Log.i(TAG, "#### Value lastCompositionMode: " + lastCompositionMode.name().toString() + ", Value frequency: " + lastFrequency);
+
+            manager(lastCompositionMode, lastFrequency);
         }
+    };
 
-        public void publishPhenotypeComposer(Message message) {
-            Log.i(TAG, "#### Data Publish to Server");
-            MyMessage msg = new MyMessage();
-            msg.setServiceName("inference");
-            msg.setTopic("inference");
-            msg.setServiceValue(message.getServiceValue());
-            Log.i(TAG, "#### Data: " + msg);
 
-            publisher.publish(msg);
+    public ISubscriberListener subscriberActiveProcessorsListener = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Log.i(TAG, "#### Read messages (active Processor):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.i(TAG, "#### " + mensagemRecebida);
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+
+            nameActiveProcessors.add(atividade);
+            activeProcessors.add(false);
         }
+    };
 
-//        @NonNull
-//        @Override
-//        public Result doWork() {
-//            return null;
-//        }
+
+    public ISubscriberListener subscriberDeactivateProcessorsListener = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Log.i(TAG, "#### Read messages (deactivate processor):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            Log.i(TAG, "#### " + mensagemRecebida);
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+
+            nameActiveProcessors.remove(atividade);
+            activeProcessors.remove(false);
+        }
+    };
+
+
+    public void publishMessage(String service, String text) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        Message message = new Message();
+        message.setServiceName(service);
+        message.setServiceValue(text);
+        publisher.publish(message);
     }
 }

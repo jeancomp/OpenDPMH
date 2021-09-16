@@ -7,9 +7,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:name=".Configurations"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -28,6 +29,8 @@
         <service android:name=".processormanager.services.ProcessorManager"/>
         <service android:name=".phenotypecomposer.PhenotypeComposer"/>
         <service android:name=".dataprocessor.processors.Sociability" />
+        <service android:name=".dataprocessor.processors.Mobility" />
+        <service android:name=".dataprocessor.processors.Sleep" />
     </application>
 
 </manifest>

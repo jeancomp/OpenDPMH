@@ -12,9 +12,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import java.util.Collections;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.DPManager;
 import br.ufma.lsdi.digitalphenotyping.MainService;
 
@@ -27,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     View button_closeFramework;
     View button_recorder;
     MainService myService;
-
+    List<String> listProcessors = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,14 +52,20 @@ public class MainActivity extends AppCompatActivity {
         button_closeFramework.setOnClickListener(clickListener);
         button_recorder.setOnClickListener(clickListener);
 
+        this.listProcessors = new ArrayList();
+        listProcessors.add("Sociability");
+        listProcessors.add("Mobility");
+        listProcessors.add("Sleep");
+
         startFramework();
     }
 
 
     public void startFramework(){
         digitalPhenotypingManager = new DPManager.Builder(this)
-                .setExternalServer("broker.hivemq.com",1883,"febfcfbccaeabda","inference")
-                .setCompositionMode(1)
+                .setExternalServer("broker.hivemq.com",1883)
+                .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
+                //.setFrequency(15)
                 .build();
         digitalPhenotypingManager.start();
     }
@@ -66,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
         try{
             Intent intent = new Intent(this, MainService.class);
-            //intent.putExtra("clientID","l");
-            intent.putExtra("communicationTechnology",4);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -91,16 +100,16 @@ public class MainActivity extends AppCompatActivity {
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.i(TAG,"#### Connection service busSystem");
+            Log.i(TAG,"#### Connection service MainService");
             MainService.LocalBinder binder = (MainService.LocalBinder) iBinder;
             myService = binder.getService();
 
-            digitalPhenotypingManager.getInstance().setBusSystem(myService);
+            digitalPhenotypingManager.getInstance().setMainService(myService);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.i(TAG,"#### Disconnection service busSystem");
+            Log.i(TAG,"#### Disconnection service MainService");
         }
     };
 
@@ -110,30 +119,19 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case  R.id.button_first: {
-                    //Log.i(TAG,"#### Publicando mensagem para start sensor");
-                    //digitalPhenotyping.getInstance().publishInference(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
-                    //digitalPhenotyping.getInstance().activaSensor("TouchScreen");
-
-                    //Log.i(TAG,"#### Publicando mensagem para start sensor");
-                    //digitalPhenotyping.getInstance().activaSensor("Call");
-
-                    Log.i(TAG,"#### Publicando mensagem para start processor: Sociability");
-                    digitalPhenotypingManager.getInstance().startDataProcessors(Collections.singletonList("Sociability"));
+                    Log.i(TAG,"#### Starting processors");
+                    digitalPhenotypingManager.getInstance().startDataProcessors(listProcessors);
                     break;
                 }
 
                 case R.id.stop: {
-                    //Log.i(TAG, "#### Publicando mensagem para stop sensor");
-                    //digitalPhenotyping.getInstance().publishInference(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
-                    //digitalPhenotyping.getInstance().deactivateSensor("TouchScreen");
-
-                    Log.i(TAG, "#### Publicando mensagem para stop processor: Sociability");
-                    digitalPhenotypingManager.getInstance().stopDataProcessors(Collections.singletonList("Sociability"));
+                    Log.i(TAG, "#### Stopping processors");
+                    digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
                     break;
                 }
 
                 case R.id.closeFramework: {
-                    Log.i(TAG, "#### Parando o framework");
+                    Log.i(TAG, "#### Stop Framework");
                     digitalPhenotypingManager.getInstance().stop();
                     finish();
                     break;
@@ -171,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy(){
-        //digitalPhenotyping.getInstance().stop();
         super.onDestroy();
     }
 }

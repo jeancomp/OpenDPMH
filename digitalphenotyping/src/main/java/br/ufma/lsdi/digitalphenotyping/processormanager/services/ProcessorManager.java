@@ -1,5 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping.processormanager.services;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -26,30 +27,30 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.Configurations;
-import br.ufma.lsdi.digitalphenotyping.MyMessage;
+import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
 
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
-    Configurations configurations = Configurations.getInstance();
+    ActivityParcelable activityParcelable;
+    Activity activity;
     Context context;
     Publisher publisher = PublisherFactory.createPublisher();
-
-    // Variáveis dos processors
-    List<String> activeProcessors = null;
-    List<String> processors = null;
+    List<String> listActiveProcessors = null;
+    List<String> listProcessors = null;
+    List<String> listActiveSensor = null;
+    List<String> listPlugin = new ArrayList();
     Subscriber subStartProcessor;
     Subscriber subStopProcessor;
-
-    // Variáveis dos sensores
+    Subscriber subActiveSensor;
+    Subscriber subDeactiveSensor;
+    private Subscriber subAddPlugin;
     private String statusCon = "undefined";
-    Subscriber subActive;
-    Subscriber subDeactive;
     String clientID;
     int communicationTechnology = 4;
-    List<String> activeSensor = null;
 
 
     @Override
@@ -66,13 +67,17 @@ public class ProcessorManager extends Service {
             subStopProcessor.addConnection(CDDL.getInstance().getConnection());
 
             startProcessorsList();
-            copyProcessorsList();
 
-            subActive = SubscriberFactory.createSubscriber();
-            subActive.addConnection(CDDL.getInstance().getConnection());
+            subActiveSensor = SubscriberFactory.createSubscriber();
+            subActiveSensor.addConnection(CDDL.getInstance().getConnection());
 
-            subDeactive = SubscriberFactory.createSubscriber();
-            subDeactive.addConnection(CDDL.getInstance().getConnection());
+            subDeactiveSensor = SubscriberFactory.createSubscriber();
+            subDeactiveSensor.addConnection(CDDL.getInstance().getConnection());
+
+            subAddPlugin = SubscriberFactory.createSubscriber();
+            subAddPlugin.addConnection(CDDL.getInstance().getConnection());
+
+            activityParcelable = new ActivityParcelable();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -86,6 +91,19 @@ public class ProcessorManager extends Service {
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sociability");
             }
+            else if(nameProcessor.equalsIgnoreCase("Mobility")) {
+                Intent s = new Intent(context, Mobility.class);
+                context.startService(s);
+                Log.i(TAG, "#### Starting inference services: Mobility");
+
+
+            }
+            else if(nameProcessor.equalsIgnoreCase("Sleep")) {
+                Intent s = new Intent(context, Sleep.class);
+                context.startService(s);
+                Log.i(TAG, "#### Starting inference services: Sleep");
+            }
+            publishMessage(Topics.ACTIVE_PROCESSOR_TOPIC.toString(),nameProcessor);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -99,6 +117,12 @@ public class ProcessorManager extends Service {
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services");
             }
+            else if(nameProcessor.equalsIgnoreCase("Mobility")) {
+                Intent s = new Intent(context, Mobility.class);
+                context.stopService(s);
+                Log.i(TAG, "#### Stopping inference services");
+            }
+            publishMessage(Topics.DEACTIVATE_PROCESSOR_TOPIC.toString(),nameProcessor);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -117,11 +141,17 @@ public class ProcessorManager extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "#### CONFIGURATION PROCESSORMANAGER SERVICE");
+        activityParcelable = (ActivityParcelable) intent.getParcelableExtra("activity");
+        activity = activityParcelable.getActivity();
+
         subscribeMessageStartProcessor(Topics.START_PROCESSOR_TOPIC.toString());
         subscribeMessageStopProcessor(Topics.STOP_PROCESSOR_TOPIC.toString());
 
-        subscribeMessageActive(Topics.ACTIVE_SENSOR_TOPIC.toString());
-        subscribeMessageDeactive(Topics.DEACTIVATE_SENSOR_TOPIC.toString().toString());
+        subscribeMessageActiveSensor(Topics.ACTIVE_SENSOR_TOPIC.toString());
+        subscribeMessageDeactiveSensor(Topics.DEACTIVATE_SENSOR_TOPIC.toString().toString());
+
+        subscribeMessageAddPlugin(Topics.ADD_PLUGIN_TOPIC.toString());
 
         super.onStartCommand(intent, flags, startId);
 
@@ -140,23 +170,15 @@ public class ProcessorManager extends Service {
 
 
     public void startProcessorsList() {
-        this.processors = new ArrayList();
-        this.processors.add("Sociability");
-    }
-
-
-    public void copyProcessorsList(){
-        Log.i(TAG, "#### Copy of processors sent to MainService");
-        if(!processors.isEmpty()) {
-            for (int i = 0; i < processors.size(); i++) {
-                publishMessage(Topics.ADD_PLUGIN_TOPIC.toString(), processors.get(i).toString());
-            }
-        }
+        this.listProcessors = new ArrayList();
+        this.listProcessors.add("Sociability");
+        this.listProcessors.add("Mobility");
+        this.listProcessors.add("Sleep");
     }
 
 
     public List<String> getProcessor() {
-        return this.processors;
+        return this.listProcessors;
     }
 
 
@@ -172,26 +194,40 @@ public class ProcessorManager extends Service {
     }
 
 
+    public void subscribeMessageActiveSensor(String serviceName) {
+        subActiveSensor.subscribeServiceByName(serviceName);
+        subActiveSensor.setSubscriberListener(subscriberStartSensors);
+    }
+
+
+    public void subscribeMessageDeactiveSensor(String serviceName) {
+        subDeactiveSensor.subscribeServiceByName(serviceName);
+        subDeactiveSensor.setSubscriberListener(subscriberStopSensors);
+    }
+
+
+    public void subscribeMessageAddPlugin(String serviceName) {
+        subAddPlugin.subscribeServiceByName(serviceName);
+        subAddPlugin.setSubscriberListener(subscriberAddPlugin);
+    }
+
+
     public ISubscriberListener subscriberStartProcessors = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### Read messages (started Processor):  " + message);
+            Log.i(TAG, "#### Read messages (started Processor):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
 
             if (isProcessor(atividade)) {
-                Log.d(TAG, "#### Start processor monitoring->  " + atividade);
+                Log.i(TAG, "#### Start processor monitoring->  " + atividade);
                 startProcessor(atividade);
             } else {
-                Log.d(TAG, "#### Invalid processor name: " + atividade);
+                Log.i(TAG, "#### Invalid processor name: " + atividade);
             }
         }
     };
@@ -203,11 +239,10 @@ public class ProcessorManager extends Service {
 //                    if (message.getServiceName().equals("Meu serviço")) {
 //                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
 //                    }
-            Log.d(TAG, "#### Read messages (stop):  " + message);
+            Log.i(TAG, "#### Read messages (stop):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
@@ -222,54 +257,31 @@ public class ProcessorManager extends Service {
     };
 
 
-    public ISubscriberListener subscriberPlugins = new ISubscriberListener() {
-        @Override
-        public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### >>>>>>>>>>>>>>>>>>> Read messages processor:  " + message);
-
-//            Object[] valor = message.getServiceValue();
-//            String mensagemRecebida = StringUtils.join(valor, ", ");
-//            Log.d(TAG, "#### " + mensagemRecebida);
-//            String[] separated = mensagemRecebida.split(",");
-//            String atividade = String.valueOf(separated[0]);
-        }
-    };
-
-
-    public void subscribeMessageActive(String serviceName) {
-        subActive.subscribeServiceByName(serviceName);
-        subActive.setSubscriberListener(subscriberStartSensors);
-    }
-
-    public void subscribeMessageDeactive(String serviceName) {
-        subDeactive.subscribeServiceByName(serviceName);
-        subDeactive.setSubscriberListener(subscriberStopSensors);
-    }
-
-
-
     public ISubscriberListener subscriberStartSensors = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### Read messages (Sensors start):  " + message);
+            Log.i(TAG, "#### Read messages (Sensors start):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
             if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
-                Log.d(TAG, "#### Start sensor monitoring->  " + atividade);
-                startSensor(atividade);
+                Log.i(TAG, "#### Start sensor monitoring->  " + atividade);
+
+                Log.i(TAG, "#### Total getAvailableAttributes: " + message.getAvailableAttributes());
+                if(message.getAvailableAttributes() >= 2){
+                    Double n = (Double) valor[1];
+                    int delay = n.intValue();
+                    Log.i(TAG, "#### Delay: " + delay);
+                    startSensor(atividade, delay);
+                }
+                else {
+                    startSensor(atividade);
+                }
             } else {
-                Log.d(TAG, "#### Invalid sensor name: " + atividade);
+                Log.i(TAG, "#### Invalid sensor name: " + atividade);
             }
         }
     };
@@ -278,23 +290,38 @@ public class ProcessorManager extends Service {
     public ISubscriberListener subscriberStopSensors = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
-            Log.d(TAG, "#### Read messages (Sensors stop):  " + message);
+            Log.i(TAG, "#### Read messages (Sensors stop):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.d(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
 
             if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
-                Log.d(TAG, "#### Stop sensor monitoring->  " + atividade);
+                Log.i(TAG, "#### Stop sensor monitoring->  " + atividade);
                 stopSensor(atividade);
             } else {
-                Log.d(TAG, "#### Invalid sensor name: " + atividade);
+                Log.i(TAG, "#### Invalid sensor name: " + atividade);
+            }
+        }
+    };
+
+
+    public ISubscriberListener subscriberAddPlugin = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Log.i(TAG, "#### Read messages (Add Plugin):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+
+            if (!listPlugin.contains(atividade)) {
+                listPlugin.add(atividade);
+            } else {
+                Log.e(TAG, "#### Processor already exists: " + atividade);
             }
         }
     };
@@ -345,12 +372,39 @@ public class ProcessorManager extends Service {
 
     public void startSensor(String sensor) {
         if (sensor.equalsIgnoreCase("TouchScreen")) {
-            // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
+            // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela: a permissão no smartphone é sobreposição,
+            // entra na configuração do aplicativo e ativa a opção "Sobreposição a outros aplicativos".
+            // Existe um mode de configurar isso ao usar o sensor de Toque de tela.
             checkDrawOverlayPermission();
             CDDL.getInstance().startSensor(sensor, 0);
         } else {
             initPermissions(sensor);
             CDDL.getInstance().startSensor(sensor, 0);
+        }
+        //cddl.onStartSensor("SMS",0);
+        //cddl.onStartSensor("Call",0);
+        //cddl.onStartSensor("ScreenOnOff",0);
+    }
+
+
+    /**
+     * Starts listening for the specified sensor but specifying a type of delay.
+     * The type of delay can be:
+     *   Fastest delay = 0,
+     *   Game delay = 1,
+     *   UI delay = 2,
+     *   Normal delay = 3
+     * @param sensor Name of the sensor to be listened to
+     * @param delay
+     */
+    public void startSensor(String sensor, int delay) {
+        if (sensor.equalsIgnoreCase("TouchScreen")) {
+            // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
+            checkDrawOverlayPermission();
+            CDDL.getInstance().startSensor(sensor, 0);
+        } else {
+            initPermissions(sensor);
+            CDDL.getInstance().startSensor(sensor, delay);
         }
         //cddl.onStartSensor("SMS",0);
         //cddl.onStartSensor("Call",0);
@@ -381,7 +435,7 @@ public class ProcessorManager extends Service {
     public void publishMessage(String service, String text) {
         publisher.addConnection(CDDL.getInstance().getConnection());
 
-        MyMessage message = new MyMessage();
+        Message message = new Message();
         message.setServiceName(service);
         message.setServiceValue(text);
         publisher.publish(message);
@@ -408,7 +462,8 @@ public class ProcessorManager extends Service {
                 // request permission via start activity for result
                 Log.i(TAG, "#### permissao dada pelo usuário");
 
-                configurations.getInstance().getActivity().startActivityForResult(intent, 1);
+                activity.startActivityForResult(intent, 1);
+                //configurations.getInstance().getActivity().startActivityForResult(intent, 1);
             }
         }
     }
@@ -442,9 +497,9 @@ public class ProcessorManager extends Service {
                     // SMS saída
                     android.Manifest.permission.READ_EXTERNAL_STORAGE};
 
-            if (!hasPermissions(configurations.getInstance().getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(activity, PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
-                ActivityCompat.requestPermissions(configurations.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
+                ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
             }
         } else if (sensor.equalsIgnoreCase("Call")) {
             String[] PERMISSIONS = {
@@ -455,9 +510,9 @@ public class ProcessorManager extends Service {
                     android.Manifest.permission.WRITE_CALL_LOG,
                     android.Manifest.permission.ADD_VOICEMAIL};
 
-            if (!hasPermissions(configurations.getInstance().getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(activity, PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
-                ActivityCompat.requestPermissions(configurations.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
+                ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
             }
         }
 //        String[] PERMISSIONS = {
@@ -512,9 +567,9 @@ public class ProcessorManager extends Service {
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
         };
 
-        if (!hasPermissions(configurations.getInstance().getActivity(), PERMISSIONS)) {
+        if (!hasPermissions(activity, PERMISSIONS)) {
             Log.i(TAG, "##### Permissão Ativada");
-            ActivityCompat.requestPermissions(configurations.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
+            ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
         }
     }
 
@@ -532,9 +587,9 @@ public class ProcessorManager extends Service {
                     // Outros services
             };
 
-            if (!hasPermissions(configurations.getInstance().getActivity(), PERMISSIONS)) {
+            if (!hasPermissions(activity, PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for framework");
-                ActivityCompat.requestPermissions(configurations.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
+                ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
             }
         }
     }

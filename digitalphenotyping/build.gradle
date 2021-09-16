@@ -60,4 +60,6 @@ dependencies {
 //    annotationProcessor 'org.projectlombok:lombok:1.18.18'
 //    implementation project(path: ':myapplication')
     implementation "androidx.work:work-runtime:2.5.0"
+    implementation "androidx.room:room-runtime:2.3.0"
+    annotationProcessor "androidx.room:room-compiler:2.3.0"
 }

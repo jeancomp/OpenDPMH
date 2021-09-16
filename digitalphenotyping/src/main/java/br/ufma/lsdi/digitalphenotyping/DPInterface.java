@@ -3,7 +3,7 @@ package br.ufma.lsdi.digitalphenotyping;
 import java.util.List;
 
 /**
- * Interface do framework
+ * Interface framework
  */
 public interface DPInterface {
     public void start();
@@ -12,7 +12,7 @@ public interface DPInterface {
     public void stopDataProcessors(List<String> nameProcessors);
     public List<String> getDataProcessorsList();
     public List<String> getActiveDataProcessorsList();
-    public void setExternalServerAddress(String hostServer, int port, String clientID, String username, String password, String topic, int compositionMode);
+    public void saveExternalServerAddress(String hostServer, int port, String username, String password, String topic, CompositionMode compositionMode);
 }
 
 // Annotations: força valores para variaveis

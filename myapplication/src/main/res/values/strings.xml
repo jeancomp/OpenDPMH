@@ -1,12 +1,12 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">OpenDPMH</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Start Sociability</string>
+    <string name="next">Start Processors</string>
     <string name="previous">Previous</string>
-    <string name="stop2">Stop Sociability</string>
+    <string name="stop2">Stop Processors</string>
     <string name="recorder">recorder</string>
 
     <string name="hello_first_fragment">OpenDPMH - Framework</string>
@@ -17,7 +17,7 @@
     <string name="noise_detected">Noise detected!</string>
     <string name="press_button_to_start">Press button to start VAD!</string>
     <string name="start">Start</string>
-    <string name="stop">Stop</string>
+    <string name="stop">Stop Processors</string>
     <string name="sample_rate">Sample Rate:</string>
     <string name="frame_size">Frame Size:</string>
     <string name="mode">Mode:</string>
