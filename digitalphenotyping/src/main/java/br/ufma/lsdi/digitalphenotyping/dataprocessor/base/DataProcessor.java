@@ -3,7 +3,6 @@ package br.ufma.lsdi.digitalphenotyping.dataprocessor.base;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +28,7 @@ public abstract class DataProcessor extends Service {
     private List<String> listSensors = null;
     private Publisher publisher = PublisherFactory.createPublisher();
 
-    DPUtilities2 dpUtilities;
+    DPUtilities dpUtilities;
 
     @Override
     public void onCreate() {
@@ -55,9 +54,7 @@ public abstract class DataProcessor extends Service {
     }
 
     @Override
-    public void onDestroy() {
-        end();
-    }
+    public void onDestroy() { end(); }
 
 
     public boolean init(){
@@ -88,7 +85,7 @@ public abstract class DataProcessor extends Service {
             listSensors.add(listSensor.get(i).toString());
         }
 
-        dpUtilities = new DPUtilities2(listSensors);
+        dpUtilities = new DPUtilities(listSensors);
     }
 
     public void onStartSensor(String nameSensor,int delay){
@@ -129,15 +126,14 @@ public abstract class DataProcessor extends Service {
     /**
      * For each started Sensor, a Subcriber is signed.
      */
-    public class DPUtilities2 {
+    public class DPUtilities {
         List<String> nameSensors = new ArrayList();
         Subscriber[] subscribers;
         int numSensors = 0;
 
-        public DPUtilities2(List<String> listSensors){
+        public DPUtilities(List<String> listSensors){
             numSensors = listSensors.size();
             nameSensors = listSensors;
-            Log.i("DPUtilities","#### numSensors: " + numSensors);
             subscribers = new Subscriber[numSensors];
         }
 
@@ -157,7 +153,6 @@ public abstract class DataProcessor extends Service {
         }
 
         public void subscribeMessage(int position, String serviceName) {
-            Log.i("DPUtilities","#### position: " + position +",serviceName: " + serviceName);
             subscribers[position].subscribeServiceByName(serviceName);
             testSubcriber();
             subscribers[position].setSubscriberListener(createSubcriber(position));
@@ -172,7 +167,6 @@ public abstract class DataProcessor extends Service {
             return subscriberListener[position] = new ISubscriberListener() {
                 @Override
                 public void onMessageArrived(Message message) {
-                    Log.i("DPUtilities","#### MESSAGE-UTILITIES: " + message);
                     inference(message);
                 }
             };

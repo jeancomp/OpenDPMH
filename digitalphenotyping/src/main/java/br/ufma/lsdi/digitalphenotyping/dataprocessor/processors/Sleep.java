@@ -18,14 +18,17 @@ public class Sleep extends DataProcessor {
 
     @Override
     public boolean init(){
-        Log.i(TAG, "#### Running processor Sociability");
+        try {
+            Log.i(TAG, "#### Running processor Sociability");
 
-        setNameProcessor("Sleep");
+            setNameProcessor("Sleep");
 
-        List<String> listSensorsUtilities = new ArrayList();
-        listSensorsUtilities.add("TouchScreen");
-        onStartSensor(listSensorsUtilities);
-
+            List<String> listSensorsUtilities = new ArrayList();
+            listSensorsUtilities.add("TouchScreen");
+            onStartSensor(listSensorsUtilities);
+        }catch (Exception e){
+            Log.e(TAG, "Error: " + e.toString());
+        }
         return true;
     }
 
@@ -40,24 +43,23 @@ public class Sleep extends DataProcessor {
         return true;
     }
 
-
     @Override
     public void inference(Message message){
+
         Object[] valor = message.getServiceValue();
         String mensagemRecebida = StringUtils.join(valor, ", ");
-        Log.i(TAG, "#### " + mensagemRecebida);
-        String[] separated = mensagemRecebida.split(",");
 
         Object[] finalValor = {getNameProcessor(),mensagemRecebida};
         Log.i(TAG,"#### VALOR: " + finalValor[0] + ", " + String.valueOf(finalValor[1]));
 
         Message msg = new Message();
-        //msg.setAvailableAttributesList(new String[]{"Tilt","Acceleration"});
-        //msg.setServiceByteArray(message.getServiceValue());
+        //msg.setAvailableAttributesList(new String[]{"Name processor"});
+        //msg.setAvailableAttributes();
         msg.setServiceName(Topics.INFERENCE_TOPIC.toString());
         msg.setServiceValue(finalValor);
         msg.setTopic(Topics.INFERENCE_TOPIC.toString());
         Log.i(TAG,"#### MENSAGEM: " + msg);
+
         publishInference(msg);
     }
 

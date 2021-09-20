@@ -309,7 +309,7 @@ public class PhenotypeComposer extends Service {
                             break;
                         }
                         if (all) {
-                            //publishPhenotype.getInstance().publishPhenotypeComposer(message);
+                            publishPhenotype.getInstance().publishPhenotypeComposer(message);
 
                             // Retrieve information
                             phenotype = db.phenotypeDAO().findByPhenotypeAll();
@@ -357,11 +357,9 @@ public class PhenotypeComposer extends Service {
     public final ISubscriberListener subscriberCompositionModeListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-            Log.i(TAG, "#### Read messages (subscriber CompositionMode):  " + message);
-
+            //Log.i(TAG, "#### Read messages (subscriber CompositionMode):  " + message);
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.i(TAG, "#### CompositionMode: " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade1 = String.valueOf(separated[0]);
 
@@ -399,7 +397,6 @@ public class PhenotypeComposer extends Service {
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.i(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 

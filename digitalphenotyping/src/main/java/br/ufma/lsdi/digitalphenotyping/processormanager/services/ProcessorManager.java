@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import br.ufma.lsdi.cddl.CDDL;
@@ -41,7 +42,7 @@ public class ProcessorManager extends Service {
     Publisher publisher = PublisherFactory.createPublisher();
     List<String> listActiveProcessors = null;
     List<String> listProcessors = null;
-    List<String> listActiveSensor = null;
+    HashMap<String, Integer> listActiveSensor = new HashMap<>();
     List<String> listPlugin = new ArrayList();
     Subscriber subStartProcessor;
     Subscriber subStopProcessor;
@@ -95,8 +96,6 @@ public class ProcessorManager extends Service {
                 Intent s = new Intent(context, Mobility.class);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Mobility");
-
-
             }
             else if(nameProcessor.equalsIgnoreCase("Sleep")) {
                 Intent s = new Intent(context, Sleep.class);
@@ -370,20 +369,24 @@ public class ProcessorManager extends Service {
     }
 
 
-    public void startSensor(String sensor) {
-        if (sensor.equalsIgnoreCase("TouchScreen")) {
-            // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela: a permissão no smartphone é sobreposição,
-            // entra na configuração do aplicativo e ativa a opção "Sobreposição a outros aplicativos".
-            // Existe um mode de configurar isso ao usar o sensor de Toque de tela.
-            checkDrawOverlayPermission();
-            CDDL.getInstance().startSensor(sensor, 0);
-        } else {
-            initPermissions(sensor);
-            CDDL.getInstance().startSensor(sensor, 0);
+    public void startSensor(String nameSensor) {
+        try {
+            if(checkSensorUsageforStart(nameSensor)) {
+                if (nameSensor.equalsIgnoreCase("TouchScreen")) {
+                    Log.i(TAG,"#### Aquiiiiiiiiiiiiiii");
+                    // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela: a permissão no smartphone é sobreposição,
+                    // entra na configuração do aplicativo e ativa a opção "Sobreposição a outros aplicativos".
+                    // Existe um mode de configurar isso ao usar o sensor de Toque de tela.
+                    checkDrawOverlayPermission();
+                    CDDL.getInstance().startSensor(nameSensor, 0);
+                } else {
+                    initPermissions(nameSensor);
+                    CDDL.getInstance().startSensor(nameSensor, 0);
+                }
+            }
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
         }
-        //cddl.onStartSensor("SMS",0);
-        //cddl.onStartSensor("Call",0);
-        //cddl.onStartSensor("ScreenOnOff",0);
     }
 
 
@@ -394,17 +397,23 @@ public class ProcessorManager extends Service {
      *   Game delay = 1,
      *   UI delay = 2,
      *   Normal delay = 3
-     * @param sensor Name of the sensor to be listened to
+     * @param nameSensor Name of the sensor to be listened to
      * @param delay
      */
-    public void startSensor(String sensor, int delay) {
-        if (sensor.equalsIgnoreCase("TouchScreen")) {
-            // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
-            checkDrawOverlayPermission();
-            CDDL.getInstance().startSensor(sensor, 0);
-        } else {
-            initPermissions(sensor);
-            CDDL.getInstance().startSensor(sensor, delay);
+    public void startSensor(String nameSensor, int delay) {
+        try {
+            if (checkSensorUsageforStart(nameSensor)) {
+                if (nameSensor.equalsIgnoreCase("TouchScreen")) {
+                    // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
+                    checkDrawOverlayPermission();
+                    CDDL.getInstance().startSensor(nameSensor, 0);
+                } else {
+                    initPermissions(nameSensor);
+                    CDDL.getInstance().startSensor(nameSensor, delay);
+                }
+            }
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
         }
         //cddl.onStartSensor("SMS",0);
         //cddl.onStartSensor("Call",0);
@@ -412,8 +421,49 @@ public class ProcessorManager extends Service {
     }
 
 
-    public void stopSensor(String sensor) {
-        CDDL.getInstance().stopSensor(sensor);
+    public void stopSensor(String nameSensor) {
+        if(checkSensorUsageforStop(nameSensor)) {
+            CDDL.getInstance().stopSensor(nameSensor);
+        }
+    }
+
+
+    public boolean checkSensorUsageforStart(String nameSensor){
+        try{
+            if(!listActiveSensor.containsKey(nameSensor)){
+                listActiveSensor.put(nameSensor, 1);
+                return true;
+            }
+            else{ // Already have processors using the sensor.
+                Integer value = listActiveSensor.get(nameSensor);
+                value = value + 1;
+                listActiveSensor.put(nameSensor, value);
+            }
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
+        }
+        return false;
+    }
+
+
+    public boolean checkSensorUsageforStop(String nameSensor){
+        try {
+            if (!listActiveSensor.isEmpty()) {
+                if (listActiveSensor.containsKey(nameSensor)) {
+                    Integer value = listActiveSensor.get(nameSensor);
+                    if (value == 1) { // Only one processor is using.
+                        listActiveSensor.remove(nameSensor);
+                        return true;
+                    } else { // More than one processor is using the sensor.
+                        value = value - 1;
+                        listActiveSensor.put(nameSensor, value);
+                    }
+                }
+            }
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
+        }
+        return false;
     }
 
 

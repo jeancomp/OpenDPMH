@@ -18,14 +18,17 @@ public class Mobility extends DataProcessor {
 
     @Override
     public boolean init(){
-        Log.i(TAG, "#### Running processor Mobility");
+        try {
+            Log.i(TAG, "#### Running processor Mobility");
 
-        setNameProcessor("Mobility");
+            setNameProcessor("Mobility");
 
-        List<String> listSensorsUtilities = new ArrayList();
-        listSensorsUtilities.add("Tilt Detector");
-        onStartSensor(listSensorsUtilities);
-
+            List<String> listSensorsUtilities = new ArrayList();
+            listSensorsUtilities.add("Tilt Detector");
+            onStartSensor(listSensorsUtilities);
+        }catch (Exception e){
+            Log.e(TAG, "Error: " + e.toString());
+        }
         return true;
     }
 

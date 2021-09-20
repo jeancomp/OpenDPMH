@@ -35,8 +35,8 @@ public class Sociability extends DataProcessor {
             List<String> listSensorsUtilities = new ArrayList();
             listSensorsUtilities.add("Call");
             listSensorsUtilities.add("SMS");
-            onStartSensor(listSensorsUtilities);
             //onStartSensor("Audio");
+            onStartSensor(listSensorsUtilities);
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
         }
