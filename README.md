@@ -11,20 +11,20 @@
 Sumário
 =================
 <!--ts-->
-   * [Goals](#Objetivo)
-   * [Project status](#Status-do-projeto)
-   * [Release history](#Histórico-de-Lançamento)
-   * [How to use](#como-usar)
-      * [Prerequisites](#Pré-requisitos)
-      * [Installation](#Instalação)
-      * [Example of use](#Exemplo-de-uso)
-   * [License](#Licença)
-   * [Contribution](#Contribuição)
-   * [Author](#Autor)
+   * [Goals](#Goals)
+   * [Project status](#Project-status)
+   * [Release history](#Release-history)
+   * [How to use](#How-to-use)
+      * [Prerequisites](#Prerequisites)
+      * [Installation](#Installation)
+      * [Example of use](#Example-of-use)
+   * [License](#License)
+   * [Contribution](#Contribution)
+   * [Author](#Author)
 <!--te-->
 
 
-Objetivo
+Goals
 =================
 The general objective of this work is to provide a framework focused on Digital Mental Health Phenotyping (DPMH). The solution will facilitate the development of mobile applications that can passively collect context data, process it, and generate high-level information. Therefore, this framework aims to create a software base to support the implementation of solutions that aim to recognize patterns of behavior and habits of users, which can support mental health professionals in their analyses, diagnoses, and treatments.
 
@@ -43,11 +43,11 @@ Componentes:
 ![](header.png)
 
 
-Status-do-projeto
+Project-status
 =================
 
 <h4 align="center"> 
-	🚧  Framework - Em desenvolvimento...  🚧
+	🚧  Framework - Under development...  🚧
 </h4>
 
 ### Features
@@ -59,22 +59,22 @@ Status-do-projeto
 - [ ] PhenotypeComposer
 
 
-Histórico-de-Lançamento
+Release-history
 =================
 
 * 0.0.1
     * Security adaptation (digital certificates) in progress.
     * Adaptation of virtual sensors to the M-HUB.
 
-Como-usar
+How-to-use
 =================
 
-Pré-requisitos
+Prerequisites
 -----
 * Android version: 6
 * Android API Version: minSdkVersion > 26
 
-Instalação
+Installation
 -----
 
 Linux & Windows:
@@ -91,7 +91,7 @@ Linux & Windows:
 3º option (apk): under construction... 
 ```
 
-Exemplo-de-uso
+Example-of-use
 -----
 DPManager
 ```sh
@@ -100,7 +100,7 @@ public DPManager digitalPhenotypingManager;
 Start-framework:
 ```sh
 digitalPhenotypingManager = new DPManager.Builder(this)
-                .setExternalServer("broker.hivemq.com",1883)
+                .setExternalServer("nameserver.com",1883)
                 .setCompositionMode(CompositionMode.FREQUENCY)
                 .setFrequency(15)
                 .build();
@@ -121,7 +121,7 @@ List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
 digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
 ```
 
-Licença
+License
 =================
 
 Your Name – [@Twitter](https://twitter.com/jeancomp) – jean.marques@lsdi.ufma.br
@@ -130,7 +130,7 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 
 [https://github.com/](https://github.com/jeancomp)
 
-Contribuição
+Contribution
 =================
 
 1. Desenvolvedor principal (<https://github.com/jeancomp>)
@@ -145,7 +145,7 @@ Contribuição
 [wiki]: https://github.com/yourname/yourproject/wiki
 
 
-Autor
+Author
 =================
 
 <a href="https://github.com/jeancomp">
@@ -154,7 +154,7 @@ Autor
  <sub><b>Jean Pablo</b></sub></a>
 
 
-Feito por Jean Pablo 👋🏽 Entre em contato!
+Made by Jean Pablo 👋🏽 Contact!
 
 [![Twitter](https://img.shields.io/twitter/url?label=%40jeancomp&style=social&url=https%3A%2F%2Ftwitter.com%2Fjeancomp)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Ftwitter.com%2Fjeancomp)
 [![Linkedin Badge](https://img.shields.io/badge/-Jean-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/jean-pablo-marques-mendes/)](https://www.linkedin.com/in/jean-pablo-marques-mendes/) 
