@@ -1,5 +1,5 @@
-# Framework para Facilitar o Desenvolvimento de Aplicações de Fenotipagem Digital
-> Um framework focado em identificar padrões de comportamento, hábitos, costumes de indivíduos monitorados através da coleta de dados de sensores físicos e virtuais.
+# OpenDPMH - Framework to Facilitate the Development of Digital Phenotyping Applications
+> A framework aimed at identifying behavior patterns, habits, customs of monitored individuals through the collection of data from physical and virtual sensors.
 
 
 [![GitHub issues](https://img.shields.io/github/issues/jeancomp/fenotipagem_digital_saude_vs_0_1)](https://github.com/jeancomp/fenotipagem_digital_saude_vs_0_1/issues)
@@ -11,35 +11,33 @@
 Sumário
 =================
 <!--ts-->
-   * [Objetivo](#Objetivo)
-   * [Status do projeto](#Status-do-projeto)
-   * [Histórico de lançamento](#Histórico-de-Lançamento)
-   * [Como usar](#como-usar)
-      * [Pré Requisitos](#Pré-requisitos)
-      * [Instalação](#Instalação)
-      * [Exemplo-de-uso](#Exemplo-de-uso)
-   * [Licença](#Licença)
-   * [Contribuição](#Contribuição)
-   * [Autor](#Autor)
+   * [Goals](#Objetivo)
+   * [Project status](#Status-do-projeto)
+   * [Release history](#Histórico-de-Lançamento)
+   * [How to use](#como-usar)
+      * [Prerequisites](#Pré-requisitos)
+      * [Installation](#Instalação)
+      * [Example of use](#Exemplo-de-uso)
+   * [License](#Licença)
+   * [Contribution](#Contribuição)
+   * [Author](#Autor)
 <!--te-->
 
 
 Objetivo
 =================
-O objetivo geral deste trabalho é fornecer um framework focado em Fenotipagem Digital de Saúde Mental (do inglês, Digital Phenotyping of Mental Health - DPMH). A solução vai facilitar o desenvolvimento de aplicações móveis que possam coletar dados de contexto passivamente, processando-os e gerando informações de alto nível. Portanto, este framework visa criar uma base de software para suportar a implementação de soluções que visem realizar o reconhecimento de padrões de comportamentos e hábitos dos usuários, os quais podem dar subsídios aos profissionais de saúde mental em suas análises, diagnósticos e tratamentos.
+The general objective of this work is to provide a framework focused on Digital Mental Health Phenotyping (DPMH). The solution will facilitate the development of mobile applications that can passively collect context data, process it, and generate high-level information. Therefore, this framework aims to create a software base to support the implementation of solutions that aim to recognize patterns of behavior and habits of users, which can support mental health professionals in their analyses, diagnoses, and treatments.
 
 <h1 align="center">
   <img alt="Arquitetura-framework" title="#Arquitetura" src="/framework.png" />
 </h1>
 
 Componentes:
-* DigitalPhenotypingManager: responsável por gerenciar o framework (e.g., start, stop).
-* BusSytem: barramento responsável por garantir a troca de mensagens entres os componentes do framework.
-* InferenceProcessorManager: gerencia os rawcontextdataprocessor (e.g., start rawcontextdataprocessor, stop rawcontextdataprocessor).
-* RawContextDataProcessor: detecta eventos comportamentais dos usuários monitorados (e.g., sociabilidade, mobilidade, sono, atividade física).
-* ContextDataProvider: responsável por receber os dados dos sensores físicos e virtuais, além de gerenciá-los (e.g., start sensor, stop sensor)
-* PhenotypeComposer: compõe fenótipos digitais dos usuários, recendo diretamente do rawcontextdataprocessor os eventos detectados.
-* DataController: gerencia a privacidade e controle dos dados, libera acesso aos plugins para se comunicarem com o framework.
+* DPManager: responsible for managing the framework (e.g., start/stop, start/stop the processors, configuring the composition mode of PhenotypeComposer).
+* MainService: bus responsible for ensuring the exchange of messages between the framework components.
+* ProcessorManager: manages dataprocessor (e.g., start/stop dataprocessor), start/stop sensors, and identifies new plugin that has been installed.
+* DataProcessor: the class where the processors will be implemented (e.g., sociability, mobility, sleep, physical activity).
+* PhenotypeComposer: composes digital phenotypes of users, receiving directly from the data processor of detected events (eg phone calls, sms, GPS, accelerometer).
 
 
 ![](header.png)
@@ -54,29 +52,27 @@ Status-do-projeto
 
 ### Features
 
-- [x] DiditalPhenotypingManager
-- [ ] InferenceProcessorManager
-- [ ] ContextDataProvider
-- [ ] BusSystem
+- [x] DPManager
+- [x] MainService
+- [ ] ProcessorManager
+- [ ] DataProcessor
 - [ ] PhenotypeComposer
-- [ ] DataController
-- [ ] RawContextDataProcessor
 
 
 Histórico-de-Lançamento
 =================
 
 * 0.0.1
-    * Adaptação de segurança (certificados digitais), em progresso.
-    * Adaptação dos sensores virtuais ao M-HUB
+    * Security adaptation (digital certificates) in progress.
+    * Adaptation of virtual sensors to the M-HUB.
 
 Como-usar
 =================
 
 Pré-requisitos
 -----
-* Versão android: 6
-* Versão API android: minSdkVersion > 26
+* Android version: 6
+* Android API Version: minSdkVersion > 26
 
 Instalação
 -----
@@ -84,42 +80,45 @@ Instalação
 Linux & Windows:
 
 ```sh
-1º opção (projeto github):
-	* faça o download do projeto zip, descompacta-o.
-	* depois abra com no Android Studio "Open an Existing Project", pronto.
+1º option (github project):
+	* download the zip project, unzip it.
+	* then open with in Android Studio "Open an Existing Project", ready.
 ```
 ```sh
-2º opção (arquivos aar): em construção... 
+2º option (aar files): under construction... 
 ```
 ```sh
-3º opção (apk): em construção... 
+3º option (apk): under construction... 
 ```
 
 Exemplo-de-uso
 -----
-DigitalPhenotypingManager
+DPManager
 ```sh
-public DigitalPhenotypingManager(Context context, Activity activity, String clientID, int communicationTechnology, Boolean secure);
+public DPManager digitalPhenotypingManager;
 ```
 Start-framework:
 ```sh
-DigitalPhenotypingManager digitalPhenotyping;
-digitalPhenotyping = new DigitalPhenotypingManager(this, this,"ClientID", 4, false);
-digitalPhenotyping.start();
-digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
-digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+digitalPhenotypingManager = new DPManager.Builder(this)
+                .setExternalServer("broker.hivemq.com",1883)
+                .setCompositionMode(CompositionMode.FREQUENCY)
+                .setFrequency(15)
+                .build();
+        digitalPhenotypingManager.start();
 ```
 Stop-framework:
 ```sh
-digitalPhenotyping.getInstance().stop();
+digitalPhenotypingManager.stop();
 ```
-Start-sensor:
+Start-dataprocessor:
 ```sh
-digitalPhenotyping.getInstance().getBusSystem().publishMessage(DigitalPhenotypingManager.ACTIVE_SENSOR,"TouchScreen");
+List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
+digitalPhenotypingManager.getInstance().startDataProcessors(listProcessors);
 ```
 Stop-sensor:
 ```sh
-digitalPhenotyping.getInstance().publishMessage(DigitalPhenotypingManager.DEACTIVATE_SENSOR, "TouchScreen");
+List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
+digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
 ```
 
 Licença
