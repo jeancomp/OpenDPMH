@@ -100,17 +100,9 @@ public DPManager digitalPhenotypingManager;
 Start-framework:
 ```sh
 Option:
-```
-```sh
 1 - SEND_WHEN_IT_ARRIVES
-```
-```sh
 2 - GROUP_ALL
-```
-```sh
 3 - FREQUENCY
-```
-```sh
 3.1 - setFrequency(value).
 ```
 ```sh
