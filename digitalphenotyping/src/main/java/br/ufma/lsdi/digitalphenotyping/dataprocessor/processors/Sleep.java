@@ -1,7 +1,5 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
-import android.content.Intent;
-import android.os.IBinder;
 import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,9 +15,9 @@ public class Sleep extends DataProcessor {
     private static final String TAG = Sleep.class.getName();
 
     @Override
-    public boolean init(){
+    public void init(){
         try {
-            Log.i(TAG, "#### Running processor Sociability");
+            Log.i(TAG, "#### Running processor Sleep");
 
             setNameProcessor("Sleep");
 
@@ -29,23 +27,11 @@ public class Sleep extends DataProcessor {
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
         }
-        return true;
     }
 
 
     @Override
-    public boolean dO(){
-        return true;
-    }
-
-
-    public boolean end(){
-        return true;
-    }
-
-    @Override
-    public void inference(Message message){
-
+    public void process(Message message){
         Object[] valor = message.getServiceValue();
         String mensagemRecebida = StringUtils.join(valor, ", ");
 
@@ -63,9 +49,6 @@ public class Sleep extends DataProcessor {
         publishInference(msg);
     }
 
-
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    public void end(){ }
 }

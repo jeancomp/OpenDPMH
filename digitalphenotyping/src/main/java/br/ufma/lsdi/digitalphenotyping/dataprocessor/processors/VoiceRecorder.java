@@ -16,7 +16,7 @@ import com.konovalov.vad.VadConfig;
 import com.konovalov.vad.VadListener;
 
 /**
- * Class responsável por identificar se o áudio possui voz humana
+ * VoiceRecorder: responsável por identificar se o áudio possui voz humana
  */
 public class VoiceRecorder {
     private static final int PCM_CHANNEL = CHANNEL_IN_MONO;

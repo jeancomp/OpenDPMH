@@ -1,6 +1,9 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -11,13 +14,17 @@ import java.util.List;
 
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.Util.Alarm;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 
 public class Mobility extends DataProcessor {
     private static final String TAG = Mobility.class.getName();
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+    Alarm alarm = new Alarm();
 
     @Override
-    public boolean init(){
+    public void init(){
         try {
             Log.i(TAG, "#### Running processor Mobility");
 
@@ -26,63 +33,54 @@ public class Mobility extends DataProcessor {
             List<String> listSensorsUtilities = new ArrayList();
             listSensorsUtilities.add("Tilt Detector");
             onStartSensor(listSensorsUtilities);
+
+            //alarm.setAlarm(this);
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
         }
-        return true;
     }
 
 
     @Override
-    public boolean dO(){
-        return true;
-    }
+    public void process(Message message){
+        //alarm.setAlarm(this);
 
-    @Override
-    public boolean end(){
-        onStopSensor("Tilt Detector");
-        return true;
-    }
-
-
-    @Override
-    public void inference(Message message) {
         Object[] valor = message.getServiceValue();
         String mensagemRecebida = StringUtils.join(valor, ", ");
         String[] separated = mensagemRecebida.split(",");
 
-        if(isValidTilt(valor)){
-            //Message msg = (Message) message;
-            //msg.setServiceName("rawdatainference");
-            //msg.setServiceByteArray(valor);
-            //msg.setServiceName(configurations.getInstance().RAW_DATA_INFERENCE_RESULT_TOPIC);
-            //msg.setTopic(configurations.getInstance().RAW_DATA_INFERENCE_RESULT_TOPIC);
-            //msg.setPublisherID("febfcfbccaeabda");
+        Object[] finalValor = {getNameProcessor(),mensagemRecebida};
+        Log.i(TAG,"#### VALOR: " + finalValor[0] + ", " + String.valueOf(finalValor[1]));
 
-            Object[] finalValor = {getNameProcessor(),mensagemRecebida};
-            Log.i(TAG,"#### VALOR: " + finalValor[0] + ", " + String.valueOf(finalValor[1]));
+        Message msg = new Message();
+        msg.setServiceName(Topics.INFERENCE_TOPIC.toString());
+        msg.setServiceValue(finalValor);
+        msg.setTopic(Topics.INFERENCE_TOPIC.toString());
+        Log.i(TAG,"#### MENSAGEM: " + msg);
 
-            Message msg = new Message();
-
-            //msg.setAvailableAttributesList(new String[]{"Tilt","Acceleration"});
-
-            msg.setServiceName(Topics.INFERENCE_TOPIC.toString());
-            msg.setServiceValue(finalValor);
-            msg.setTopic(Topics.INFERENCE_TOPIC.toString());
-            Log.i(TAG,"#### MENSAGEM: " + msg);
-            publishInference(msg);
-        }
+        publishInference(msg);
     }
 
 
-    public Boolean isValidTilt(Object[] valor){
-        // O que seria um Tilt inválido ???
-        return true;
+    @Override
+    public void end(){
+        onStopSensor("Tilt Detector");
     }
 
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
+
+
+    public final IBinder mBinder = new Mobility.LocalBinder();
+
+
+    public class LocalBinder extends Binder {
+        public Mobility getService() {
+            return Mobility.this;
+        }
+    }
+
 }

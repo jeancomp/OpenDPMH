@@ -1,5 +1,6 @@
 package com.jp.myapplication;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +34,12 @@ public class MainActivity extends AppCompatActivity {
     View button_recorder;
     MainService myService;
     List<String> listProcessors = null;
+    Activity activity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity = this;
         setContentView(R.layout.fragment_first);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
     public void startFramework(){
         digitalPhenotypingManager = new DPManager.Builder(this)
                 .setExternalServer("broker.hivemq.com",1883)
-                .setCompositionMode(CompositionMode.FREQUENCY)
-                .setFrequency(15)
+                .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
+                //.setFrequency(15)
                 .build();
         digitalPhenotypingManager.start();
     }

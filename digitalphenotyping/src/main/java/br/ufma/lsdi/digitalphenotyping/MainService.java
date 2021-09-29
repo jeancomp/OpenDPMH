@@ -235,10 +235,8 @@ public class MainService extends Service {
             con.setHost(host);
             con.addConnectionListener(connectionListener);
             con.connect();
-            //cddl = CDDL.getInstance();
             cddl = CDDL.getInstance();
             cddl.setConnection(con);
-            //cddl.setContext(getContext());
             cddl.setContext(getContext());
             cddl.startService();
 

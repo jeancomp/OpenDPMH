@@ -55,8 +55,8 @@ public class PhenotypeComposer extends Service {
     private String statusConnection = "";
     private CompositionMode lastCompositionMode = SEND_WHEN_IT_ARRIVES;
     private int lastFrequency = 6;
-    private List<String> nameActiveProcessors = null;
-    private List<Boolean> activeProcessors = null;
+    private List<String> nameActiveProcessors = new ArrayList();
+    private List<Boolean> activeProcessors = new ArrayList();
     AppDatabase db;
     WorkManager workManager;
 
@@ -81,9 +81,6 @@ public class PhenotypeComposer extends Service {
             // Monitor the Deactivate Processors
             subDeactivateProcessor = SubscriberFactory.createSubscriber();
             subDeactivateProcessor.addConnection(CDDL.getInstance().getConnection());
-
-            this.activeProcessors = new ArrayList();
-            this.nameActiveProcessors = new ArrayList();
 
             messageTextView = new TextView(context);
 

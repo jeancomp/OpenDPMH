@@ -1,15 +1,19 @@
 package com.jp.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.konovalov.vad.Vad;
 import com.konovalov.vad.VadConfig;
@@ -22,6 +26,7 @@ import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
 public class MainActivityRecorder extends AppCompatActivity implements VoiceRecorder.Listener, View.OnClickListener, AdapterView.OnItemSelectedListener {
+    private static final String TAG = MainActivityRecorder.class.getName();
     private VadConfig.SampleRate DEFAULT_SAMPLE_RATE = VadConfig.SampleRate.SAMPLE_RATE_16K;
     private VadConfig.FrameSize DEFAULT_FRAME_SIZE = VadConfig.FrameSize.FRAME_SIZE_160;
     private VadConfig.Mode DEFAULT_MODE = VadConfig.Mode.VERY_AGGRESSIVE;
@@ -61,6 +66,16 @@ public class MainActivityRecorder extends AppCompatActivity implements VoiceReco
                 .setVoiceDurationMillis(DEFAULT_VOICE_DURATION)
                 .build();
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         recorder = new VoiceRecorder(this, config);
 
         speechTextView = findViewById(R.id.speechTextView);
@@ -87,7 +102,7 @@ public class MainActivityRecorder extends AppCompatActivity implements VoiceReco
 
         recordingActionButton = findViewById(R.id.recordingActionButton);
         recordingActionButton.setOnClickListener(this);
-        recordingActionButton.setEnabled(false);
+        recordingActionButton.setEnabled(true);
 
         //MainActivityPermissionsDispatcher.activateAudioPermissionWithPermissionCheck(this);
     }
@@ -122,12 +137,14 @@ public class MainActivityRecorder extends AppCompatActivity implements VoiceReco
     }
 
     private void startRecording() {
+        Log.i(TAG,"#### Iniciando a gravação!");
         isRecording = true;
         recorder.start();
         recordingActionButton.setImageResource(R.drawable.stop);
     }
 
     private void stopRecording() {
+        Log.i(TAG,"#### Parando a gravação!");
         isRecording = false;
         recorder.stop();
         recordingActionButton.setImageResource(R.drawable.red_dot);
@@ -183,6 +200,7 @@ public class MainActivityRecorder extends AppCompatActivity implements VoiceReco
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.i(TAG,"#### Voz humana detectada!");
                 speechTextView.setText(R.string.speech_detected);
             }
         });
@@ -193,6 +211,7 @@ public class MainActivityRecorder extends AppCompatActivity implements VoiceReco
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.i(TAG,"#### Voz humana não detectada!");
                 speechTextView.setText(R.string.noise_detected);
             }
         });

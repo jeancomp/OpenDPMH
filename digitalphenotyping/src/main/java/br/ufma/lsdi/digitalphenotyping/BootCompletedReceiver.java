@@ -23,6 +23,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 //                context.startActivity(i);
 //            }
 
+            Log.i(TAG,"#### Dispositivo reiniciado.");
             Intent i = new Intent(context, MainService.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);

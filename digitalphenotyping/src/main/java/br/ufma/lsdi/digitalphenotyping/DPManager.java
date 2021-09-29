@@ -79,7 +79,6 @@ public class DPManager implements DPInterface {
 
             //this.activity = activity;
             this.context = (Context) activity;
-            //configurations.getInstance().setActivity(activity);
 
             propertyManager = new PropertyManager("configuration.properties", this.context);
             saveExternalServerAddress(builderCopy.hostServer, builderCopy.port, builderCopy.username, builderCopy.password, builderCopy.topic, builderCopy.compositionMode);
@@ -379,7 +378,9 @@ public class DPManager implements DPInterface {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.FOREGROUND_SERVICE,
-                Manifest.permission.RECORD_AUDIO
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
 
                 // Outros services
         };

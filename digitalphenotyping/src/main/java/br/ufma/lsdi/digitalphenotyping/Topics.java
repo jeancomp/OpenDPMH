@@ -9,6 +9,7 @@ public enum Topics {
     DEACTIVATE_PROCESSOR_TOPIC("deactivateprocessor"),
     ACTIVE_SENSOR_TOPIC("activesensor"),
     DEACTIVATE_SENSOR_TOPIC("deactivatesensor"),
+    LIST_SENSORS_TOPIC("listsensors"),
     COMPOSITION_MODE_TOPIC("compositionmode"),
     MAINSERVICE_COMPOSITIONMODE_TOPIC("mainservicecompositionmode"),
     OPENDPMH_TOPIC("opendpmh"),

@@ -3,9 +3,10 @@ package br.ufma.lsdi.digitalphenotyping.dataprocessor.base;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.os.IBinder;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import br.ufma.lsdi.cddl.CDDL;
@@ -20,15 +21,16 @@ import br.ufma.lsdi.digitalphenotyping.Topics;
 public abstract class DataProcessor extends Service {
     private Context context;
     private String clientID;
-    private String idProcessor;
-    private String uid;
-    private Date endtime;
-    private double duration;
     private String nameProcessor = "";
-    private List<String> listSensors = null;
+    private List<String> listSensors = new ArrayList();
+    private List<String> listUsedSensors = new ArrayList();
     private Publisher publisher = PublisherFactory.createPublisher();
+    private DPUtilities dpUtilities;
 
-    DPUtilities dpUtilities;
+//    public DataProcessor(List<String> listSensors){
+//        //this.listSensors = listSensors;
+//        //start os sensores
+//    }
 
     @Override
     public void onCreate() {
@@ -37,8 +39,6 @@ public abstract class DataProcessor extends Service {
         this.clientID = CDDL.getInstance().getConnection().getClientId();
 
         publisher.addConnection(CDDL.getInstance().getConnection());
-
-        listSensors = new ArrayList();
 
         init();
     }
@@ -49,27 +49,28 @@ public abstract class DataProcessor extends Service {
 
         dpUtilities.configSubscribers();
 
-        dO();
         return START_STICKY;
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
     @Override
     public void onDestroy() { end(); }
 
 
-    public boolean init(){
-        return true;
-    }
+    public void init(){ }
 
 
-    public boolean dO(){
-        return true;
-    }
+    public void process(Message message){}
 
 
-    public boolean end(){
-        return true;
-    }
+    public void end(){ }
+
+
+    public Context getContext(){ return this.context; }
 
 
     public void setNameProcessor(String nameProcessor){ this.nameProcessor = nameProcessor; }
@@ -78,25 +79,39 @@ public abstract class DataProcessor extends Service {
     public String getNameProcessor(){ return this.nameProcessor; }
 
 
+    public List<String> getSensors(){
+        listSensors = CDDL.getInstance().getSensorVirtualList();
+        List<Sensor> sensorInternal = CDDL.getInstance().getInternalSensorList();
+
+        if (sensorInternal.size() != 0) {
+            for (int i = 0; i < sensorInternal.size(); i++) {
+                listSensors.add(sensorInternal.get(i).getName());
+            }
+        }
+        return listSensors;
+    }
+
+
     public void onStartSensor(List<String> listSensor){
         for(int i=0; i<listSensor.size(); i++) {
             publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), listSensor.get(i).toString());
 
-            listSensors.add(listSensor.get(i).toString());
+            listUsedSensors.add(listSensor.get(i).toString());
         }
 
-        dpUtilities = new DPUtilities(listSensors);
+        dpUtilities = new DPUtilities(listUsedSensors);
     }
+
 
     public void onStartSensor(String nameSensor,int delay){
         publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), nameSensor, delay);
     }
 
+
     public void onStopSensor(String nameSensor){
         publishMessage(Topics.DEACTIVATE_SENSOR_TOPIC.toString(), nameSensor);
     }
 
-    public void inference(Message message){}
 
     public void publishMessage(String service, String text) {
         Message message = new Message();
@@ -105,6 +120,7 @@ public abstract class DataProcessor extends Service {
         message.setAvailableAttributes(1);
         publisher.publish(message);
     }
+
 
     public void publishMessage(String service, String text, int delay) {
         int total = 2;
@@ -117,11 +133,11 @@ public abstract class DataProcessor extends Service {
         //Log.i(TAG,"#### RRRRRRRRRRR: " + message.getAvailableAttributes());
     }
 
+
     public void publishInference(Message message){
         publisher.publish(message);
     }
 
-    //=============================================================================
 
     /**
      * For each started Sensor, a Subcriber is signed.
@@ -138,13 +154,6 @@ public abstract class DataProcessor extends Service {
         }
 
         public void configSubscribers(){
-//        for(int i=0; i<numSensors; i++){
-//            if(!this.nameSensors.contains(listSensors.get(i).toString())){
-//                Log.i("DPUtilities","#### Sensor Add: " + listSensors.get(i).toString());
-//                this.nameSensors.add(listSensors.get(i).toString());
-//            }
-//        }
-
             for(int i=0; i<numSensors; i++) {
                 subscribers[i] = SubscriberFactory.createSubscriber();
                 subscribers[i].addConnection(CDDL.getInstance().getConnection());
@@ -167,7 +176,7 @@ public abstract class DataProcessor extends Service {
             return subscriberListener[position] = new ISubscriberListener() {
                 @Override
                 public void onMessageArrived(Message message) {
-                    inference(message);
+                    process(message);
                 }
             };
         }

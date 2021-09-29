@@ -36,22 +36,24 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
 
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
-    ActivityParcelable activityParcelable;
-    Activity activity;
-    Context context;
-    Publisher publisher = PublisherFactory.createPublisher();
-    List<String> listActiveProcessors = null;
-    List<String> listProcessors = null;
-    HashMap<String, Integer> listActiveSensor = new HashMap<>();
-    List<String> listPlugin = new ArrayList();
-    Subscriber subStartProcessor;
-    Subscriber subStopProcessor;
-    Subscriber subActiveSensor;
-    Subscriber subDeactiveSensor;
+    private ActivityParcelable activityParcelable;
+    private Activity activity;
+    private Context context;
+    private Publisher publisher = PublisherFactory.createPublisher();
+    private List<String> listActiveProcessors = null;
+    private List<String> listProcessors = null;
+    private HashMap<String, Integer> listActiveSensor = new HashMap<>();
+    private List<String> listSensors = new ArrayList();
+    private List<String> listPlugin = new ArrayList();
+    private Subscriber subStartProcessor;
+    private Subscriber subStopProcessor;
+    private Subscriber subActiveSensor;
+    private Subscriber subDeactiveSensor;
+    private Subscriber subListSensors;
     private Subscriber subAddPlugin;
     private String statusCon = "undefined";
-    String clientID;
-    int communicationTechnology = 4;
+    private String clientID;
+    private int communicationTechnology = 4;
 
 
     @Override
@@ -74,6 +76,9 @@ public class ProcessorManager extends Service {
 
             subDeactiveSensor = SubscriberFactory.createSubscriber();
             subDeactiveSensor.addConnection(CDDL.getInstance().getConnection());
+
+            subListSensors = SubscriberFactory.createSubscriber();
+            subListSensors.addConnection(CDDL.getInstance().getConnection());
 
             subAddPlugin = SubscriberFactory.createSubscriber();
             subAddPlugin.addConnection(CDDL.getInstance().getConnection());
@@ -141,6 +146,8 @@ public class ProcessorManager extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "#### CONFIGURATION PROCESSORMANAGER SERVICE");
+        super.onStartCommand(intent, flags, startId);
+
         activityParcelable = (ActivityParcelable) intent.getParcelableExtra("activity");
         activity = activityParcelable.getActivity();
 
@@ -148,11 +155,13 @@ public class ProcessorManager extends Service {
         subscribeMessageStopProcessor(Topics.STOP_PROCESSOR_TOPIC.toString());
 
         subscribeMessageActiveSensor(Topics.ACTIVE_SENSOR_TOPIC.toString());
-        subscribeMessageDeactiveSensor(Topics.DEACTIVATE_SENSOR_TOPIC.toString().toString());
+        subscribeMessageDeactiveSensor(Topics.DEACTIVATE_SENSOR_TOPIC.toString());
+        subscribeMessageListSensors(Topics.LIST_SENSORS_TOPIC.toString());
 
         subscribeMessageAddPlugin(Topics.ADD_PLUGIN_TOPIC.toString());
 
-        super.onStartCommand(intent, flags, startId);
+        listSensors.addAll(listInternalSensor());
+        listSensors.addAll(listVirtualSensor());
 
         return START_STICKY;
     }
@@ -202,6 +211,12 @@ public class ProcessorManager extends Service {
     public void subscribeMessageDeactiveSensor(String serviceName) {
         subDeactiveSensor.subscribeServiceByName(serviceName);
         subDeactiveSensor.setSubscriberListener(subscriberStopSensors);
+    }
+
+
+    public void subscribeMessageListSensors(String serviceName) {
+        subListSensors.subscribeServiceByName(serviceName);
+        subListSensors.setSubscriberListener(subscriberListSensors);
     }
 
 
@@ -307,6 +322,26 @@ public class ProcessorManager extends Service {
     };
 
 
+    public ISubscriberListener subscriberListSensors = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ", ");
+            String[] separated = mensagemRecebida.split(",");
+            String atividade = String.valueOf(separated[0]);
+            if(atividade.equals("alive")) {
+                //Send processor list to Dataprocessor
+                Object[] list = listSensors.toArray();
+                publisher.addConnection(CDDL.getInstance().getConnection());
+                Message msg = new Message();
+                msg.setServiceName("listsensors");
+                msg.setServiceValue(list);
+                publisher.publish(msg);
+            }
+        }
+    };
+
+
     public ISubscriberListener subscriberAddPlugin = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
@@ -344,11 +379,6 @@ public class ProcessorManager extends Service {
 
     public List<String> listVirtualSensor() {
         List<String> s = CDDL.getInstance().getSensorVirtualList();
-
-        Log.i(TAG, "\n #### Sensores virtuais disponíveis, Tamanho: \n" + s.size());
-        for (int i = 0; i < s.size(); i++) {
-            Log.i(TAG, "#### (" + i + "): " + s.get(i).toString());
-        }
         return s;
     }
 
@@ -357,11 +387,9 @@ public class ProcessorManager extends Service {
         List<String> s = new ArrayList();
         List<Sensor> sensorInternal = CDDL.getInstance().getInternalSensorList();
 
-        Log.i(TAG, "\n #### Sensores internos disponíveis, Tamanho: \n" + sensorInternal.size());
         if (sensorInternal.size() != 0) {
             for (int i = 0; i < sensorInternal.size(); i++) {
                 s.add(sensorInternal.get(i).getName());
-                Log.i(TAG, "#### (" + i + "): " + sensorInternal.get(i).getName());
             }
             return s;
         }
@@ -428,6 +456,11 @@ public class ProcessorManager extends Service {
     }
 
 
+    /**
+     *
+     * @param nameSensor
+     * @return
+     */
     public boolean checkSensorUsageforStart(String nameSensor){
         try{
             if(!listActiveSensor.containsKey(nameSensor)){
