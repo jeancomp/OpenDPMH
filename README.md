@@ -98,6 +98,11 @@ DPManager
 public DPManager digitalPhenotypingManager;
 ```
 Start-framework:
+Option: 
+1 - SEND_WHEN_IT_ARRIVES
+2 - GROUP_ALL
+3 - FREQUENCY
+3.1 - setFrequency(value).
 ```sh
 digitalPhenotypingManager = new DPManager.Builder(this)
                 .setExternalServer("nameserver.com",1883)
