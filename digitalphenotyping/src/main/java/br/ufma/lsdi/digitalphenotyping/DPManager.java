@@ -1,6 +1,7 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 import static br.ufma.lsdi.digitalphenotyping.CompositionMode.FREQUENCY;
+import static br.ufma.lsdi.digitalphenotyping.CompositionMode.GROUP_ALL;
 import static br.ufma.lsdi.digitalphenotyping.CompositionMode.SEND_WHEN_IT_ARRIVES;
 
 import android.Manifest;
@@ -13,6 +14,8 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 
 import java.util.List;
@@ -43,7 +46,8 @@ public class DPManager implements DPInterface {
     /**
      * Construtor do DPManager
      */
-    public DPManager(){ }
+    public DPManager() {
+    }
 
 
     /**
@@ -51,7 +55,7 @@ public class DPManager implements DPInterface {
      * Builder class with framework settings.
      * @param builder is a class that contains framework settings.
      */
-    public DPManager(final Builder builder){
+    public DPManager(final Builder builder) {
         this.activity = builder.activity;
         this.builderCopy = builder;
     }
@@ -73,15 +77,29 @@ public class DPManager implements DPInterface {
      * Starts the framework giving start service on the main services of the framework.
      */
     @Override
-    public void start(){
-        try{
+    public void start() {
+        try {
             Log.i(TAG, "#### INICIANDO FRAMEWORK");
 
             //this.activity = activity;
-            this.context = (Context) activity;
+            this.context = (Context) builderCopy.activity;
+
+            //ActivityCompat.requestPermissions(this.activity,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},101);
 
             propertyManager = new PropertyManager("configuration.properties", this.context);
-            saveExternalServerAddress(builderCopy.hostServer, builderCopy.port, builderCopy.username, builderCopy.password, builderCopy.topic, builderCopy.compositionMode);
+            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                saveExternalServerAddress(builderCopy.hostServer, builderCopy.port, builderCopy.username, builderCopy.password);
+            }
 
             this.communicationTechnology = 4;
             this.secure = false;
@@ -121,7 +139,7 @@ public class DPManager implements DPInterface {
     @Override
     public void stop(){
         Log.i(TAG,"#### Stopped framework MainService.");
-        // PARA O SERVICE PRIMEIRO PLANO
+        // Stop the foreground service
         myService.stopForeground(true);
 
         try {
@@ -139,15 +157,21 @@ public class DPManager implements DPInterface {
 
     /**
      * Start framework processors passing a list of processors as parameters.
-     * @param nameProcessors a list of processors.
+     * @param dataProcessorsName a list of processors.
      */
     @Override
-    public void startDataProcessors(List<String> nameProcessors){
+    public void startDataProcessors(List<String> dataProcessorsName){
+        if(dataProcessorsName.isEmpty()){
+            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be empty.");
+        }
+        else if(dataProcessorsName == null){
+            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be null.");
+        }
         if(!servicesStarted) {
             Log.i(TAG, "#### Started processors");
-            if (!nameProcessors.isEmpty()) {
-                for (int i = 0; i < nameProcessors.size(); i++) {
-                    publishMessage(Topics.START_PROCESSOR_TOPIC.toString(), nameProcessors.get(i).toString());
+            if (!dataProcessorsName.isEmpty()) {
+                for (int i = 0; i < dataProcessorsName.size(); i++) {
+                    publishMessage(Topics.START_PROCESSOR_TOPIC.toString(), dataProcessorsName.get(i).toString());
                 }
             }
         }
@@ -159,15 +183,21 @@ public class DPManager implements DPInterface {
 
     /**
      * Stops framework processors passing a list of processors as parameters.
-     * @param nameProcessors a list of processors.
+     * @param dataProcessorsName a list of processors.
      */
     @Override
-    public void stopDataProcessors(List<String> nameProcessors){
+    public void stopDataProcessors(List<String> dataProcessorsName){
+        if(dataProcessorsName.isEmpty()){
+            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be empty.");
+        }
+        else if(dataProcessorsName == null){
+            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be null.");
+        }
         if(servicesStarted) {
             Log.i(TAG, "#### Stopped processors");
-            if (!nameProcessors.isEmpty()) {
-                for (int i = 0; i < nameProcessors.size(); i++) {
-                    publishMessage(Topics.STOP_PROCESSOR_TOPIC.toString(), nameProcessors.get(i).toString());
+            if (!dataProcessorsName.isEmpty()) {
+                for (int i = 0; i < dataProcessorsName.size(); i++) {
+                    publishMessage(Topics.STOP_PROCESSOR_TOPIC.toString(), dataProcessorsName.get(i).toString());
                 }
             }
         }
@@ -212,17 +242,24 @@ public class DPManager implements DPInterface {
      * @param port server port number for the framework to send the identified digital phenotypes.
      * @param username port number of the remote server.
      * @param password remote server password.
-     * @param topic name of the topic for which the digital phenotypes will be received.
-     * @param compositionMode how the framework works (e.g., SEND_WHEN_IT_ARRIVES, GROUP_ALL and FREQUENCY).
      */
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    @RequiresPermission(allOf = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    })
     @Override
-    public void saveExternalServerAddress(String hostServer, int port, String username, String password, String topic, CompositionMode compositionMode){
+    public void saveExternalServerAddress(String hostServer, Integer port, String username, String password){
+        if(hostServer.isEmpty() || hostServer == null){
+            throw new HandlingExceptions("#### Error: hostServer cannot be empty or null.");
+        }
+        else if(port == null){
+            throw new HandlingExceptions("#### Error: port number cannot be empty or null.");
+        }
         propertyManager.setProperty("hostServer",hostServer);
         propertyManager.setProperty("port", String.valueOf(port));
         propertyManager.setProperty("username",username);
         propertyManager.setProperty("password",password);
-        propertyManager.setProperty("topic",topic);
-        propertyManager.setProperty("compositionMode", String.valueOf(compositionMode));
     }
 
 
@@ -231,14 +268,11 @@ public class DPManager implements DPInterface {
      * @return returns a string vector.
      */
     public String[] getExternalServerAddress(){
-        String str[] = new String[6];
+        String str[] = new String[4];
         str[0] = propertyManager.getProperty("hostServer");
         str[1] = propertyManager.getProperty("port");
-        str[2] = propertyManager.getProperty("clientID");
         str[3] = propertyManager.getProperty("username");
         str[4] = propertyManager.getProperty("password");
-        str[5] = propertyManager.getProperty("topic");
-        str[6] = propertyManager.getProperty("compositionMode");
         return str;
     }
 
@@ -257,6 +291,9 @@ public class DPManager implements DPInterface {
      * @param context the context of the application.
      */
     public void setContext(Context context) {
+        if(context == null){
+            throw new HandlingExceptions("#### Error: context cannot be null.");
+        }
         this.context = context;
     }
 
@@ -266,6 +303,9 @@ public class DPManager implements DPInterface {
      * @param activity there is application activity.
      */
     public void setActivity(Activity activity){
+        if(activity == null){
+            throw new HandlingExceptions("#### Error: activity cannot be null.");
+        }
         this.activity = activity;
     }
 
@@ -284,6 +324,9 @@ public class DPManager implements DPInterface {
      * @param secure
      */
     public void setSecure(Boolean secure) {
+        if(secure == null){
+            throw new HandlingExceptions("#### Error: secure cannot be null.");
+        }
         this.secure = secure;
     }
 
@@ -294,15 +337,6 @@ public class DPManager implements DPInterface {
      */
     public Boolean getSecure() {
         return this.secure;
-    }
-
-
-    /**
-     *
-     * @param statusCon
-     */
-    public void setStatusCon(String statusCon){
-        this.statusCon = statusCon;
     }
 
 
@@ -320,6 +354,9 @@ public class DPManager implements DPInterface {
      * @param mainService
      */
     public void setMainService(MainService mainService){
+        if(mainService == null){
+            throw new HandlingExceptions("#### Error: mainService cannot be null.");
+        }
         this.myService = mainService;
     }
 
@@ -375,8 +412,8 @@ public class DPManager implements DPInterface {
 
         String[] PERMISSIONS = {
                 // Service location
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.FOREGROUND_SERVICE,
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -404,8 +441,6 @@ public class DPManager implements DPInterface {
                 ", port='" + builderCopy.port + '\'' +
                 ", username=" + builderCopy.username +
                 ", password='" + builderCopy.password + '\'' +
-                ", topic='" + builderCopy.topic + '\'' +
-                ", compositionMode='" + builderCopy.compositionMode + '\'' +
                 '}';
     }
 
@@ -414,36 +449,30 @@ public class DPManager implements DPInterface {
      *
      */
     public static class Builder{
-        private static final String TAG = Builder.class.getName();
-        private Activity activity=null;
+        private Activity activity;
         private String hostServer = "";
-        private int port=0;
-        private String username = "";
-        private String password = "";
-        private String topic = "";
-        private CompositionMode compositionMode = SEND_WHEN_IT_ARRIVES;
-        private int frequency = 0;
+        private Integer port = null;
+        private String username = "username";
+        private String password = "12345";
+        private CompositionMode compositionMode = null;
+        private Integer frequency = null;
 
         public Builder(Activity activity){
             this.activity = activity;
         }
 
-        public Builder setExternalServer(final String host, final int port){
+        public Builder setExternalServer(final String host, final Integer port){
             this.hostServer = host;
             this.port = port;
             return this;
         }
 
         public Builder setCompositionMode(@NonNull CompositionMode compositionMode){
-            try {
-                this.compositionMode = compositionMode;
-            }catch (Exception e){
-                Log.e(TAG,"#### The options for the composition mode are [SEND_WHEN_IT_ARRIVES, GROUP_ALL, FREQUENCY].");
-            }
+            this.compositionMode = compositionMode;
             return this;
         }
 
-        public Builder setFrequency(@NonNull int frequency){
+        public Builder setFrequency(@NonNull Integer frequency){
             this.frequency = frequency;
             return this;
         }
@@ -463,29 +492,63 @@ public class DPManager implements DPInterface {
             return this;
         }
 
-        public Builder setPort(@NonNull final int port){
+        public Builder setPort(@NonNull final Integer port){
             this.port = port;
             return this;
         }
 
-        public Builder setTopic(@NonNull final String topic){
-            this.topic = topic;
-            return this;
-        }
-
         public DPManager build(){
-            try{
-                if(this.hostServer.isEmpty()){
-                    Log.e(TAG,"#### Error: The hostname is required.");
+            if(this.hostServer.isEmpty()){
+                throw new HandlingExceptions("#### Error: The hostname is required.");
+            }
+            else if(this.hostServer.length() > 100){
+                throw new HandlingExceptions("#### Error: The hostname is too long.");
+            }
+            else if(this.hostServer == null){
+                throw new HandlingExceptions("#### Error: The hostname cannot be null.");
+            }
+            else if((this.port <= 0) || (this.port == null)){
+                throw new HandlingExceptions("#### Error: port number is required. It cannot be less than or equal to zero, nor null.");
+            }
+            else if(this.activity == null){
+                throw new HandlingExceptions("#### Error: Activity is required. An activity cannot be null.");
+            }
+            else if(this.compositionMode == null){
+                throw new HandlingExceptions("#### Error: Compose mode cannot be null (e.g., setCompositionMode(CompositionMode.FREQUENCY)).");
+            }
+            else if(this.compositionMode != SEND_WHEN_IT_ARRIVES){
+                if(this.compositionMode != GROUP_ALL) {
+                    if(this.compositionMode != FREQUENCY) {
+                        throw new HandlingExceptions("#### Error: Unidentified compositing mode. Options for composition mode are [SEND_WHEN_IT_ARRIVES, GROUP_ALL, FREQUENCY].");
+                    }
                 }
-                else if(this.port == 0){
-                    Log.e(TAG,"#### Error: The port number is required.");
+            }
+            if(this.compositionMode == FREQUENCY){
+                if(this.frequency == null){
+                    throw new HandlingExceptions("#### Error: frequency cannot be null (e.g., .setFrequency(15) )");
                 }
-                else if(this.activity == null){
-                    Log.e(TAG,"#### Error: The activity is mandatory.");
+                else if(this.frequency <= 0){
+                    throw new HandlingExceptions("#### Error: frequency cannot be less than or equal to zero (e.g., .setFrequency(15).");
                 }
-            }catch (Exception e){
-                Log.e(TAG,"#### Error: " + e.toString());
+            }
+            if(!this.username.equals("username")){
+                if(this.username.isEmpty()){
+                    throw new HandlingExceptions("#### Error: username cannot be empty.");
+                }
+                else if(this.username.length() > 100){
+                    throw new HandlingExceptions("#### Error: username cannot be very long name.");
+                }
+                else if(this.username.contains(" ")){
+                    throw new HandlingExceptions("#### Error: username cannot have a space in the name.");
+                }
+            }
+            if(!this.password.equals("12345")){
+                if(this.password.isEmpty()){
+                    throw new HandlingExceptions("#### Error: password cannot be empty.");
+                }
+                else if(this.password.length() > 100){
+                    throw new HandlingExceptions("#### Error: password cannot be very long name.");
+                }
             }
             return new DPManager(this);
         }

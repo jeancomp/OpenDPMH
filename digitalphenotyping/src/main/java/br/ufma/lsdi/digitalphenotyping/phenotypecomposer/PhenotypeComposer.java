@@ -18,8 +18,11 @@ import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.gson.Gson;
+
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +62,7 @@ public class PhenotypeComposer extends Service {
     private List<Boolean> activeProcessors = new ArrayList();
     AppDatabase db;
     WorkManager workManager;
+    DigitalPhenotypeEvent digitalPhenotypeEvent;
 
     @Override
     public void onCreate() {
@@ -126,6 +130,7 @@ public class PhenotypeComposer extends Service {
     public void startBroker(){
         try {
             String host = "broker.hivemq.com";
+            //String host = "127.0.0.19";
             Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
             connectionBroker = ConnectionFactory.createConnection();
             connectionBroker.setClientId("febfcfbccaeabda");
@@ -280,14 +285,14 @@ public class PhenotypeComposer extends Service {
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
-            Log.i(TAG,"#### nameProcessor: " + atividade);
+
+            //message = setDigitalPhenotypeEvent(message);
 
             if(lastCompositionMode == SEND_WHEN_IT_ARRIVES){
                 publishPhenotype.getInstance().publishPhenotypeComposer(message);
             }
             else if(lastCompositionMode == GROUP_ALL){
                 int position = nameActiveProcessors.indexOf(atividade);
-                Log.i(TAG,"#### Posição: " + position);
                 activeProcessors.set(position,true);
                 Phenotypes phenotype = new Phenotypes();
 
@@ -314,7 +319,6 @@ public class PhenotypeComposer extends Service {
                                 String stringPhenotype = phenotype.getPhenotype();
                                 int i = 0;
                                 Message msg = phenotype.getObjectFromString(stringPhenotype);
-                                Log.i(TAG, "#### Database Result: " + msg.getServiceValue());
 
                                 // Publish the information
                                 publishPhenotype.getInstance().publishPhenotypeComposer(msg);
@@ -410,5 +414,151 @@ public class PhenotypeComposer extends Service {
         message.setServiceName(service);
         message.setServiceValue(text);
         publisher.publish(message);
+    }
+
+
+    public Message setDigitalPhenotypeEvent(Message msg){
+        Object[] valor1 = msg.getServiceValue();
+        String mensagemRecebida1 = StringUtils.join(valor1, ", ");
+        String[] listValues = mensagemRecebida1.split(",");
+
+        Object[] valor2 = msg.getServiceValue();
+        String mensagemRecebida2 = StringUtils.join(valor2, ", ");
+        String[] listAttrutes = mensagemRecebida2.split(",");
+
+        digitalPhenotypeEvent = DigitalPhenotypeEvent.getInstance();
+        int size = msg.getAvailableAttributes();
+
+        digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
+        for(int i=0; i < size; i++){
+            Attribute attribute = new Attribute();
+            if(!listAttrutes[i].isEmpty()) {
+                attribute.setLabel(listAttrutes[i]);
+            }
+            if(!listValues[i].isEmpty()) {
+                attribute.setValue(listValues[i]);
+            }
+            digitalPhenotypeEvent.getAttributes().add(attribute);
+        }
+
+        Gson gson = new Gson();
+        String json = gson.toJson(digitalPhenotypeEvent);
+
+        Message message = new Message();
+        message.setServiceValue(json);
+        return message;
+    }
+
+
+    public static class DigitalPhenotypeEvent {
+        private static DigitalPhenotypeEvent instance = null;
+        private String uid;
+        private Situation situation;
+        private LocalDateTime startDateTime;
+        private LocalDateTime endDateTime;
+        private List<Attribute> attributes = new ArrayList();
+
+        public DigitalPhenotypeEvent(){ }
+
+        public static DigitalPhenotypeEvent getInstance() {
+            if (instance == null) {
+                instance = new DigitalPhenotypeEvent();
+                Log.i("DigitalPhenotypeEvent","#### DigitalPhenotypeEvent create");
+            }
+            return instance;
+        }
+
+        public String getUid() {
+            return uid;
+        }
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+
+        public Situation getSituation() {
+            return situation;
+        }
+
+        public void setSituation(Situation situation) {
+            this.situation = situation;
+        }
+
+        public LocalDateTime getStartDateTime() {
+            return startDateTime;
+        }
+
+        public void setStartDateTime(LocalDateTime startDateTime) {
+            this.startDateTime = startDateTime;
+        }
+
+        public LocalDateTime getEndDateTime() {
+            return endDateTime;
+        }
+
+        public void setEndDateTime(LocalDateTime endDateTime) {
+            this.endDateTime = endDateTime;
+        }
+
+        public List<Attribute> getAttributes() {
+            return attributes;
+        }
+
+        public void setAttributes(List<Attribute> attributes) {
+            this.attributes = attributes;
+        }
+
+        public void destroy(){
+            instance = null;
+            setUid(null);
+            setSituation(null);
+            setStartDateTime(null);
+            setEndDateTime(null);
+            setAttributes(null);
+        }
+    }
+
+
+    public class Situation{
+        private String label;  // (e.g., Monday, Tuesday)
+        private String description;
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+
+
+    public class Attribute{
+        private String label;
+        private String value;
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
     }
 }

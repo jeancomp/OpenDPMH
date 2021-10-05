@@ -12,7 +12,7 @@ public interface DPInterface {
     public void stopDataProcessors(List<String> nameProcessors);
     public List<String> getDataProcessorsList();
     public List<String> getActiveDataProcessorsList();
-    public void saveExternalServerAddress(String hostServer, int port, String username, String password, String topic, CompositionMode compositionMode);
+    public void saveExternalServerAddress(String hostServer, Integer port, String username, String password);
 }
 
 // Annotations: força valores para variaveis

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.listProcessors = new ArrayList();
         listProcessors.add("Sociability");
-        listProcessors.add("Mobility");
+        //listProcessors.add("Mobility");
         listProcessors.add("Sleep");
 
         startFramework();

@@ -12,8 +12,8 @@ public enum Topics {
     LIST_SENSORS_TOPIC("listsensors"),
     COMPOSITION_MODE_TOPIC("compositionmode"),
     MAINSERVICE_COMPOSITIONMODE_TOPIC("mainservicecompositionmode"),
-    OPENDPMH_TOPIC("opendpmh"),
-    INFERENCE_TOPIC("inference");
+    INFERENCE_TOPIC("inference"),
+    OPENDPMH_TOPIC("opendpmh");
 
     private final String text;
 

@@ -42,8 +42,8 @@ public class PublishPhenotype {
     public void publishPhenotypeComposer(Message message) {
         Log.i(TAG, "#### Data Publish to Server");
         Message msg = new Message();
-        msg.setServiceName("inference");
-        msg.setTopic(Topics.INFERENCE_TOPIC.toString());
+        msg.setServiceName("opendpmh");
+        msg.setTopic(Topics.OPENDPMH_TOPIC.toString());
         msg.setServiceValue(message.getServiceValue());
         Log.i(TAG, "#### Data: " + msg);
 

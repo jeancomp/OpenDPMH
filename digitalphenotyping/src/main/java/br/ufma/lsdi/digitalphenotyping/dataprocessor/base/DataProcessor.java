@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.os.IBinder;
+import android.util.Log;
+
+import com.google.gson.Gson;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +21,7 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
+import br.ufma.lsdi.digitalphenotyping.HandlingExceptions;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 
 public abstract class DataProcessor extends Service {
@@ -24,13 +30,10 @@ public abstract class DataProcessor extends Service {
     private String nameProcessor = "";
     private List<String> listSensors = new ArrayList();
     private List<String> listUsedSensors = new ArrayList();
+    private List<String> listUsedSensorsAux = new ArrayList();
     private Publisher publisher = PublisherFactory.createPublisher();
     private DPUtilities dpUtilities;
-
-//    public DataProcessor(List<String> listSensors){
-//        //this.listSensors = listSensors;
-//        //start os sensores
-//    }
+    private DPUtilities dpUtilitiesAux;
 
     @Override
     public void onCreate() {
@@ -48,6 +51,9 @@ public abstract class DataProcessor extends Service {
         super.onStartCommand(intent, flags, startId);
 
         dpUtilities.configSubscribers();
+        if(listUsedSensorsAux.size()>0) {
+            dpUtilitiesAux.configSubscribers();
+        }
 
         return START_STICKY;
     }
@@ -64,19 +70,47 @@ public abstract class DataProcessor extends Service {
     public void init(){ }
 
 
-    public void process(Message message){}
+    public void onSensorDataArrived(Message message){}
+
+
+    public void processedDataMessage(Message message){ }
+
+
+    public void sendProcessedData(Message message){
+        message.setServiceName(Topics.INFERENCE_TOPIC.toString());
+        message.setTopic(Topics.INFERENCE_TOPIC.toString());
+        publishInference(message);
+    }
 
 
     public void end(){ }
 
 
+    public String toJson(Object o){
+        Gson gson = new Gson();
+        String json = gson.toJson(o);
+        return json;
+    }
+
+
     public Context getContext(){ return this.context; }
 
 
-    public void setNameProcessor(String nameProcessor){ this.nameProcessor = nameProcessor; }
+    public void setDataProcessorName(String dataProcessorName){
+        if(dataProcessorName == null){
+            throw new HandlingExceptions("#### Error: dataprocessorName cannot be null.");
+        }
+        if(dataProcessorName.isEmpty()){
+            throw new HandlingExceptions("#### Error: dataprocessorName cannot be empty.");
+        }
+        else if(dataProcessorName.length() > 100){
+            throw new HandlingExceptions("#### Error: dataprocessorName too long.");
+        }
+        this.nameProcessor = dataProcessorName;
+    }
 
 
-    public String getNameProcessor(){ return this.nameProcessor; }
+    public String getDataProcessorName(){ return this.nameProcessor; }
 
 
     public List<String> getSensors(){
@@ -92,24 +126,64 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void onStartSensor(List<String> listSensor){
-        for(int i=0; i<listSensor.size(); i++) {
-            publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), listSensor.get(i).toString());
-
-            listUsedSensors.add(listSensor.get(i).toString());
+    public void startSensor(List<String> sensorList){
+        if(sensorList.isEmpty()){
+            throw new HandlingExceptions("#### Error: Sensor list cannot be empty.");
         }
+        else if(sensorList == null){
+            throw new HandlingExceptions("#### Error: Sensor list cannot be null.");
+        }
+        for(int i=0; i<sensorList.size(); i++) {
+            publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), sensorList.get(i).toString());
 
+            listUsedSensors.add(sensorList.get(i).toString());
+        }
         dpUtilities = new DPUtilities(listUsedSensors);
     }
 
 
-    public void onStartSensor(String nameSensor,int delay){
-        publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), nameSensor, delay);
+    public void startSensor(List<String> sensorList, List<Integer> samplingRateList){
+        if(sensorList.size() != samplingRateList.size()){
+            throw new HandlingExceptions("#### Error: the sensor list must be the same size as the sample rate list.");
+        }
+        if(sensorList.isEmpty()){
+            throw new HandlingExceptions("#### Error: Sensor list cannot be empty.");
+        }
+        else if(sensorList == null){
+            throw new HandlingExceptions("#### Error: Sensor list cannot be null.");
+        }
+        if(samplingRateList.isEmpty()){
+            throw new HandlingExceptions("#### Error: Sample rate list cannot be empty.");
+        }
+        else if(samplingRateList == null){
+            throw new HandlingExceptions("#### Error: Sample rate list cannot be null.");
+        }
+        for(int i=0; i < sensorList.size(); i++) {
+            publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), sensorList.get(i).toString(), samplingRateList.get(i));
+
+            listUsedSensorsAux.add(sensorList.get(i).toString());
+        }
+        dpUtilitiesAux = new DPUtilities(listUsedSensorsAux);
     }
 
 
-    public void onStopSensor(String nameSensor){
-        publishMessage(Topics.DEACTIVATE_SENSOR_TOPIC.toString(), nameSensor);
+    public void stopSensor(List<String> sensorList){
+        if(sensorList.isEmpty()){
+            throw new HandlingExceptions("#### Error: Sensor list cannot be empty.");
+        }
+        else if(sensorList == null){
+            throw new HandlingExceptions("#### Error: Sensor list cannot be null.");
+        }
+        for(int i=0; i<sensorList.size(); i++) {
+            publishMessage(Topics.DEACTIVATE_SENSOR_TOPIC.toString(), sensorList.get(i).toString());
+
+            if(listUsedSensors.contains(sensorList.get(i).toString())){
+                listUsedSensors.remove(sensorList.get(i).toString());
+            }
+            else{
+                listUsedSensorsAux.remove(sensorList.get(i).toString());
+            }
+        }
     }
 
 
@@ -122,9 +196,9 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void publishMessage(String service, String text, int delay) {
+    public void publishMessage(String service, String text, int samplingRate) {
         int total = 2;
-        Object[] value = {text, delay};
+        Object[] value = {text, samplingRate};
         Message message = new Message();
         message.setServiceName(service);
         message.setServiceValue(value);
@@ -176,9 +250,16 @@ public abstract class DataProcessor extends Service {
             return subscriberListener[position] = new ISubscriberListener() {
                 @Override
                 public void onMessageArrived(Message message) {
-                    process(message);
+                    Object[] valor = message.getServiceValue();
+                    String mensagemRecebida = StringUtils.join(valor, ", ");
+                    Object[] finalValor = {getDataProcessorName(),mensagemRecebida};
+                    Log.i("TESTE","#### VALOR: " + finalValor[0] + ", " + String.valueOf(finalValor[1]));
+                    message.setServiceValue(finalValor);
+
+                    onSensorDataArrived(message);
                 }
             };
         }
     }
+    //public class ProcessedInformation extends Message{ }
 }

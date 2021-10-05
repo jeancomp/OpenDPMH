@@ -71,8 +71,6 @@ public class MainService extends Service {
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @RequiresPermission(allOf = {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.FOREGROUND_SERVICE,
             Manifest.permission.RECEIVE_BOOT_COMPLETED    // Na dúvida ainda se vai ter esse recurso no framework
     })

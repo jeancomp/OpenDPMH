@@ -40,8 +40,8 @@ public class ProcessorManager extends Service {
     private Activity activity;
     private Context context;
     private Publisher publisher = PublisherFactory.createPublisher();
-    private List<String> listActiveProcessors = null;
-    private List<String> listProcessors = null;
+    private List<String> listDataProcessors = new ArrayList();
+    private List<String> listActiveDataProcessors = new ArrayList();
     private HashMap<String, Integer> listActiveSensor = new HashMap<>();
     private List<String> listSensors = new ArrayList();
     private List<String> listPlugin = new ArrayList();
@@ -90,7 +90,7 @@ public class ProcessorManager extends Service {
     }
 
 
-    public synchronized void startProcessor(String nameProcessor) {
+    public synchronized void startDataProcessor(String nameProcessor) {
         try {
             if(nameProcessor.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
@@ -99,6 +99,7 @@ public class ProcessorManager extends Service {
             }
             else if(nameProcessor.equalsIgnoreCase("Mobility")) {
                 Intent s = new Intent(context, Mobility.class);
+                //putExtra(list sensores);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Mobility");
             }
@@ -107,14 +108,16 @@ public class ProcessorManager extends Service {
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sleep");
             }
-            publishMessage(Topics.ACTIVE_PROCESSOR_TOPIC.toString(),nameProcessor);
+
+            updatesListActiveProcessors(nameProcessor); // Check the processor if it has already been activated to start
+            publishMessage(Topics.ACTIVE_PROCESSOR_TOPIC.toString(),nameProcessor); //PhenotypeComposer recebe informação que o processor foi ativado.
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
     }
 
 
-    public synchronized void stopProcessor(String nameProcessor) {
+    public synchronized void stopDataProcessor(String nameProcessor) {
         try {
             if(nameProcessor.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
@@ -126,6 +129,13 @@ public class ProcessorManager extends Service {
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services");
             }
+            else if(nameProcessor.equalsIgnoreCase("Sleep")) {
+                Intent s = new Intent(context, Sleep.class);
+                context.stopService(s);
+                Log.i(TAG, "#### Stopping inference services: Sleep");
+            }
+
+            updatesListActiveProcessors(nameProcessor);
             publishMessage(Topics.DEACTIVATE_PROCESSOR_TOPIC.toString(),nameProcessor);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
@@ -178,15 +188,19 @@ public class ProcessorManager extends Service {
 
 
     public void startProcessorsList() {
-        this.listProcessors = new ArrayList();
-        this.listProcessors.add("Sociability");
-        this.listProcessors.add("Mobility");
-        this.listProcessors.add("Sleep");
+        this.listDataProcessors.add("Sociability");
+        this.listDataProcessors.add("Mobility");
+        this.listDataProcessors.add("Sleep");
     }
 
 
-    public List<String> getProcessor() {
-        return this.listProcessors;
+    public List<String> getDataProcessors() {
+        return listDataProcessors;
+    }
+
+
+    public List<String> getListActiveDataProcessors(){
+        return listActiveDataProcessors;
     }
 
 
@@ -239,7 +253,7 @@ public class ProcessorManager extends Service {
 
             if (isProcessor(atividade)) {
                 Log.i(TAG, "#### Start processor monitoring->  " + atividade);
-                startProcessor(atividade);
+                startDataProcessor(atividade);
             } else {
                 Log.i(TAG, "#### Invalid processor name: " + atividade);
             }
@@ -263,7 +277,7 @@ public class ProcessorManager extends Service {
 
             if (isProcessor(atividade)) {
                 Log.i(TAG, "#### Stop processor monitoring->  " + atividade);
-                stopProcessor(atividade);
+                stopDataProcessor(atividade);
             } else {
                 Log.i(TAG, "#### Invalid processor name: " + atividade);
             }
@@ -453,6 +467,10 @@ public class ProcessorManager extends Service {
         if(checkSensorUsageforStop(nameSensor)) {
             CDDL.getInstance().stopSensor(nameSensor);
         }
+    }
+
+
+    public void updatesListActiveProcessors(String nameProcessor){
     }
 
 
@@ -679,7 +697,7 @@ public class ProcessorManager extends Service {
 
 
     public List<String> listProcessors() {
-        List<String> s = getProcessor();
+        List<String> s = getDataProcessors();
 
         Log.i(TAG, "\n #### Available Data Processors, Size: \n" + s.size());
         for (int i = 0; i < s.size(); i++) {
@@ -690,7 +708,7 @@ public class ProcessorManager extends Service {
 
 
     //Implementar
-    public void startAllProcessors() {
+    public void startAllDataProcessors() {
     }
 
 
