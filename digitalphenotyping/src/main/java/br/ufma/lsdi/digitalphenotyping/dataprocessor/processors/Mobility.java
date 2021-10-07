@@ -49,11 +49,7 @@ public class Mobility extends DataProcessor {
 
 
     @Override
-    public void end(){
-        List<String> listSensors = new ArrayList();
-        listSensors.add("Tilt Detector");
-        stopSensor(listSensors);
-    }
+    public void end(){ }
 
 
     @Override

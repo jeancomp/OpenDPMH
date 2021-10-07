@@ -17,7 +17,7 @@ public class Sociability extends DataProcessor {
     @Override
     public void init() {
         try {
-            Log.i(TAG, "#### Running processor Sociability");
+            Log.i(TAG, "#### Running processor Sociability.");
 
             setDataProcessorName("Sociability");
 
@@ -44,8 +44,5 @@ public class Sociability extends DataProcessor {
 
 
     @Override
-    public void end() {
-        stopSensor(listSensors);
-        //onStopSensor("Audio");
-    }
+    public void end() { }
 }

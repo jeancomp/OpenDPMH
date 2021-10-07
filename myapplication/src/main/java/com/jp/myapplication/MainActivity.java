@@ -21,8 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
-import br.ufma.lsdi.digitalphenotyping.DPManager;
-import br.ufma.lsdi.digitalphenotyping.MainService;
+import br.ufma.lsdi.digitalphenotyping.dp.DPManager;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidActivityException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidCompositionModeException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidFrequencyException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidHostServerException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidMainServiceException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidPasswordException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidPortException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidUsernameException;
+import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -60,11 +69,27 @@ public class MainActivity extends AppCompatActivity {
         //listProcessors.add("Mobility");
         listProcessors.add("Sleep");
 
-        startFramework();
+        try {
+            startFramework();
+        } catch (InvalidCompositionModeException e) {
+            e.printStackTrace();
+        } catch (InvalidPortException e) {
+            e.printStackTrace();
+        } catch (InvalidUsernameException e) {
+            e.printStackTrace();
+        } catch (InvalidHostServerException e) {
+            e.printStackTrace();
+        } catch (InvalidActivityException e) {
+            e.printStackTrace();
+        } catch (InvalidFrequencyException e) {
+            e.printStackTrace();
+        } catch (InvalidPasswordException e) {
+            e.printStackTrace();
+        }
     }
 
 
-    public void startFramework(){
+    public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException {
         digitalPhenotypingManager = new DPManager.Builder(this)
                 .setExternalServer("broker.hivemq.com",1883)
                 .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
@@ -107,7 +132,11 @@ public class MainActivity extends AppCompatActivity {
             MainService.LocalBinder binder = (MainService.LocalBinder) iBinder;
             myService = binder.getService();
 
-            digitalPhenotypingManager.getInstance().setMainService(myService);
+            try {
+                digitalPhenotypingManager.getInstance().setMainService(myService);
+            } catch (InvalidMainServiceException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -123,13 +152,17 @@ public class MainActivity extends AppCompatActivity {
             switch (view.getId()) {
                 case  R.id.button_first: {
                     Log.i(TAG,"#### Starting processors");
-                    digitalPhenotypingManager.getInstance().startDataProcessors(listProcessors);
+                    try {
+                        digitalPhenotypingManager.getInstance().startDataProcessors(listProcessors);
+                    } catch (InvalidDataProcessorNameException e) { e.printStackTrace(); }
                     break;
                 }
 
                 case R.id.stop: {
                     Log.i(TAG, "#### Stopping processors");
-                    digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
+                    try {
+                        digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
+                    } catch (InvalidDataProcessorNameException e) { e.printStackTrace(); }
                     break;
                 }
 

@@ -19,9 +19,10 @@ public class Sleep extends DataProcessor {
 
             setDataProcessorName("Sleep");
 
-            List<String> listSensors = new ArrayList();
-            listSensors.add("TouchScreen");
-            startSensor(listSensors);
+            List<String> sensorList = new ArrayList();
+            sensorList.add("TouchScreen");
+            sensorList.add("SMS");
+            startSensor(sensorList);
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
         }
@@ -41,8 +42,5 @@ public class Sleep extends DataProcessor {
 
 
     @Override
-    public void end(){
-        List<String> listSensors = new ArrayList();
-        listSensors.add("TouchScreen");
-        stopSensor(listSensors); }
+    public void end(){ }
 }

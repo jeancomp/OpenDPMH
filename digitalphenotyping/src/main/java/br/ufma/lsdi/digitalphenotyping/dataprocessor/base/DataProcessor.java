@@ -21,8 +21,9 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.HandlingExceptions;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
 public abstract class DataProcessor extends Service {
     private Context context;
@@ -64,7 +65,19 @@ public abstract class DataProcessor extends Service {
     }
 
     @Override
-    public void onDestroy() { end(); }
+    public void onDestroy() {
+        end();
+        try {
+            if(!listUsedSensors.isEmpty()) {
+                stopSensor(listUsedSensors);
+            }
+            if(!listUsedSensorsAux.isEmpty()) {
+                stopSensor(listUsedSensorsAux);
+            }
+        } catch (InvalidSensorNameException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public void init(){ }
@@ -96,15 +109,15 @@ public abstract class DataProcessor extends Service {
     public Context getContext(){ return this.context; }
 
 
-    public void setDataProcessorName(String dataProcessorName){
+    public void setDataProcessorName(String dataProcessorName) throws InvalidDataProcessorNameException {
         if(dataProcessorName == null){
-            throw new HandlingExceptions("#### Error: dataprocessorName cannot be null.");
+            throw new InvalidDataProcessorNameException("#### Error: dataprocessorName cannot be null.");
         }
         if(dataProcessorName.isEmpty()){
-            throw new HandlingExceptions("#### Error: dataprocessorName cannot be empty.");
+            throw new InvalidDataProcessorNameException("#### Error: dataprocessorName cannot be empty.");
         }
         else if(dataProcessorName.length() > 100){
-            throw new HandlingExceptions("#### Error: dataprocessorName too long.");
+            throw new InvalidDataProcessorNameException("#### Error: dataprocessorName too long.");
         }
         this.nameProcessor = dataProcessorName;
     }
@@ -126,12 +139,12 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void startSensor(List<String> sensorList){
+    public void startSensor(List<String> sensorList) throws InvalidSensorNameException {
         if(sensorList.isEmpty()){
-            throw new HandlingExceptions("#### Error: Sensor list cannot be empty.");
+            throw new InvalidSensorNameException("#### Error: Sensor list cannot be empty.");
         }
         else if(sensorList == null){
-            throw new HandlingExceptions("#### Error: Sensor list cannot be null.");
+            throw new InvalidSensorNameException("#### Error: Sensor list cannot be null.");
         }
         for(int i=0; i<sensorList.size(); i++) {
             publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), sensorList.get(i).toString());
@@ -142,21 +155,21 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void startSensor(List<String> sensorList, List<Integer> samplingRateList){
+    public void startSensor(List<String> sensorList, List<Integer> samplingRateList) throws InvalidSensorNameException {
         if(sensorList.size() != samplingRateList.size()){
-            throw new HandlingExceptions("#### Error: the sensor list must be the same size as the sample rate list.");
+            throw new InvalidSensorNameException("#### Error: the sensor list must be the same size as the sample rate list.");
         }
         if(sensorList.isEmpty()){
-            throw new HandlingExceptions("#### Error: Sensor list cannot be empty.");
+            throw new InvalidSensorNameException("#### Error: Sensor list cannot be empty.");
         }
         else if(sensorList == null){
-            throw new HandlingExceptions("#### Error: Sensor list cannot be null.");
+            throw new InvalidSensorNameException("#### Error: Sensor list cannot be null.");
         }
         if(samplingRateList.isEmpty()){
-            throw new HandlingExceptions("#### Error: Sample rate list cannot be empty.");
+            throw new InvalidSensorNameException("#### Error: Sample rate list cannot be empty.");
         }
         else if(samplingRateList == null){
-            throw new HandlingExceptions("#### Error: Sample rate list cannot be null.");
+            throw new InvalidSensorNameException("#### Error: Sample rate list cannot be null.");
         }
         for(int i=0; i < sensorList.size(); i++) {
             publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), sensorList.get(i).toString(), samplingRateList.get(i));
@@ -167,12 +180,12 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void stopSensor(List<String> sensorList){
+    private void stopSensor(List<String> sensorList) throws InvalidSensorNameException {
         if(sensorList.isEmpty()){
-            throw new HandlingExceptions("#### Error: Sensor list cannot be empty.");
+            throw new InvalidSensorNameException("#### Error: Sensor list cannot be empty.");
         }
         else if(sensorList == null){
-            throw new HandlingExceptions("#### Error: Sensor list cannot be null.");
+            throw new InvalidSensorNameException("#### Error: Sensor list cannot be null.");
         }
         for(int i=0; i<sensorList.size(); i++) {
             publishMessage(Topics.DEACTIVATE_SENSOR_TOPIC.toString(), sensorList.get(i).toString());
@@ -187,7 +200,7 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void publishMessage(String service, String text) {
+    private void publishMessage(String service, String text) {
         Message message = new Message();
         message.setServiceName(service);
         message.setServiceValue(text);
@@ -196,7 +209,7 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void publishMessage(String service, String text, int samplingRate) {
+    private void publishMessage(String service, String text, int samplingRate) {
         int total = 2;
         Object[] value = {text, samplingRate};
         Message message = new Message();
@@ -208,7 +221,7 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void publishInference(Message message){
+    private void publishInference(Message message){
         publisher.publish(message);
     }
 

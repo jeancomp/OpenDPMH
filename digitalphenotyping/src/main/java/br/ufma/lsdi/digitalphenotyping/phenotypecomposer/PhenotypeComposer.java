@@ -103,10 +103,10 @@ public class PhenotypeComposer extends Service {
         subscribeMessageRawDataInferenceResult(Topics.INFERENCE_TOPIC.toString());
         subscribeMessageCompositionMode(Topics.COMPOSITION_MODE_TOPIC.toString());
 
-        subscribeMessageAtiveProcessor(Topics.ACTIVE_PROCESSOR_TOPIC.toString());
-        subscribeMessageDeactivateProcessor(Topics.DEACTIVATE_PROCESSOR_TOPIC.toString());
+        subscribeMessageAtiveProcessor(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString());
+        subscribeMessageDeactivateProcessor(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString());
 
-        startBroker();
+        connectionBroker();
 
         //manager(lastCompositionMode, lastFrequency);
 
@@ -127,7 +127,7 @@ public class PhenotypeComposer extends Service {
     public IBinder onBind(Intent intent) { return null; }
 
 
-    public void startBroker(){
+    public void connectionBroker(){
         try {
             String host = "broker.hivemq.com";
             //String host = "127.0.0.19";

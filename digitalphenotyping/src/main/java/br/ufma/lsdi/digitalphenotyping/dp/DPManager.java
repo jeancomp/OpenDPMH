@@ -1,4 +1,4 @@
-package br.ufma.lsdi.digitalphenotyping;
+package br.ufma.lsdi.digitalphenotyping.dp;
 
 import static br.ufma.lsdi.digitalphenotyping.CompositionMode.FREQUENCY;
 import static br.ufma.lsdi.digitalphenotyping.CompositionMode.GROUP_ALL;
@@ -24,6 +24,21 @@ import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
+import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
+import br.ufma.lsdi.digitalphenotyping.CompositionMode;
+import br.ufma.lsdi.digitalphenotyping.PropertyManager;
+import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidActivityException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidCompositionModeException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidContextException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidFrequencyException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidHostServerException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidMainServiceException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidPasswordException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidPortException;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidUsernameException;
+import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
 
 /**
  * DPInterface class is responsible for starting the framework's main service (MainService).
@@ -160,18 +175,18 @@ public class DPManager implements DPInterface {
      * @param dataProcessorsName a list of processors.
      */
     @Override
-    public void startDataProcessors(List<String> dataProcessorsName){
+    public void startDataProcessors(List<String> dataProcessorsName) throws InvalidDataProcessorNameException {
         if(dataProcessorsName.isEmpty()){
-            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be empty.");
+            throw new InvalidDataProcessorNameException("#### Error: dataProcessorsName cannot be empty.");
         }
         else if(dataProcessorsName == null){
-            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be null.");
+            throw new InvalidDataProcessorNameException("#### Error: dataProcessorsName cannot be null.");
         }
         if(!servicesStarted) {
             Log.i(TAG, "#### Started processors");
             if (!dataProcessorsName.isEmpty()) {
                 for (int i = 0; i < dataProcessorsName.size(); i++) {
-                    publishMessage(Topics.START_PROCESSOR_TOPIC.toString(), dataProcessorsName.get(i).toString());
+                    publishMessage(Topics.START_DATAPROCESSOR_TOPIC.toString(), dataProcessorsName.get(i).toString());
                 }
             }
         }
@@ -186,18 +201,18 @@ public class DPManager implements DPInterface {
      * @param dataProcessorsName a list of processors.
      */
     @Override
-    public void stopDataProcessors(List<String> dataProcessorsName){
+    public void stopDataProcessors(List<String> dataProcessorsName) throws InvalidDataProcessorNameException {
         if(dataProcessorsName.isEmpty()){
-            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be empty.");
+            throw new InvalidDataProcessorNameException("#### Error: dataProcessorsName cannot be empty.");
         }
         else if(dataProcessorsName == null){
-            throw new HandlingExceptions("#### Error: dataProcessorsName cannot be null.");
+            throw new InvalidDataProcessorNameException("#### Error: dataProcessorsName cannot be null.");
         }
         if(servicesStarted) {
             Log.i(TAG, "#### Stopped processors");
             if (!dataProcessorsName.isEmpty()) {
                 for (int i = 0; i < dataProcessorsName.size(); i++) {
-                    publishMessage(Topics.STOP_PROCESSOR_TOPIC.toString(), dataProcessorsName.get(i).toString());
+                    publishMessage(Topics.STOP_DATAPROCESSOR_TOPIC.toString(), dataProcessorsName.get(i).toString());
                 }
             }
         }
@@ -249,12 +264,12 @@ public class DPManager implements DPInterface {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     })
     @Override
-    public void saveExternalServerAddress(String hostServer, Integer port, String username, String password){
+    public void saveExternalServerAddress(String hostServer, Integer port, String username, String password) throws InvalidHostServerException, InvalidPortException {
         if(hostServer.isEmpty() || hostServer == null){
-            throw new HandlingExceptions("#### Error: hostServer cannot be empty or null.");
+            throw new InvalidHostServerException("#### Error: hostServer cannot be empty or null.");
         }
         else if(port == null){
-            throw new HandlingExceptions("#### Error: port number cannot be empty or null.");
+            throw new InvalidPortException("#### Error: port number cannot be empty or null.");
         }
         propertyManager.setProperty("hostServer",hostServer);
         propertyManager.setProperty("port", String.valueOf(port));
@@ -290,9 +305,9 @@ public class DPManager implements DPInterface {
      * Set the application context.
      * @param context the context of the application.
      */
-    public void setContext(Context context) {
+    public void setContext(Context context) throws InvalidContextException {
         if(context == null){
-            throw new HandlingExceptions("#### Error: context cannot be null.");
+            throw new InvalidContextException("#### Error: context cannot be null.");
         }
         this.context = context;
     }
@@ -302,9 +317,9 @@ public class DPManager implements DPInterface {
      * Set application activity.
      * @param activity there is application activity.
      */
-    public void setActivity(Activity activity){
+    public void setActivity(Activity activity) throws InvalidActivityException {
         if(activity == null){
-            throw new HandlingExceptions("#### Error: activity cannot be null.");
+            throw new InvalidActivityException("#### Error: activity cannot be null.");
         }
         this.activity = activity;
     }
@@ -325,7 +340,7 @@ public class DPManager implements DPInterface {
      */
     public void setSecure(Boolean secure) {
         if(secure == null){
-            throw new HandlingExceptions("#### Error: secure cannot be null.");
+            //throw new HandlingExceptions("#### Error: secure cannot be null.");
         }
         this.secure = secure;
     }
@@ -353,9 +368,9 @@ public class DPManager implements DPInterface {
      *
      * @param mainService
      */
-    public void setMainService(MainService mainService){
+    public void setMainService(MainService mainService) throws InvalidMainServiceException {
         if(mainService == null){
-            throw new HandlingExceptions("#### Error: mainService cannot be null.");
+            throw new InvalidMainServiceException("#### Error: mainService cannot be null.");
         }
         this.myService = mainService;
     }
@@ -497,57 +512,57 @@ public class DPManager implements DPInterface {
             return this;
         }
 
-        public DPManager build(){
+        public DPManager build() throws InvalidHostServerException, InvalidPortException, InvalidActivityException, InvalidCompositionModeException, InvalidFrequencyException, InvalidUsernameException, InvalidPasswordException {
             if(this.hostServer.isEmpty()){
-                throw new HandlingExceptions("#### Error: The hostname is required.");
+                throw new InvalidHostServerException("#### Error: The hostname is required.");
             }
             else if(this.hostServer.length() > 100){
-                throw new HandlingExceptions("#### Error: The hostname is too long.");
+                throw new InvalidHostServerException("#### Error: The hostname is too long.");
             }
             else if(this.hostServer == null){
-                throw new HandlingExceptions("#### Error: The hostname cannot be null.");
+                throw new InvalidHostServerException("#### Error: The hostname cannot be null.");
             }
             else if((this.port <= 0) || (this.port == null)){
-                throw new HandlingExceptions("#### Error: port number is required. It cannot be less than or equal to zero, nor null.");
+                throw new InvalidPortException("#### Error: port number is required. It cannot be less than or equal to zero, nor null.");
             }
             else if(this.activity == null){
-                throw new HandlingExceptions("#### Error: Activity is required. An activity cannot be null.");
+                throw new InvalidActivityException("#### Error: Activity is required. An activity cannot be null.");
             }
             else if(this.compositionMode == null){
-                throw new HandlingExceptions("#### Error: Compose mode cannot be null (e.g., setCompositionMode(CompositionMode.FREQUENCY)).");
+                throw new InvalidCompositionModeException("#### Error: Compose mode cannot be null (e.g., setCompositionMode(CompositionMode.FREQUENCY)).");
             }
             else if(this.compositionMode != SEND_WHEN_IT_ARRIVES){
                 if(this.compositionMode != GROUP_ALL) {
                     if(this.compositionMode != FREQUENCY) {
-                        throw new HandlingExceptions("#### Error: Unidentified compositing mode. Options for composition mode are [SEND_WHEN_IT_ARRIVES, GROUP_ALL, FREQUENCY].");
+                        throw new InvalidCompositionModeException("#### Error: Unidentified compositing mode. Options for composition mode are [SEND_WHEN_IT_ARRIVES, GROUP_ALL, FREQUENCY].");
                     }
                 }
             }
             if(this.compositionMode == FREQUENCY){
                 if(this.frequency == null){
-                    throw new HandlingExceptions("#### Error: frequency cannot be null (e.g., .setFrequency(15) )");
+                    throw new InvalidFrequencyException("#### Error: frequency cannot be null (e.g., .setFrequency(15) )");
                 }
                 else if(this.frequency <= 0){
-                    throw new HandlingExceptions("#### Error: frequency cannot be less than or equal to zero (e.g., .setFrequency(15).");
+                    throw new InvalidFrequencyException("#### Error: frequency cannot be less than or equal to zero (e.g., .setFrequency(15).");
                 }
             }
             if(!this.username.equals("username")){
                 if(this.username.isEmpty()){
-                    throw new HandlingExceptions("#### Error: username cannot be empty.");
+                    throw new InvalidUsernameException("#### Error: username cannot be empty.");
                 }
                 else if(this.username.length() > 100){
-                    throw new HandlingExceptions("#### Error: username cannot be very long name.");
+                    throw new InvalidUsernameException("#### Error: username cannot be very long name.");
                 }
                 else if(this.username.contains(" ")){
-                    throw new HandlingExceptions("#### Error: username cannot have a space in the name.");
+                    throw new InvalidUsernameException("#### Error: username cannot have a space in the name.");
                 }
             }
             if(!this.password.equals("12345")){
                 if(this.password.isEmpty()){
-                    throw new HandlingExceptions("#### Error: password cannot be empty.");
+                    throw new InvalidPasswordException("#### Error: password cannot be empty.");
                 }
                 else if(this.password.length() > 100){
-                    throw new HandlingExceptions("#### Error: password cannot be very long name.");
+                    throw new InvalidPasswordException("#### Error: password cannot be very long name.");
                 }
             }
             return new DPManager(this);

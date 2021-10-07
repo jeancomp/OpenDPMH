@@ -1,4 +1,4 @@
-package br.ufma.lsdi.digitalphenotyping;
+package br.ufma.lsdi.digitalphenotyping.mainservice;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 import static br.ufma.lsdi.digitalphenotyping.CompositionMode.FREQUENCY;
@@ -41,6 +41,10 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
+import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
+import br.ufma.lsdi.digitalphenotyping.CompositionMode;
+import br.ufma.lsdi.digitalphenotyping.R;
+import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.PhenotypeComposer;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManager;
 

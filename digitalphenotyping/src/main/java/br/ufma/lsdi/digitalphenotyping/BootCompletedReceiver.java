@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
+
 public class BootCompletedReceiver extends BroadcastReceiver {
     private static final String TAG = BootCompletedReceiver.class.getName();
 

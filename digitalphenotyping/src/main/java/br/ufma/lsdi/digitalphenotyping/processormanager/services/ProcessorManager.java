@@ -33,6 +33,8 @@ import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
+import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
@@ -45,8 +47,8 @@ public class ProcessorManager extends Service {
     private HashMap<String, Integer> listActiveSensor = new HashMap<>();
     private List<String> listSensors = new ArrayList();
     private List<String> listPlugin = new ArrayList();
-    private Subscriber subStartProcessor;
-    private Subscriber subStopProcessor;
+    private Subscriber subStartDataProcessor;
+    private Subscriber subStopDataProcessor;
     private Subscriber subActiveSensor;
     private Subscriber subDeactiveSensor;
     private Subscriber subListSensors;
@@ -63,13 +65,13 @@ public class ProcessorManager extends Service {
 
             context = this;
 
-            subStartProcessor = SubscriberFactory.createSubscriber();
-            subStartProcessor.addConnection(CDDL.getInstance().getConnection());
+            subStartDataProcessor = SubscriberFactory.createSubscriber();
+            subStartDataProcessor.addConnection(CDDL.getInstance().getConnection());
 
-            subStopProcessor = SubscriberFactory.createSubscriber();
-            subStopProcessor.addConnection(CDDL.getInstance().getConnection());
+            subStopDataProcessor = SubscriberFactory.createSubscriber();
+            subStopDataProcessor.addConnection(CDDL.getInstance().getConnection());
 
-            startProcessorsList();
+            startDataProcessorsList();
 
             subActiveSensor = SubscriberFactory.createSubscriber();
             subActiveSensor.addConnection(CDDL.getInstance().getConnection());
@@ -90,53 +92,50 @@ public class ProcessorManager extends Service {
     }
 
 
-    public synchronized void startDataProcessor(String nameProcessor) {
+    public synchronized void startDataProcessor(String dataProcessorName) {
         try {
-            if(nameProcessor.equalsIgnoreCase("Sociability")) {
+            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sociability");
             }
-            else if(nameProcessor.equalsIgnoreCase("Mobility")) {
+            else if(dataProcessorName.equalsIgnoreCase("Mobility")) {
                 Intent s = new Intent(context, Mobility.class);
-                //putExtra(list sensores);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Mobility");
             }
-            else if(nameProcessor.equalsIgnoreCase("Sleep")) {
+            else if(dataProcessorName.equalsIgnoreCase("Sleep")) {
                 Intent s = new Intent(context, Sleep.class);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sleep");
             }
-
-            updatesListActiveProcessors(nameProcessor); // Check the processor if it has already been activated to start
-            publishMessage(Topics.ACTIVE_PROCESSOR_TOPIC.toString(),nameProcessor); //PhenotypeComposer recebe informação que o processor foi ativado.
+            listActiveDataProcessors.add(dataProcessorName); // Update active DataProcessor list
+            publishMessage(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString(),dataProcessorName); //PhenotypeComposer recebe informação que o processor foi ativado.
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
     }
 
 
-    public synchronized void stopDataProcessor(String nameProcessor) {
+    public synchronized void stopDataProcessor(String dataProcessorName) {
         try {
-            if(nameProcessor.equalsIgnoreCase("Sociability")) {
+            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services");
             }
-            else if(nameProcessor.equalsIgnoreCase("Mobility")) {
+            else if(dataProcessorName.equalsIgnoreCase("Mobility")) {
                 Intent s = new Intent(context, Mobility.class);
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services");
             }
-            else if(nameProcessor.equalsIgnoreCase("Sleep")) {
+            else if(dataProcessorName.equalsIgnoreCase("Sleep")) {
                 Intent s = new Intent(context, Sleep.class);
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services: Sleep");
             }
-
-            updatesListActiveProcessors(nameProcessor);
-            publishMessage(Topics.DEACTIVATE_PROCESSOR_TOPIC.toString(),nameProcessor);
+            listActiveDataProcessors.remove(dataProcessorName);
+            publishMessage(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString(),dataProcessorName);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -161,8 +160,8 @@ public class ProcessorManager extends Service {
         activityParcelable = (ActivityParcelable) intent.getParcelableExtra("activity");
         activity = activityParcelable.getActivity();
 
-        subscribeMessageStartProcessor(Topics.START_PROCESSOR_TOPIC.toString());
-        subscribeMessageStopProcessor(Topics.STOP_PROCESSOR_TOPIC.toString());
+        subscribeMessageStartDataProcessor(Topics.START_DATAPROCESSOR_TOPIC.toString());
+        subscribeMessageStopDataProcessor(Topics.STOP_DATAPROCESSOR_TOPIC.toString());
 
         subscribeMessageActiveSensor(Topics.ACTIVE_SENSOR_TOPIC.toString());
         subscribeMessageDeactiveSensor(Topics.DEACTIVATE_SENSOR_TOPIC.toString());
@@ -187,32 +186,15 @@ public class ProcessorManager extends Service {
     }
 
 
-    public void startProcessorsList() {
-        this.listDataProcessors.add("Sociability");
-        this.listDataProcessors.add("Mobility");
-        this.listDataProcessors.add("Sleep");
+    public void subscribeMessageStartDataProcessor(String serviceName) {
+        subStartDataProcessor.subscribeServiceByName(serviceName);
+        subStartDataProcessor.setSubscriberListener(subscriberStartDataProcessors);
     }
 
 
-    public List<String> getDataProcessors() {
-        return listDataProcessors;
-    }
-
-
-    public List<String> getListActiveDataProcessors(){
-        return listActiveDataProcessors;
-    }
-
-
-    public void subscribeMessageStartProcessor(String serviceName) {
-        subStartProcessor.subscribeServiceByName(serviceName);
-        subStartProcessor.setSubscriberListener(subscriberStartProcessors);
-    }
-
-
-    public void subscribeMessageStopProcessor(String serviceName) {
-        subStopProcessor.subscribeServiceByName(serviceName);
-        subStopProcessor.setSubscriberListener(subscriberStopProcessors);
+    public void subscribeMessageStopDataProcessor(String serviceName) {
+        subStopDataProcessor.subscribeServiceByName(serviceName);
+        subStopDataProcessor.setSubscriberListener(subscriberStopDataProcessors);
     }
 
 
@@ -240,7 +222,7 @@ public class ProcessorManager extends Service {
     }
 
 
-    public ISubscriberListener subscriberStartProcessors = new ISubscriberListener() {
+    public ISubscriberListener subscriberStartDataProcessors = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
             Log.i(TAG, "#### Read messages (started Processor):  " + message);
@@ -248,20 +230,32 @@ public class ProcessorManager extends Service {
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
+            String dataProcessorName = String.valueOf(separated[0]);
 
-
-            if (isProcessor(atividade)) {
-                Log.i(TAG, "#### Start processor monitoring->  " + atividade);
-                startDataProcessor(atividade);
+            if (isDataProcessor(dataProcessorName)) {
+                if(isDataProcessorActive(dataProcessorName)) {
+                    Log.i(TAG, "#### Start processor monitoring->  " + dataProcessorName);
+                    startDataProcessor(dataProcessorName);
+                }
+                else{
+                    try {
+                        throw new InvalidDataProcessorNameException("#### Error: dataProcessorName is already activated.");
+                    } catch (InvalidDataProcessorNameException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
-                Log.i(TAG, "#### Invalid processor name: " + atividade);
+                try {
+                    throw new InvalidDataProcessorNameException("#### Error: Invalid processor name.");
+                } catch (InvalidDataProcessorNameException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
 
 
-    public ISubscriberListener subscriberStopProcessors = new ISubscriberListener() {
+    public ISubscriberListener subscriberStopDataProcessors = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
 //                    if (message.getServiceName().equals("Meu serviço")) {
@@ -272,14 +266,27 @@ public class ProcessorManager extends Service {
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
+            String dataProcessorName = String.valueOf(separated[0]);
 
 
-            if (isProcessor(atividade)) {
-                Log.i(TAG, "#### Stop processor monitoring->  " + atividade);
-                stopDataProcessor(atividade);
+            if (isDataProcessor(dataProcessorName)) {
+                if(!isDataProcessorActive(dataProcessorName)) {
+                    Log.i(TAG, "#### Stop processor monitoring->  " + dataProcessorName);
+                    stopDataProcessor(dataProcessorName);
+                }
+                else{
+                    try {
+                        throw new InvalidDataProcessorNameException("#### Error: dataProcessorName is already deactivated.");
+                    } catch (InvalidDataProcessorNameException e) {
+                        e.printStackTrace();
+                    }
+                }
             } else {
-                Log.i(TAG, "#### Invalid processor name: " + atividade);
+                try {
+                    throw new InvalidDataProcessorNameException("#### Error: Invalid processor name.");
+                } catch (InvalidDataProcessorNameException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -293,23 +300,27 @@ public class ProcessorManager extends Service {
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
+            String nameSensor = String.valueOf(separated[0]);
 
-            if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
-                Log.i(TAG, "#### Start sensor monitoring->  " + atividade);
+            if (isInternalSensor(nameSensor) || isVirtualSensor(nameSensor)) {
+                Log.i(TAG, "#### Start sensor monitoring->  " + nameSensor);
 
                 Log.i(TAG, "#### Total getAvailableAttributes: " + message.getAvailableAttributes());
                 if(message.getAvailableAttributes() >= 2){
                     Double n = (Double) valor[1];
                     int delay = n.intValue();
-                    Log.i(TAG, "#### Delay: " + delay);
-                    startSensor(atividade, delay);
+                    Log.i(TAG, "#### Sampling rate: " + delay);
+                    startSensor(nameSensor, delay);
                 }
                 else {
-                    startSensor(atividade);
+                    startSensor(nameSensor);
                 }
             } else {
-                Log.i(TAG, "#### Invalid sensor name: " + atividade);
+                try {
+                    throw new InvalidSensorNameException("#### Error: Invalid sensor name: " + nameSensor);
+                } catch (InvalidSensorNameException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -323,14 +334,18 @@ public class ProcessorManager extends Service {
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
+            String nameSensor = String.valueOf(separated[0]);
 
 
-            if (isInternalSensor(atividade) || isVirtualSensor(atividade)) {
-                Log.i(TAG, "#### Stop sensor monitoring->  " + atividade);
-                stopSensor(atividade);
+            if (isInternalSensor(nameSensor) || isVirtualSensor(nameSensor)) {
+                Log.i(TAG, "#### Stop sensor monitoring->  " + nameSensor);
+                stopSensor(nameSensor);
             } else {
-                Log.i(TAG, "#### Invalid sensor name: " + atividade);
+                try {
+                    throw new InvalidSensorNameException("#### Warning: Invalid sensor name: " + nameSensor);
+                } catch (InvalidSensorNameException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -364,12 +379,12 @@ public class ProcessorManager extends Service {
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
+            String pluginName = String.valueOf(separated[0]);
 
-            if (!listPlugin.contains(atividade)) {
-                listPlugin.add(atividade);
+            if (!listPlugin.contains(pluginName)) {
+                listPlugin.add(pluginName);
             } else {
-                Log.e(TAG, "#### Processor already exists: " + atividade);
+                //throw new HandlingExceptions("#### Error: Processor already exists.");
             }
         }
     };
@@ -411,19 +426,18 @@ public class ProcessorManager extends Service {
     }
 
 
-    public void startSensor(String nameSensor) {
+    public void startSensor(String sensorName) {
         try {
-            if(checkSensorUsageforStart(nameSensor)) {
-                if (nameSensor.equalsIgnoreCase("TouchScreen")) {
-                    Log.i(TAG,"#### Aquiiiiiiiiiiiiiii");
+            if(checkSensorUsageforStart(sensorName)) {
+                if (sensorName.equalsIgnoreCase("TouchScreen")) {
                     // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela: a permissão no smartphone é sobreposição,
                     // entra na configuração do aplicativo e ativa a opção "Sobreposição a outros aplicativos".
                     // Existe um mode de configurar isso ao usar o sensor de Toque de tela.
                     checkDrawOverlayPermission();
-                    CDDL.getInstance().startSensor(nameSensor, 0);
+                    CDDL.getInstance().startSensor(sensorName, 0);
                 } else {
-                    initPermissions(nameSensor);
-                    CDDL.getInstance().startSensor(nameSensor, 0);
+                    initPermissions(sensorName);
+                    CDDL.getInstance().startSensor(sensorName, 0);
                 }
             }
         }catch (Exception e){
@@ -439,19 +453,19 @@ public class ProcessorManager extends Service {
      *   Game delay = 1,
      *   UI delay = 2,
      *   Normal delay = 3
-     * @param nameSensor Name of the sensor to be listened to
-     * @param delay
+     * @param sensorName Name of the sensor to be listened to
+     * @param samplingRate
      */
-    public void startSensor(String nameSensor, int delay) {
+    public void startSensor(String sensorName, int samplingRate) {
         try {
-            if (checkSensorUsageforStart(nameSensor)) {
-                if (nameSensor.equalsIgnoreCase("TouchScreen")) {
+            if (checkSensorUsageforStart(sensorName)) {
+                if (sensorName.equalsIgnoreCase("TouchScreen")) {
                     // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
                     checkDrawOverlayPermission();
-                    CDDL.getInstance().startSensor(nameSensor, 0);
+                    CDDL.getInstance().startSensor(sensorName, 0);
                 } else {
-                    initPermissions(nameSensor);
-                    CDDL.getInstance().startSensor(nameSensor, delay);
+                    initPermissions(sensorName);
+                    CDDL.getInstance().startSensor(sensorName, samplingRate);
                 }
             }
         }catch (Exception e){
@@ -463,21 +477,61 @@ public class ProcessorManager extends Service {
     }
 
 
-    public void stopSensor(String nameSensor) {
-        if(checkSensorUsageforStop(nameSensor)) {
-            CDDL.getInstance().stopSensor(nameSensor);
+    public void stopSensor(String sensorName) {
+        if(checkSensorUsageforStop(sensorName)) {
+            CDDL.getInstance().stopSensor(sensorName);
         }
     }
 
 
-    public void updatesListActiveProcessors(String nameProcessor){
+    public void startDataProcessorsList() {
+        this.listDataProcessors.add("Sociability");
+        this.listDataProcessors.add("Mobility");
+        this.listDataProcessors.add("Sleep");
+    }
+
+
+    public List<String> getDataProcessors() {
+        return listDataProcessors;
+    }
+
+
+    public List<String> getListActiveDataProcessors(){
+        return listActiveDataProcessors;
     }
 
 
     /**
-     *
+     * Check if dataProcessorName is in the list of available processors.
+     * @param dataProcessorName
+     * @return true or false
+     */
+    private Boolean isDataProcessor(String dataProcessorName) {
+        if (listDataProcessors.contains(dataProcessorName)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Returns false if dataProcessor is active, if not, returns true.
+     * @param dataProcessorName
+     * @return true or false
+     */
+    public boolean isDataProcessorActive(String dataProcessorName){
+        if(listActiveDataProcessors.contains(dataProcessorName)){
+            return false;
+        }
+        return true;
+    }
+
+
+    /**
+     * Manages the list of active sensors, if nameSensor is being used by another dataProcessor,
+     * returns true and increment by 1, otherwise returns false.
      * @param nameSensor
-     * @return
+     * @return true or false
      */
     public boolean checkSensorUsageforStart(String nameSensor){
         try{
@@ -497,6 +551,13 @@ public class ProcessorManager extends Service {
     }
 
 
+    /**
+     * Manages the list of active sensors, if nameSensor is being used by another dataProcessor,
+     * returns true and decrements by 1, otherwise return false and arrow to 0, indicating that no
+     * dataProcessor is using the nameSensor.
+     * @param nameSensor
+     * @return true or false
+     */
     public boolean checkSensorUsageforStop(String nameSensor){
         try {
             if (!listActiveSensor.isEmpty()) {
@@ -540,14 +601,6 @@ public class ProcessorManager extends Service {
         message.setServiceName(service);
         message.setServiceValue(text);
         publisher.publish(message);
-    }
-
-
-    private Boolean isProcessor(String nameProcessor) {
-        if (listProcessors().contains(nameProcessor)) {
-            return true;
-        }
-        return false;
     }
 
 
@@ -693,17 +746,6 @@ public class ProcessorManager extends Service {
                 ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
             }
         }
-    }
-
-
-    public List<String> listProcessors() {
-        List<String> s = getDataProcessors();
-
-        Log.i(TAG, "\n #### Available Data Processors, Size: \n" + s.size());
-        for (int i = 0; i < s.size(); i++) {
-            Log.i(TAG, "#### (" + i + "): " + s.get(i).toString());
-        }
-        return s;
     }
 
 
