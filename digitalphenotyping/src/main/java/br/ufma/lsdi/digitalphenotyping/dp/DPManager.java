@@ -61,8 +61,7 @@ public class DPManager implements DPInterface {
     /**
      * Construtor do DPManager
      */
-    public DPManager() {
-    }
+    public DPManager() {}
 
 
     /**
@@ -101,15 +100,9 @@ public class DPManager implements DPInterface {
 
             //ActivityCompat.requestPermissions(this.activity,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},101);
 
-            propertyManager = new PropertyManager("configuration.properties", this.context);
+            propertyManager = new PropertyManager();
+            //propertyManager = new PropertyManager("configuration.properties", this.context);
             if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -264,17 +257,17 @@ public class DPManager implements DPInterface {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     })
     @Override
-    public void saveExternalServerAddress(String hostServer, Integer port, String username, String password) throws InvalidHostServerException, InvalidPortException {
+    public void saveExternalServerAddress(String hostServer, String port, String username, String password) throws InvalidHostServerException, InvalidPortException {
         if(hostServer.isEmpty() || hostServer == null){
             throw new InvalidHostServerException("#### Error: hostServer cannot be empty or null.");
         }
         else if(port == null){
             throw new InvalidPortException("#### Error: port number cannot be empty or null.");
         }
-        propertyManager.setProperty("hostServer",hostServer);
-        propertyManager.setProperty("port", String.valueOf(port));
-        propertyManager.setProperty("username",username);
-        propertyManager.setProperty("password",password);
+        propertyManager.setProperty(getContext(), "hostServer",hostServer);
+        propertyManager.setProperty(getContext(), "port", port);
+        propertyManager.setProperty(getContext(), "username",username);
+        propertyManager.setProperty(getContext(), "password",password);
     }
 
 
@@ -284,10 +277,10 @@ public class DPManager implements DPInterface {
      */
     public String[] getExternalServerAddress(){
         String str[] = new String[4];
-        str[0] = propertyManager.getProperty("hostServer");
-        str[1] = propertyManager.getProperty("port");
-        str[3] = propertyManager.getProperty("username");
-        str[4] = propertyManager.getProperty("password");
+//        str[0] = propertyManager.getProperty("hostServer");
+//        str[1] = propertyManager.getProperty("port");
+//        str[3] = propertyManager.getProperty("username");
+//        str[4] = propertyManager.getProperty("password");
         return str;
     }
 
@@ -466,7 +459,7 @@ public class DPManager implements DPInterface {
     public static class Builder{
         private Activity activity;
         private String hostServer = "";
-        private Integer port = null;
+        private String port = "";
         private String username = "username";
         private String password = "12345";
         private CompositionMode compositionMode = null;
@@ -476,7 +469,7 @@ public class DPManager implements DPInterface {
             this.activity = activity;
         }
 
-        public Builder setExternalServer(final String host, final Integer port){
+        public Builder setExternalServer(final String host, final String port){
             this.hostServer = host;
             this.port = port;
             return this;
@@ -507,7 +500,7 @@ public class DPManager implements DPInterface {
             return this;
         }
 
-        public Builder setPort(@NonNull final Integer port){
+        public Builder setPort(@NonNull final String port){
             this.port = port;
             return this;
         }
@@ -522,7 +515,7 @@ public class DPManager implements DPInterface {
             else if(this.hostServer == null){
                 throw new InvalidHostServerException("#### Error: The hostname cannot be null.");
             }
-            else if((this.port <= 0) || (this.port == null)){
+            else if((this.port.equals("0")) || (this.port == null)){
                 throw new InvalidPortException("#### Error: port number is required. It cannot be less than or equal to zero, nor null.");
             }
             else if(this.activity == null){

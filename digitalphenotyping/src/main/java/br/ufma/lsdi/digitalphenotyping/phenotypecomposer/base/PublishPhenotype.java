@@ -22,7 +22,7 @@ public class PublishPhenotype {
     private String clientID="febfcfbccaeabda";
     private String username;
     private String password;
-    private String topic = "inference";
+    private String topic = "opendmph";
 
     //public PublishPhenotype(){ }
 

@@ -18,11 +18,8 @@ import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.google.gson.Gson;
-
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +46,8 @@ public class PhenotypeComposer extends Service {
     Publisher publisher = PublisherFactory.createPublisher();
     Subscriber subRawDataInferenceResult;
     Subscriber subCompositionMode;
-    Subscriber subActiveProcessor;
-    Subscriber subDeactivateProcessor;
+    Subscriber subActiveDataProcessor;
+    Subscriber subDeactivateDataProcessor;
     private Context context;
     PublishPhenotype publishPhenotype;
     private TextView messageTextView;
@@ -58,11 +55,10 @@ public class PhenotypeComposer extends Service {
     private String statusConnection = "";
     private CompositionMode lastCompositionMode = SEND_WHEN_IT_ARRIVES;
     private int lastFrequency = 6;
-    private List<String> nameActiveProcessors = new ArrayList();
-    private List<Boolean> activeProcessors = new ArrayList();
+    private List<String> nameActiveDataProcessors = new ArrayList();
+    private List<Boolean> activeDataProcessors = new ArrayList();
     AppDatabase db;
     WorkManager workManager;
-    DigitalPhenotypeEvent digitalPhenotypeEvent;
 
     @Override
     public void onCreate() {
@@ -78,13 +74,13 @@ public class PhenotypeComposer extends Service {
             subCompositionMode = SubscriberFactory.createSubscriber();
             subCompositionMode.addConnection(CDDL.getInstance().getConnection());
 
-            // Monitor the Active Processors
-            subActiveProcessor = SubscriberFactory.createSubscriber();
-            subActiveProcessor.addConnection(CDDL.getInstance().getConnection());
+            // Monitor the Active DataProcessor
+            subActiveDataProcessor = SubscriberFactory.createSubscriber();
+            subActiveDataProcessor.addConnection(CDDL.getInstance().getConnection());
 
             // Monitor the Deactivate Processors
-            subDeactivateProcessor = SubscriberFactory.createSubscriber();
-            subDeactivateProcessor.addConnection(CDDL.getInstance().getConnection());
+            subDeactivateDataProcessor = SubscriberFactory.createSubscriber();
+            subDeactivateDataProcessor.addConnection(CDDL.getInstance().getConnection());
 
             messageTextView = new TextView(context);
 
@@ -103,8 +99,8 @@ public class PhenotypeComposer extends Service {
         subscribeMessageRawDataInferenceResult(Topics.INFERENCE_TOPIC.toString());
         subscribeMessageCompositionMode(Topics.COMPOSITION_MODE_TOPIC.toString());
 
-        subscribeMessageAtiveProcessor(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString());
-        subscribeMessageDeactivateProcessor(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString());
+        subscribeMessageAtiveDataProcessor(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString());
+        subscribeMessageDeactivateDataProcessor(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString());
 
         connectionBroker();
 
@@ -129,8 +125,8 @@ public class PhenotypeComposer extends Service {
 
     public void connectionBroker(){
         try {
-            String host = "broker.hivemq.com";
-            //String host = "127.0.0.19";
+            //String host = "broker.hivemq.com";
+            String host = "192.168.0.7";
             Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
             connectionBroker = ConnectionFactory.createConnection();
             connectionBroker.setClientId("febfcfbccaeabda");
@@ -265,15 +261,15 @@ public class PhenotypeComposer extends Service {
     }
 
 
-    public void subscribeMessageAtiveProcessor(String serviceName) {
-        subActiveProcessor.subscribeServiceByName(serviceName);
-        subActiveProcessor.setSubscriberListener(subscriberActiveProcessorsListener);
+    public void subscribeMessageAtiveDataProcessor(String serviceName) {
+        subActiveDataProcessor.subscribeServiceByName(serviceName);
+        subActiveDataProcessor.setSubscriberListener(subscriberActiveDataProcessorsListener);
     }
 
 
-    public void subscribeMessageDeactivateProcessor(String serviceName) {
-        subDeactivateProcessor.subscribeServiceByName(serviceName);
-        subDeactivateProcessor.setSubscriberListener(subscriberDeactivateProcessorsListener);
+    public void subscribeMessageDeactivateDataProcessor(String serviceName) {
+        subDeactivateDataProcessor.subscribeServiceByName(serviceName);
+        subDeactivateDataProcessor.setSubscriberListener(subscriberDeactivateDataProcessorsListener);
     }
 
 
@@ -286,22 +282,20 @@ public class PhenotypeComposer extends Service {
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            //message = setDigitalPhenotypeEvent(message);
-
             if(lastCompositionMode == SEND_WHEN_IT_ARRIVES){
                 publishPhenotype.getInstance().publishPhenotypeComposer(message);
             }
             else if(lastCompositionMode == GROUP_ALL){
-                int position = nameActiveProcessors.indexOf(atividade);
-                activeProcessors.set(position,true);
+                int position = nameActiveDataProcessors.indexOf(atividade);
+                activeDataProcessors.set(position,true);
                 Phenotypes phenotype = new Phenotypes();
 
-                if(activeProcessors.size() != 0) {
-                    if (!activeProcessors.isEmpty()) {
+                if(activeDataProcessors.size() != 0) {
+                    if (!activeDataProcessors.isEmpty()) {
                         boolean all = true;
-                        for (int i = 0; i <= activeProcessors.size(); i++) {
-                            if (!activeProcessors.get(i).booleanValue()) {
-                                if (!activeProcessors.contains(false)) {
+                        for (int i = 0; i <= activeDataProcessors.size(); i++) {
+                            if (!activeDataProcessors.get(i).booleanValue()) {
+                                if (!activeDataProcessors.contains(false)) {
                                     all = true;
                                 } else {
                                     all = false;
@@ -329,8 +323,8 @@ public class PhenotypeComposer extends Service {
                                 phenotype = db.phenotypeDAO().findByPhenotypeAll();
                             }
 
-                            for (int j = 0; j < activeProcessors.size(); j++) {
-                                activeProcessors.set(j, false);
+                            for (int j = 0; j < activeDataProcessors.size(); j++) {
+                                activeDataProcessors.set(j, false);
                             }
                         } else {
                             //Save phenotype
@@ -374,7 +368,7 @@ public class PhenotypeComposer extends Service {
     };
 
 
-    public ISubscriberListener subscriberActiveProcessorsListener = new ISubscriberListener() {
+    public ISubscriberListener subscriberActiveDataProcessorsListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
             Log.i(TAG, "#### Read messages (active Processor):  " + message);
@@ -385,13 +379,13 @@ public class PhenotypeComposer extends Service {
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            nameActiveProcessors.add(atividade);
-            activeProcessors.add(false);
+            nameActiveDataProcessors.add(atividade);
+            activeDataProcessors.add(false);
         }
     };
 
 
-    public ISubscriberListener subscriberDeactivateProcessorsListener = new ISubscriberListener() {
+    public ISubscriberListener subscriberDeactivateDataProcessorsListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
             Log.i(TAG, "#### Read messages (deactivate processor):  " + message);
@@ -401,8 +395,8 @@ public class PhenotypeComposer extends Service {
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            nameActiveProcessors.remove(atividade);
-            activeProcessors.remove(false);
+            nameActiveDataProcessors.remove(atividade);
+            activeDataProcessors.remove(false);
         }
     };
 
@@ -414,151 +408,5 @@ public class PhenotypeComposer extends Service {
         message.setServiceName(service);
         message.setServiceValue(text);
         publisher.publish(message);
-    }
-
-
-    public Message setDigitalPhenotypeEvent(Message msg){
-        Object[] valor1 = msg.getServiceValue();
-        String mensagemRecebida1 = StringUtils.join(valor1, ", ");
-        String[] listValues = mensagemRecebida1.split(",");
-
-        Object[] valor2 = msg.getServiceValue();
-        String mensagemRecebida2 = StringUtils.join(valor2, ", ");
-        String[] listAttrutes = mensagemRecebida2.split(",");
-
-        digitalPhenotypeEvent = DigitalPhenotypeEvent.getInstance();
-        int size = msg.getAvailableAttributes();
-
-        digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
-        for(int i=0; i < size; i++){
-            Attribute attribute = new Attribute();
-            if(!listAttrutes[i].isEmpty()) {
-                attribute.setLabel(listAttrutes[i]);
-            }
-            if(!listValues[i].isEmpty()) {
-                attribute.setValue(listValues[i]);
-            }
-            digitalPhenotypeEvent.getAttributes().add(attribute);
-        }
-
-        Gson gson = new Gson();
-        String json = gson.toJson(digitalPhenotypeEvent);
-
-        Message message = new Message();
-        message.setServiceValue(json);
-        return message;
-    }
-
-
-    public static class DigitalPhenotypeEvent {
-        private static DigitalPhenotypeEvent instance = null;
-        private String uid;
-        private Situation situation;
-        private LocalDateTime startDateTime;
-        private LocalDateTime endDateTime;
-        private List<Attribute> attributes = new ArrayList();
-
-        public DigitalPhenotypeEvent(){ }
-
-        public static DigitalPhenotypeEvent getInstance() {
-            if (instance == null) {
-                instance = new DigitalPhenotypeEvent();
-                Log.i("DigitalPhenotypeEvent","#### DigitalPhenotypeEvent create");
-            }
-            return instance;
-        }
-
-        public String getUid() {
-            return uid;
-        }
-
-        public void setUid(String uid) {
-            this.uid = uid;
-        }
-
-        public Situation getSituation() {
-            return situation;
-        }
-
-        public void setSituation(Situation situation) {
-            this.situation = situation;
-        }
-
-        public LocalDateTime getStartDateTime() {
-            return startDateTime;
-        }
-
-        public void setStartDateTime(LocalDateTime startDateTime) {
-            this.startDateTime = startDateTime;
-        }
-
-        public LocalDateTime getEndDateTime() {
-            return endDateTime;
-        }
-
-        public void setEndDateTime(LocalDateTime endDateTime) {
-            this.endDateTime = endDateTime;
-        }
-
-        public List<Attribute> getAttributes() {
-            return attributes;
-        }
-
-        public void setAttributes(List<Attribute> attributes) {
-            this.attributes = attributes;
-        }
-
-        public void destroy(){
-            instance = null;
-            setUid(null);
-            setSituation(null);
-            setStartDateTime(null);
-            setEndDateTime(null);
-            setAttributes(null);
-        }
-    }
-
-
-    public class Situation{
-        private String label;  // (e.g., Monday, Tuesday)
-        private String description;
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-    }
-
-
-    public class Attribute{
-        private String label;
-        private String value;
-
-        public String getLabel() {
-            return label;
-        }
-
-        public void setLabel(String label) {
-            this.label = label;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
     }
 }

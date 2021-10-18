@@ -5,12 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexcepti
 public abstract class DataProcessor extends Service {
     private Context context;
     private String clientID;
-    private String nameProcessor = "";
+    private String dataProcessorName = null;
     private List<String> listSensors = new ArrayList();
     private List<String> listUsedSensors = new ArrayList();
     private List<String> listUsedSensorsAux = new ArrayList();
@@ -51,7 +51,16 @@ public abstract class DataProcessor extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        dpUtilities.configSubscribers();
+        if(getDataProcessorName() == null) {
+            try {
+                throw new InvalidDataProcessorNameException("#### Error: invalid dataProcessorName, cannot be null.");
+            } catch (InvalidDataProcessorNameException e) {
+                e.printStackTrace();
+            }
+        }
+        if(listUsedSensors.size()>0){
+            dpUtilities.configSubscribers();
+        }
         if(listUsedSensorsAux.size()>0) {
             dpUtilitiesAux.configSubscribers();
         }
@@ -119,11 +128,11 @@ public abstract class DataProcessor extends Service {
         else if(dataProcessorName.length() > 100){
             throw new InvalidDataProcessorNameException("#### Error: dataprocessorName too long.");
         }
-        this.nameProcessor = dataProcessorName;
+        this.dataProcessorName = dataProcessorName;
     }
 
 
-    public String getDataProcessorName(){ return this.nameProcessor; }
+    public String getDataProcessorName(){ return this.dataProcessorName; }
 
 
     public List<String> getSensors(){
@@ -263,11 +272,18 @@ public abstract class DataProcessor extends Service {
             return subscriberListener[position] = new ISubscriberListener() {
                 @Override
                 public void onMessageArrived(Message message) {
-                    Object[] valor = message.getServiceValue();
-                    String mensagemRecebida = StringUtils.join(valor, ", ");
-                    Object[] finalValor = {getDataProcessorName(),mensagemRecebida};
-                    Log.i("TESTE","#### VALOR: " + finalValor[0] + ", " + String.valueOf(finalValor[1]));
-                    message.setServiceValue(finalValor);
+                    //Add processor name
+                    Object[] valor1 = message.getServiceValue();
+                    String mensagemRecebida1 = StringUtils.join(valor1, ", ");
+                    Object[] finalValor1 = {getDataProcessorName(),mensagemRecebida1};
+
+                    message.setAvailableAttributes(message.getAvailableAttributes() + 1);
+                    String[] valor2 = message.getAvailableAttributesList();
+                    String mensagemRecebida2 = StringUtils.join(valor2, ", ");
+                    String[] finalValor2 = {"Processor Name",mensagemRecebida2};
+
+                    message.setAvailableAttributesList(finalValor2);
+                    message.setServiceValue(finalValor1);
 
                     onSensorDataArrived(message);
                 }
@@ -275,4 +291,139 @@ public abstract class DataProcessor extends Service {
         }
     }
     //public class ProcessedInformation extends Message{ }
+
+
+    public static class DigitalPhenotypeEvent {
+        private static DigitalPhenotypeEvent instance = null;
+        private String uid = "";
+        private Situation situation = null;
+        private LocalDateTime startDateTime= null;
+        private LocalDateTime endDateTime = null;
+        private List<Attribute> attributes = new ArrayList();
+
+        public DigitalPhenotypeEvent(){ }
+
+        public static DigitalPhenotypeEvent getInstance() {
+            if (instance == null) {
+                instance = new DigitalPhenotypeEvent();
+            }
+            return instance;
+        }
+
+        public String getUid() {
+            return uid;
+        }
+
+        public void setUid(String uid) {
+            this.uid = uid;
+        }
+
+        public Situation getSituation() {
+            return situation;
+        }
+
+        public void setSituation(Situation situation) {
+            this.situation = situation;
+        }
+
+        public LocalDateTime getStartDateTime() {
+            return startDateTime;
+        }
+
+        public void setStartDateTime(LocalDateTime startDateTime) {
+            this.startDateTime = startDateTime;
+        }
+
+        public LocalDateTime getEndDateTime() {
+            return endDateTime;
+        }
+
+        public void setEndDateTime(LocalDateTime endDateTime) {
+            this.endDateTime = endDateTime;
+        }
+
+        public List<Attribute> getAttributes() {
+            return attributes;
+        }
+
+        public void setAttributes(String label, String value, String type, boolean qualityAttribute) {
+            Attribute attribute = new Attribute();
+            attribute.setLabel(label);
+            attribute.setValue(value);
+            attribute.setType(type);
+            attribute.setQualityAttribute(qualityAttribute);
+            this.attributes.add(attribute);
+        }
+
+        public void destroy(){
+            setUid(null);
+            setSituation(null);
+            setStartDateTime(null);
+            setEndDateTime(null);
+            setAttributes("","","",false);
+            instance = null;
+        }
+    }
+
+
+    public class Situation{
+        private String label = "";  // (e.g., Estacionário, Correndo, Andando)
+        private String description = "";
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+
+
+    public static class Attribute{
+        private String label = "";
+        private String value = "";
+        private String type = "";
+        private boolean qualityAttribute = false;
+
+        public String getLabel() {
+            return label;
+        }
+
+        public void setLabel(String label) {
+            this.label = label;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public boolean isQualityAttribute() {
+            return qualityAttribute;
+        }
+
+        public void setQualityAttribute(boolean qualityAttribute) {
+            this.qualityAttribute = qualityAttribute;
+        }
+    }
 }

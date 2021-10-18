@@ -16,7 +16,7 @@ public interface DPInterface {
     public void stopDataProcessors(List<String> nameProcessors) throws InvalidDataProcessorNameException;
     public List<String> getDataProcessorsList();
     public List<String> getActiveDataProcessorsList();
-    public void saveExternalServerAddress(String hostServer, Integer port, String username, String password) throws InvalidHostServerException, InvalidPortException;
+    public void saveExternalServerAddress(String hostServer, String port, String username, String password) throws InvalidHostServerException, InvalidPortException;
 }
 
 // Annotations: força valores para variaveis

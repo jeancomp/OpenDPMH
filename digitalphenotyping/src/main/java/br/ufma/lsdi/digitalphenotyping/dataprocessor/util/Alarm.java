@@ -8,32 +8,35 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 
 public class Alarm extends BroadcastReceiver {
-    Message message;
     Context context;
+    Send send;
 
     @Override
-    public void onReceive(Context context, Intent intent){
+    public void onReceive(Context context, Intent intent) {
         this.context = context;
-        readData("/storage/emulated/0/Download/gps_u00.csv");
+        readData();
     }
 
 
     public void setAlarm(Context context) {
-        AlarmManager am =( AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        send = new Send();
+        send.getInstance().setContext(context);
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, Alarm.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 1, pi); // Millisec * Second * Minute
@@ -41,10 +44,10 @@ public class Alarm extends BroadcastReceiver {
 
 
     // Método ler arquivo CSV linha por linha
-    public void readData(String path) {
-        /*try{
-            InputStream is = new FileInputStream(Environment.DIRECTORY_PICTURES + "/gps_u00.csv");
-            BufferedReader reader = new BufferedReader( new InputStreamReader(is, StandardCharsets.UTF_8));
+    public void readData() {
+        try {
+            InputStream is = context.getAssets().open("gps_u00.csv");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             String line = "";
             try {
                 reader.readLine();
@@ -53,65 +56,71 @@ public class Alarm extends BroadcastReceiver {
 
                     Message msg = new Message();
                     msg.setServiceValue(line);
-                    message = msg;
 
-                    conectMobility();
+                    send.getInstance().conectMobility(msg);
                 }
                 is.close();
             } catch (IOException e) {
                 Log.wtf("Alarm", "Erro ao ler arquivo" + line, e);
                 e.printStackTrace();
             }
-        }
-        catch (FileNotFoundException e1) {
+        } catch (FileNotFoundException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
-        }*/
-        File fileDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        File fileToGet = new File(fileDirectory,"gps_u00.csv");
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileToGet));
-            String line;
-            while ((line = br.readLine()) !=null) {
-                Log.i("Alarm","#### Values: " + line);
-            }
-        }catch(FileNotFoundException e) {
-            e.printStackTrace();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
+}
 
+    class Send{
+        Context context;
+        Message message = new Message();
+        private static Send instance = null;
 
-    public void conectMobility(){
-        try{
-            Intent intent = new Intent(this.context, Mobility.class);
+        public Send(){}
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                this.context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        public static Send getInstance() {
+            if (instance == null) {
+                instance = new Send();
             }
-            else {
-                this.context.startService(intent);
+            return instance;
+        }
+
+        public void setContext(Context c){
+            context = c;
+        }
+
+        public void conectMobility(Message m){
+            try{
+                message = m;
+                Intent intent = new Intent(context, Mobility.class);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                }
+                else {
+                    context.startService(intent);
+                }
+            }catch (Exception e){
+                Log.e("Alarm", "#### Error: " + e.getMessage());
             }
-        }catch (Exception e){
-            Log.e("Alarm", "#### Error: " + e.getMessage());
-        }
-    }
-
-
-    ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.i("Alarm","#### Connection service MainService");
-            Mobility.LocalBinder binder = (Mobility.LocalBinder) iBinder;
-            Mobility myService = binder.getService();
-
-            myService.onSensorDataArrived(message);
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            Log.i("Alarm","#### Disconnection service MainService");
-        }
-    };
+
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                Log.i("Alarm","#### Connection service MainService");
+                Mobility.LocalBinder binder = (Mobility.LocalBinder) iBinder;
+                Mobility myService = binder.getService();
+
+                myService.onSensorDataArrived(message);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                Log.i("Alarm","#### Disconnection service MainService");
+            }
+        };
 }

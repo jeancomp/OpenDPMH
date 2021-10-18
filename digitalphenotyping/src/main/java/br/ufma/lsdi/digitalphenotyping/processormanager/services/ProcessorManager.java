@@ -34,6 +34,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
 import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidPluginException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
 public class ProcessorManager extends Service {
@@ -45,8 +46,8 @@ public class ProcessorManager extends Service {
     private List<String> listDataProcessors = new ArrayList();
     private List<String> listActiveDataProcessors = new ArrayList();
     private HashMap<String, Integer> listActiveSensor = new HashMap<>();
-    private List<String> listSensors = new ArrayList();
-    private List<String> listPlugin = new ArrayList();
+    private List<String> sensorList = new ArrayList();
+    private List<String> pluginList = new ArrayList();
     private Subscriber subStartDataProcessor;
     private Subscriber subStopDataProcessor;
     private Subscriber subActiveSensor;
@@ -169,8 +170,8 @@ public class ProcessorManager extends Service {
 
         subscribeMessageAddPlugin(Topics.ADD_PLUGIN_TOPIC.toString());
 
-        listSensors.addAll(listInternalSensor());
-        listSensors.addAll(listVirtualSensor());
+        sensorList.addAll(listInternalSensor());
+        sensorList.addAll(listVirtualSensor());
 
         return START_STICKY;
     }
@@ -360,7 +361,7 @@ public class ProcessorManager extends Service {
             String atividade = String.valueOf(separated[0]);
             if(atividade.equals("alive")) {
                 //Send processor list to Dataprocessor
-                Object[] list = listSensors.toArray();
+                Object[] list = sensorList.toArray();
                 publisher.addConnection(CDDL.getInstance().getConnection());
                 Message msg = new Message();
                 msg.setServiceName("listsensors");
@@ -381,10 +382,15 @@ public class ProcessorManager extends Service {
             String[] separated = mensagemRecebida.split(",");
             String pluginName = String.valueOf(separated[0]);
 
-            if (!listPlugin.contains(pluginName)) {
-                listPlugin.add(pluginName);
-            } else {
-                //throw new HandlingExceptions("#### Error: Processor already exists.");
+            if (!pluginList.contains(pluginName)) {
+                pluginList.add(pluginName);
+            }
+            else {
+                try {
+                    throw new InvalidPluginException("#### Error: Processor already exists.");
+                } catch (InvalidPluginException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -428,7 +434,7 @@ public class ProcessorManager extends Service {
 
     public void startSensor(String sensorName) {
         try {
-            if(checkSensorUsageforStart(sensorName)) {
+            addSensorUsage(sensorName);
                 if (sensorName.equalsIgnoreCase("TouchScreen")) {
                     // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela: a permissão no smartphone é sobreposição,
                     // entra na configuração do aplicativo e ativa a opção "Sobreposição a outros aplicativos".
@@ -439,7 +445,6 @@ public class ProcessorManager extends Service {
                     initPermissions(sensorName);
                     CDDL.getInstance().startSensor(sensorName, 0);
                 }
-            }
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -458,7 +463,7 @@ public class ProcessorManager extends Service {
      */
     public void startSensor(String sensorName, int samplingRate) {
         try {
-            if (checkSensorUsageforStart(sensorName)) {
+            addSensorUsage(sensorName);
                 if (sensorName.equalsIgnoreCase("TouchScreen")) {
                     // Solicita permissão de desenhar (canDrawOverlays) para Toque de Tela
                     checkDrawOverlayPermission();
@@ -467,7 +472,6 @@ public class ProcessorManager extends Service {
                     initPermissions(sensorName);
                     CDDL.getInstance().startSensor(sensorName, samplingRate);
                 }
-            }
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -478,7 +482,7 @@ public class ProcessorManager extends Service {
 
 
     public void stopSensor(String sensorName) {
-        if(checkSensorUsageforStop(sensorName)) {
+        if(removeSensorUsageforStop(sensorName)) {
             CDDL.getInstance().stopSensor(sensorName);
         }
     }
@@ -533,21 +537,16 @@ public class ProcessorManager extends Service {
      * @param nameSensor
      * @return true or false
      */
-    public boolean checkSensorUsageforStart(String nameSensor){
-        try{
+    public void addSensorUsage(String nameSensor){
             if(!listActiveSensor.containsKey(nameSensor)){
                 listActiveSensor.put(nameSensor, 1);
-                return true;
+                //return true;
             }
             else{ // Already have processors using the sensor.
                 Integer value = listActiveSensor.get(nameSensor);
                 value = value + 1;
                 listActiveSensor.put(nameSensor, value);
             }
-        }catch (Exception e){
-            Log.e(TAG,"#### Error: " + e.toString());
-        }
-        return false;
     }
 
 
@@ -558,7 +557,7 @@ public class ProcessorManager extends Service {
      * @param nameSensor
      * @return true or false
      */
-    public boolean checkSensorUsageforStop(String nameSensor){
+    public boolean removeSensorUsageforStop(String nameSensor){
         try {
             if (!listActiveSensor.isEmpty()) {
                 if (listActiveSensor.containsKey(nameSensor)) {
