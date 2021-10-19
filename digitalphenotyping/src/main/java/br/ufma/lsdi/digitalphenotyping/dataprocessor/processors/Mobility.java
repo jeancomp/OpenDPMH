@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.Alarm;
 
 public class Mobility extends DataProcessor {
@@ -70,13 +72,13 @@ public class Mobility extends DataProcessor {
         String[] listAttrutes = mensagemRecebida2.split(",");
 
         if(!listAttrutes[1].isEmpty() && !listValues[1].isEmpty()) {
-            digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
+            //digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
         }
         if(!listAttrutes[9].isEmpty() && !listValues[9].isEmpty()) {
             Situation situation = new Situation();
             situation.setLabel(listValues[9]);
             situation.setDescription(listAttrutes[9]);
-            digitalPhenotypeEvent.setSituation(situation);
+            //digitalPhenotypeEvent.setSituation(situation);
         }
 
         String json = toJson(digitalPhenotypeEvent);

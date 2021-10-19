@@ -10,6 +10,8 @@ import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class Sleep extends DataProcessor {
     private static final String TAG = Sleep.class.getName();
@@ -42,6 +44,7 @@ public class Sleep extends DataProcessor {
     public void processedDataMessage(Message message){
         Log.i(TAG,"#### MSG ORIGINAL SLEEP: " + message);
         DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+        digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
         digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
         Situation situation = new Situation();
@@ -61,10 +64,12 @@ public class Sleep extends DataProcessor {
             digitalPhenotypeEvent.setAttributes(listAttrutes[0], listValues[0], "String", false);
         }*/
         if(!listAttributes[2].isEmpty() && !listValues[2].isEmpty()) {
-            Log.i(TAG,"#### listAttributes[1]: " + listAttributes[2]);
-            Log.i(TAG,"#### listValues[1]: " + listValues[2]);
+            Log.i(TAG,"#### listAttributes[2]: " + listAttributes[2]);
+            Log.i(TAG,"#### listValues[2]: " + listValues[2]);
             digitalPhenotypeEvent.setAttributes(listAttributes[2], listValues[2], "Date", false);
         }
+
+        Log.i(TAG,"#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();

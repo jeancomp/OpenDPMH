@@ -11,6 +11,8 @@ import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class Sociability extends DataProcessor {
     private static final String TAG = Sociability.class.getName();
@@ -49,7 +51,7 @@ public class Sociability extends DataProcessor {
         Situation situation = new Situation();
         situation.setLabel("Socialized");
         situation.setDescription("Individual socialized.");
-        digitalPhenotypeEvent.setSituation(situation);
+        //digitalPhenotypeEvent.setSituation(situation);
 
         Object[] valor1 = message.getServiceValue();
         String mensagemRecebida1 = StringUtils.join(valor1, ", ");
@@ -63,7 +65,7 @@ public class Sociability extends DataProcessor {
             digitalPhenotypeEvent.setAttributes(listAttrutes[0], listValues[0], "String", false);
         }*/
         if(!listAttrutes[1].isEmpty() && !listValues[1].isEmpty()) {
-            digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
+            //digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
         }
 
         String json = toJson(digitalPhenotypeEvent);

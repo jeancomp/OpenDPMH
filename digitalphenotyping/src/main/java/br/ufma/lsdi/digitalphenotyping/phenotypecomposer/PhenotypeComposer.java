@@ -18,8 +18,12 @@ import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +40,8 @@ import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabase;
@@ -279,14 +285,13 @@ public class PhenotypeComposer extends Service {
             Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            String[] separated = mensagemRecebida.split(",");
-            String atividade = String.valueOf(separated[0]);
+            DigitalPhenotypeEvent digitalPhenotypeEvent = objectFromString(mensagemRecebida);
 
-            if(lastCompositionMode == SEND_WHEN_IT_ARRIVES){
-                publishPhenotype.getInstance().publishPhenotypeComposer(message);
+            if(lastCompositionMode == SEND_WHEN_IT_ARRIVES){ //Publish DigitalPhenotypeEvent
+                publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
             }
             else if(lastCompositionMode == GROUP_ALL){
-                int position = nameActiveDataProcessors.indexOf(atividade);
+                int position = nameActiveDataProcessors.indexOf(digitalPhenotypeEvent.getDataProcessorName());
                 activeDataProcessors.set(position,true);
                 Phenotypes phenotype = new Phenotypes();
 
@@ -305,22 +310,25 @@ public class PhenotypeComposer extends Service {
                             break;
                         }
                         if (all) {
-                            publishPhenotype.getInstance().publishPhenotypeComposer(message);
+                            DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
+                            digitalPhenotype.setDpeList(digitalPhenotypeEvent);
 
                             // Retrieve information
                             phenotype = db.phenotypeDAO().findByPhenotypeAll();
                             while (phenotype != null) {
                                 String stringPhenotype = phenotype.getPhenotype();
-                                int i = 0;
-                                Message msg = phenotype.getObjectFromString(stringPhenotype);
+                                DigitalPhenotypeEvent dpe = phenotype.getObjectFromString(stringPhenotype);
 
-                                // Publish the information
-                                publishPhenotype.getInstance().publishPhenotypeComposer(msg);
+                                digitalPhenotype.setDpeList(dpe);
 
                                 // Remove from database
                                 db.phenotypeDAO().delete(phenotype);
 
                                 phenotype = db.phenotypeDAO().findByPhenotypeAll();
+                            }
+                            if(digitalPhenotype.getDigitalPhenotypeEventList().size() > 0){
+                                // Publish the information
+                                publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
                             }
 
                             for (int j = 0; j < activeDataProcessors.size(); j++) {
@@ -329,20 +337,20 @@ public class PhenotypeComposer extends Service {
                         } else {
                             //Save phenotype
                             Phenotypes phenotypes = new Phenotypes();
-                            phenotypes.stringFromObject(message);
+                            phenotypes.setPhenotype(mensagemRecebida);
                             db.phenotypeDAO().insertAll(phenotypes);
                         }
                     }
                 }
                 else{
-                    //Publish phenotype
-                    publishPhenotype.getInstance().publishPhenotypeComposer(message);
+                    //Publish DigitalPhenotypeEvent
+                    publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                 }
             }
             else if(lastCompositionMode == FREQUENCY){
                 //Save phenotype
                 Phenotypes phenotypes = new Phenotypes();
-                phenotypes.stringFromObject(message);
+                phenotypes.setPhenotype(mensagemRecebida);
                 db.phenotypeDAO().insertAll(phenotypes);
             }
         }
@@ -408,5 +416,17 @@ public class PhenotypeComposer extends Service {
         message.setServiceName(service);
         message.setServiceValue(text);
         publisher.publish(message);
+    }
+
+    public String stringFromObject(Message msg){
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(msg);
+        return jsonString;
+    }
+
+    public DigitalPhenotypeEvent objectFromString(String jsonString){
+        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
+        DigitalPhenotypeEvent digitalPhenotypeEvent = new Gson().fromJson(jsonString, listType);
+        return digitalPhenotypeEvent;
     }
 }

@@ -12,7 +12,7 @@ import androidx.work.WorkerParameters;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import br.ufma.lsdi.cddl.message.Message;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabase;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
@@ -38,20 +38,23 @@ public class DistributePhenotypeWork extends Worker {
             Date date = new Date(stamp.getTime());
             Log.i(TAG,"#### WORK EXECUTE: " + date);
 
+            DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
+
             // Retrieve information
             phenotype = db.phenotypeDAO().findByPhenotypeAll();
             while (phenotype != null) {
                 String stringPhenotype = phenotype.getPhenotype();
-                Message msg = phenotype.getObjectFromString(stringPhenotype);
-                Log.i(TAG, "#### Database Result: " + msg.getServiceValue());
-
-                // Publish the information
-                publishPhenotype.getInstance().publishPhenotypeComposer(msg);
+                DigitalPhenotypeEvent digitalPhenotypeEvent = phenotype.getObjectFromString(stringPhenotype);
+                digitalPhenotype.setDpeList(digitalPhenotypeEvent);
 
                 // Remove from database
                 db.phenotypeDAO().delete(phenotype);
 
                 phenotype = db.phenotypeDAO().findByPhenotypeAll();
+            }
+            if(digitalPhenotype.getDigitalPhenotypeEventList().size() > 0){
+                // Publish the information
+                publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
             }
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());

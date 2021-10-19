@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 
-import br.ufma.lsdi.cddl.message.Message;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 
 @Entity(tableName = "phenotypes")
 public class Phenotypes{
@@ -21,15 +21,19 @@ public class Phenotypes{
         return phenotype;
     }
 
-    public void stringFromObject(Message msg){
+    public void setPhenotype(String str){
+        this.phenotype = str;
+    }
+
+    public void stringFromObject(DigitalPhenotypeEvent dpe){
         Gson gson = new Gson();
-        String jsonString = gson.toJson(msg);
+        String jsonString = gson.toJson(dpe);
         phenotype = jsonString;
     }
 
-    public Message getObjectFromString(String jsonString){
-        Type listType = new TypeToken<Message>(){}.getType();
-        Message msg = new Gson().fromJson(jsonString, listType);
-        return msg;
+    public DigitalPhenotypeEvent getObjectFromString(String jsonString){
+        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
+        DigitalPhenotypeEvent dpe = new Gson().fromJson(jsonString, listType);
+        return dpe;
     }
 }
