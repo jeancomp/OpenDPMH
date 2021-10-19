@@ -65,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
         button_recorder.setOnClickListener(clickListener);
 
         this.listProcessors = new ArrayList();
-        //listProcessors.add("Sociability");
-        //listProcessors.add("Mobility");
+        listProcessors.add("Sociability");
+        listProcessors.add("Mobility");
         listProcessors.add("Sleep");
 
         try {

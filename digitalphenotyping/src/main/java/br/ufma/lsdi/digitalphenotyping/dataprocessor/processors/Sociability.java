@@ -46,27 +46,42 @@ public class Sociability extends DataProcessor {
     public void processedDataMessage(Message message){
         Log.i(TAG,"#### MSG ORIGINAL SOCIABILITY: " + message);
         DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+        digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
         digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
         Situation situation = new Situation();
-        situation.setLabel("Socialized");
-        situation.setDescription("Individual socialized.");
-        //digitalPhenotypeEvent.setSituation(situation);
+        situation.setLabel("Socialization");
+        situation.setDescription("User socialized.");
+        digitalPhenotypeEvent.setSituation(situation);
 
         Object[] valor1 = message.getServiceValue();
         String mensagemRecebida1 = StringUtils.join(valor1, ", ");
         String[] listValues = mensagemRecebida1.split(",");
 
-        Object[] valor2 = message.getAvailableAttributesList();
+        String[] valor2 = message.getAvailableAttributesList();
         String mensagemRecebida2 = StringUtils.join(valor2, ", ");
-        String[] listAttrutes = mensagemRecebida2.split(",");
+        String[] listAttributes = mensagemRecebida2.split(",");
 
         /*if(!listAttrutes[0].isEmpty() && !listValues[0].isEmpty()) {
             digitalPhenotypeEvent.setAttributes(listAttrutes[0], listValues[0], "String", false);
         }*/
-        if(!listAttrutes[1].isEmpty() && !listValues[1].isEmpty()) {
-            //digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
+        if(!listAttributes[2].isEmpty() && !listValues[2].isEmpty()) {
+            Log.i(TAG,"#### listAttributes[2]: " + listAttributes[2]);
+            Log.i(TAG,"#### listValues[2]: " + listValues[2]);
+            digitalPhenotypeEvent.setAttributes(listAttributes[2], listValues[2], "String", false);
         }
+        if(!listAttributes[3].isEmpty() && !listValues[3].isEmpty()) {
+            Log.i(TAG,"#### listAttributes[3]: " + listAttributes[3]);
+            Log.i(TAG,"#### listValues[3]: " + listValues[3]);
+            digitalPhenotypeEvent.setAttributes(listAttributes[3], listValues[2], "Date", false);
+        }
+        if(!listAttributes[4].isEmpty() && !listValues[4].isEmpty()) {
+            Log.i(TAG,"#### listAttributes[4]: " + listAttributes[3]);
+            Log.i(TAG,"#### listValues[4]: " + listValues[3]);
+            digitalPhenotypeEvent.setAttributes(listAttributes[3], listValues[2], "Integer", false);
+        }
+
+        Log.i(TAG,"#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();

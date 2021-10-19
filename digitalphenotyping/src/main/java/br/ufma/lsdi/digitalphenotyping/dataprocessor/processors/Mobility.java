@@ -43,14 +43,12 @@ public class Mobility extends DataProcessor {
         //Add processor name
         Object[] valor1 = message.getServiceValue();
         String mensagemRecebida1 = StringUtils.join(valor1, ", ");
-        Object[] finalValor1 = {getDataProcessorName(),mensagemRecebida1};
+        String[] finalValor1 = {getDataProcessorName(),mensagemRecebida1};
 
-        message.setAvailableAttributes(message.getAvailableAttributes() + 1);
-        Object[] valor2 = message.getAvailableAttributesList();
-        String mensagemRecebida2 = StringUtils.join(valor2, ", ");
-        Object[] finalValor2 = {"Processor Name",mensagemRecebida2};
+        message.setAvailableAttributes(11);
+        String[] finalValor2 = {"Data Processor Name","Time","Provider","Network_type","Accuracy","Latitude","Longitude","Altitude","Bearing","Speed","TravelState"};
 
-        message.setAvailableAttributesList((String[]) finalValor2);
+        message.setAvailableAttributesList(finalValor2);
         message.setServiceValue(finalValor1);
 
         processedDataMessage(message);
@@ -61,6 +59,7 @@ public class Mobility extends DataProcessor {
     public void processedDataMessage(Message message){
         Log.i(TAG,"#### MSG ORIGINAL MOBILITY: " + message);
         DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+        digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
         digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
         Object[] valor1 = message.getServiceValue();
@@ -72,13 +71,13 @@ public class Mobility extends DataProcessor {
         String[] listAttrutes = mensagemRecebida2.split(",");
 
         if(!listAttrutes[1].isEmpty() && !listValues[1].isEmpty()) {
-            //digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
+            digitalPhenotypeEvent.setAttributes(listAttrutes[1], listValues[1], "Date", false);
         }
-        if(!listAttrutes[9].isEmpty() && !listValues[9].isEmpty()) {
+        if(!listAttrutes[10].isEmpty() && !listValues[10].isEmpty()) {
             Situation situation = new Situation();
-            situation.setLabel(listValues[9]);
-            situation.setDescription(listAttrutes[9]);
-            //digitalPhenotypeEvent.setSituation(situation);
+            situation.setLabel(listValues[10]);
+            situation.setDescription(listAttrutes[10]);
+            digitalPhenotypeEvent.setSituation(situation);
         }
 
         String json = toJson(digitalPhenotypeEvent);

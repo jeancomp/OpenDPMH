@@ -279,7 +279,7 @@ public abstract class DataProcessor extends Service {
                     message.setAvailableAttributes(message.getAvailableAttributes() + 1);
                     String[] valor2 = message.getAvailableAttributesList();
                     String mensagemRecebida2 = StringUtils.join(valor2, ", ");
-                    String[] finalValor2 = {"Processor Name",mensagemRecebida2};
+                    String[] finalValor2 = {"Data Processor Name",mensagemRecebida2};
 
                     message.setAvailableAttributesList(finalValor2);
                     message.setServiceValue(finalValor1);
