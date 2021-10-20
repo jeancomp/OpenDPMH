@@ -11,7 +11,8 @@ public enum Topics {
     DEACTIVATE_SENSOR_TOPIC("deactivatesensor"),
     LIST_SENSORS_TOPIC("listsensors"),
     COMPOSITION_MODE_TOPIC("compositionmode"),
-    MAINSERVICE_COMPOSITIONMODE_TOPIC("mainservicecompositionmode"),
+    MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC("configurationinformation"),
+    CONFIGURATION_INFORMATION_TOPIC("configurationinformations"),
     INFERENCE_TOPIC("inference"),
     OPENDPMH_TOPIC("opendpmh");
 

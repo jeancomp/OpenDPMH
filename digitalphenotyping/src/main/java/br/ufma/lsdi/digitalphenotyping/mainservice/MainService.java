@@ -55,6 +55,10 @@ public class MainService extends Service {
     private static final String TAG = MainService.class.getName();
     Publisher publisher = PublisherFactory.createPublisher();
     private CDDL cddl;
+    private String hostServer = "";
+    private String port = "";
+    private String username = "username";
+    private String password = "";
     private String clientID;
     private ConnectionImpl con;
     private Context context;
@@ -68,7 +72,7 @@ public class MainService extends Service {
     private String nameClientCertificate = "client.crt";
     private static final int ID_SERVICE = 101;
     private boolean servicesStarted = false;
-    private Subscriber subCompositionMode;
+    private Subscriber subConfigurationInformation;
     private List<String> processors = null;
     private CompositionMode compositionmode = SEND_WHEN_IT_ARRIVES;
     private int frequency = 0;
@@ -164,6 +168,10 @@ public class MainService extends Service {
             if(servicesStarted) {
                 //String clientID = intent.getStringExtra("clientID");
                 compositionmode = (CompositionMode) intent.getSerializableExtra("compositionmode");
+                hostServer = intent.getStringExtra("hostserver");
+                port = intent.getStringExtra("port");
+                username = intent.getStringExtra("username");
+                password = intent.getStringExtra("password");
                 frequency = 0;
                 if (compositionmode == FREQUENCY) {
                     frequency = intent.getIntExtra("frequency", 1);
@@ -172,9 +180,9 @@ public class MainService extends Service {
                 Log.i(TAG, "#### MainService receives CompositionMode: " + compositionmode.name().toString());
             }
 
-            subCompositionMode = SubscriberFactory.createSubscriber();
-            subCompositionMode.addConnection(CDDL.getInstance().getConnection());
-            subscribeMessageCompositionMode(Topics.MAINSERVICE_COMPOSITIONMODE_TOPIC.toString());
+            subConfigurationInformation = SubscriberFactory.createSubscriber();
+            subConfigurationInformation.addConnection(CDDL.getInstance().getConnection());
+            subscribeMessageConfigurationInformation(Topics.MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC.toString());
         }
 
         super.onStartCommand(intent, flags, startId);
@@ -182,28 +190,29 @@ public class MainService extends Service {
     }
 
 
-    public void subscribeMessageCompositionMode(String serviceName) {
-        subCompositionMode.subscribeServiceByName(serviceName);
-        subCompositionMode.setSubscriberListener(subscriberMainServiceCompositionMode);
+    public void subscribeMessageConfigurationInformation(String serviceName) {
+        subConfigurationInformation.subscribeServiceByName(serviceName);
+        subConfigurationInformation.setSubscriberListener(subscriberConfigurationInformation);
     }
 
 
-    public ISubscriberListener subscriberMainServiceCompositionMode = new ISubscriberListener() {
+    public ISubscriberListener subscriberConfigurationInformation = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
 //                    if (message.getServiceName().equals("Meu serviço")) {
 //                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
 //                    }
-            Log.i(TAG, "#### Read messages (subscriber MainServiceCompositionMode):  " + message);
+            Log.i(TAG, "#### Read messages (subscriber subscriberConfigurationInformation):  " + message);
 
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.i(TAG, "#### PhenotypeComposer: " + mensagemRecebida);
+            Log.i(TAG, "#### Who alive: " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
             if (atividade.equals("alive")) {
                 //publishMessage(Topics.COMPOSITIONMODE.toString(), String.valueOf(compositionmode.name().toString()), String.valueOf(frequency));
+                publishMessage(Topics.CONFIGURATION_INFORMATION_TOPIC.toString(), hostServer, port, username, password, clientID);
                 publishMessage(Topics.COMPOSITION_MODE_TOPIC.toString(), compositionmode, frequency);
             }
         }
@@ -448,6 +457,32 @@ public class MainService extends Service {
      */
     public List<String> getProcessors(){
         return this.processors;
+    }
+
+
+    /**
+     * Publish framework configuration information, e.g., external server address, port number, user login,
+     *  password, and the user identifier.
+     * @param service
+     * @param hostServer
+     * @param port
+     * @param username
+     * @param password
+     * @param clientID
+     */
+    public void publishMessage(String service, String hostServer, String port, String username, String password, String clientID){
+        publisher.addConnection(CDDL.getInstance().getConnection());
+        Object[] valor = {hostServer, port, username, password, clientID};
+
+        Message message = new Message();
+
+        message.setAvailableAttributes(5);
+        String[] finalValor2 = {"External server address", "Port", "Username", "Password", "ClientID"};
+        message.setAvailableAttributesList(finalValor2);
+
+        message.setServiceName(service);
+        message.setServiceValue(valor);
+        publisher.publish(message);
     }
 
 

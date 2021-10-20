@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException {
         digitalPhenotypingManager = new DPManager.Builder(this)
-                .setExternalServer("broker.hivemq.com","1883")
+                .setExternalServer("192.168.0.7","1883")
+                //.setExternalServer("broker.hivemq.com","1883")
                 .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
                 //.setFrequency(15)
                 .build();

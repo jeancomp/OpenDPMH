@@ -14,8 +14,6 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.annotation.RequiresPermission;
 import androidx.core.app.ActivityCompat;
 
 import java.util.List;
@@ -26,7 +24,6 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
-import br.ufma.lsdi.digitalphenotyping.PropertyManager;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidCompositionModeException;
@@ -54,7 +51,6 @@ public class DPManager implements DPInterface {
     private Boolean secure;
     private MainService myService;
     private boolean servicesStarted = false;
-    private PropertyManager propertyManager;
     private Builder builderCopy;
 
 
@@ -93,21 +89,10 @@ public class DPManager implements DPInterface {
     @Override
     public void start() {
         try {
-            Log.i(TAG, "#### INICIANDO FRAMEWORK");
+            Log.i(TAG, "#### FRAMEWORK STARTED");
 
             //this.activity = activity;
             this.context = (Context) builderCopy.activity;
-
-            //ActivityCompat.requestPermissions(this.activity,new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE},101);
-
-            propertyManager = new PropertyManager();
-            //propertyManager = new PropertyManager("configuration.properties", this.context);
-            if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                saveExternalServerAddress(builderCopy.hostServer, builderCopy.port, builderCopy.username, builderCopy.password);
-            }
 
             this.communicationTechnology = 4;
             this.secure = false;
@@ -123,6 +108,10 @@ public class DPManager implements DPInterface {
                 intent.putExtra("activity", (Parcelable) activityParcelable);
 
                 intent.putExtra("compositionmode", builderCopy.compositionMode);
+                intent.putExtra("hostserver", builderCopy.hostServer);
+                intent.putExtra("port", builderCopy.port);
+                intent.putExtra("username", builderCopy.username);
+                intent.putExtra("password", builderCopy.password);
                 if(builderCopy.compositionMode == FREQUENCY) {
                     intent.putExtra("frequency", builderCopy.frequency);
                 }
@@ -240,48 +229,6 @@ public class DPManager implements DPInterface {
         List<String> activeProcessors = null;
 
         return activeProcessors;
-    }
-
-
-    /**
-     * It saves the data necessary for the PhenotypeComposer to connect to a remote server, sending
-     * the identified digital phenotypes to the external server.
-     * @param hostServer remote server name.
-     * @param port server port number for the framework to send the identified digital phenotypes.
-     * @param username port number of the remote server.
-     * @param password remote server password.
-     */
-    @RequiresApi(api = Build.VERSION_CODES.Q)
-    @RequiresPermission(allOf = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    })
-    @Override
-    public void saveExternalServerAddress(String hostServer, String port, String username, String password) throws InvalidHostServerException, InvalidPortException {
-        if(hostServer.isEmpty() || hostServer == null){
-            throw new InvalidHostServerException("#### Error: hostServer cannot be empty or null.");
-        }
-        else if(port == null){
-            throw new InvalidPortException("#### Error: port number cannot be empty or null.");
-        }
-        propertyManager.setProperty(getContext(), "hostServer",hostServer);
-        propertyManager.setProperty(getContext(), "port", port);
-        propertyManager.setProperty(getContext(), "username",username);
-        propertyManager.setProperty(getContext(), "password",password);
-    }
-
-
-    /**
-     * Searches the external server address through a string vector.
-     * @return returns a string vector.
-     */
-    public String[] getExternalServerAddress(){
-        String str[] = new String[4];
-//        str[0] = propertyManager.getProperty("hostServer");
-//        str[1] = propertyManager.getProperty("port");
-//        str[3] = propertyManager.getProperty("username");
-//        str[4] = propertyManager.getProperty("password");
-        return str;
     }
 
 

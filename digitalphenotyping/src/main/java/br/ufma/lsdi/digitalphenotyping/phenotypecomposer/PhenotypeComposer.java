@@ -51,6 +51,7 @@ public class PhenotypeComposer extends Service {
     private static final String TAG = PhenotypeComposer.class.getName();
     Publisher publisher = PublisherFactory.createPublisher();
     Subscriber subRawDataInferenceResult;
+    Subscriber subConfigurationInformation;
     Subscriber subCompositionMode;
     Subscriber subActiveDataProcessor;
     Subscriber subDeactivateDataProcessor;
@@ -75,6 +76,10 @@ public class PhenotypeComposer extends Service {
             //Receives data inferred by DataProcessors
             subRawDataInferenceResult = SubscriberFactory.createSubscriber();
             subRawDataInferenceResult.addConnection(CDDL.getInstance().getConnection());
+
+            // Monitor the Configuration Information
+            subConfigurationInformation = SubscriberFactory.createSubscriber();
+            subConfigurationInformation.addConnection(CDDL.getInstance().getConnection());
 
             // Monitor the CompositionMode
             subCompositionMode = SubscriberFactory.createSubscriber();
@@ -103,16 +108,15 @@ public class PhenotypeComposer extends Service {
         Log.i(TAG, "#### CONFIGURATION PHENOTYPECOMPOSER SERVICE");
 
         subscribeMessageRawDataInferenceResult(Topics.INFERENCE_TOPIC.toString());
+        subscribeMessageConfigurationInformation(Topics.CONFIGURATION_INFORMATION_TOPIC.toString());
         subscribeMessageCompositionMode(Topics.COMPOSITION_MODE_TOPIC.toString());
 
         subscribeMessageAtiveDataProcessor(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString());
         subscribeMessageDeactivateDataProcessor(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString());
 
-        connectionBroker();
-
         //manager(lastCompositionMode, lastFrequency);
 
-        publishMessage(Topics.MAINSERVICE_COMPOSITIONMODE_TOPIC.toString(), "alive");
+        publishMessage(Topics.MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC.toString(), "alive");
 
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
@@ -129,17 +133,21 @@ public class PhenotypeComposer extends Service {
     public IBinder onBind(Intent intent) { return null; }
 
 
-    public void connectionBroker(){
+    public void connectionBroker(String hostServer, String port, String username, String password, String clientID){
         try {
+            Log.i(TAG,"#### Configuration Broker Server");
+            Log.i(TAG,"#### HostServer:" + hostServer);
+            Log.i(TAG,"#### Port:" + port);
+            Log.i(TAG,"#### Username: " + username);
+            Log.i(TAG,"#### Password: " + password);
+            Log.i(TAG,"#### ClientID: " + clientID);
+
             //String host = "broker.hivemq.com";
-            String host = "192.168.0.7";
-            Log.i(TAG,"#### ENDEREÇO DO BROKER: " + host);
+            //String host = "192.168.0.7";
             connectionBroker = ConnectionFactory.createConnection();
-            connectionBroker.setClientId("febfcfbccaeabda");
-            Log.i(TAG,"#### clientID:  " + connectionBroker.getClientId());
-            //Log.i(TAG,"#### clientID CDDL:  " + CDDL.getInstance().getConnection().getClientId());
-            connectionBroker.setHost(host);
-            connectionBroker.setPort("1883");
+            connectionBroker.setClientId(clientID);
+            connectionBroker.setHost(hostServer);
+            connectionBroker.setPort(port);
             connectionBroker.addConnectionListener(connectionListener);
 
             long automaticReconnectionTime = 1000L;
@@ -150,8 +158,14 @@ public class PhenotypeComposer extends Service {
             int maxInflightMessages = 10;
             int mqttVersion =3;
 
-            connectionBroker.connect("tcp",host,"1883", automaticReconnection,automaticReconnectionTime,false,connectionTimeout,
-                    keepAliveInterval,publishConnectionChangedStatus,maxInflightMessages,"","",mqttVersion);
+            if(username.equals("username")) {
+                connectionBroker.connect("tcp", hostServer, port, automaticReconnection, automaticReconnectionTime, false, connectionTimeout,
+                        keepAliveInterval, publishConnectionChangedStatus, maxInflightMessages, "", "", mqttVersion);
+            }
+            else{
+                connectionBroker.connect("tcp", hostServer, port, automaticReconnection, automaticReconnectionTime, false, connectionTimeout,
+                        keepAliveInterval, publishConnectionChangedStatus, maxInflightMessages, username, password, mqttVersion);
+            }
 
             Log.i(TAG,"#### CONECTADO: " + connectionBroker.isConnected());
             if(!connectionBroker.isConnected()){
@@ -260,6 +274,13 @@ public class PhenotypeComposer extends Service {
     }
 
 
+    public void subscribeMessageConfigurationInformation(String serviceName) {
+        subConfigurationInformation.subscribeServiceByName(serviceName);
+        subConfigurationInformation.setSubscriberListener(subscriberConfigurationInformation);
+        subConfigurationInformation.subscribeTopic(Topics.CONFIGURATION_INFORMATION_TOPIC.toString());
+    }
+
+
     public void subscribeMessageCompositionMode(String serviceName) {
         subCompositionMode.subscribeServiceByName(serviceName);
         subCompositionMode.setSubscriberListener(subscriberCompositionModeListener);
@@ -353,6 +374,19 @@ public class PhenotypeComposer extends Service {
                 phenotypes.setPhenotype(mensagemRecebida);
                 db.phenotypeDAO().insertAll(phenotypes);
             }
+        }
+    };
+
+
+    public final ISubscriberListener subscriberConfigurationInformation = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ",");
+            String[] separated = mensagemRecebida.split(",");
+
+            connectionBroker(separated[0], separated[1], separated[2], separated[3], separated[4]); // Values are already checked for null in DPManager.
+
         }
     };
 
