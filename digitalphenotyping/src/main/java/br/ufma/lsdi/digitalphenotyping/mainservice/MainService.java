@@ -16,7 +16,6 @@ import android.hardware.Sensor;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Parcelable;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -41,7 +40,6 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.R;
 import br.ufma.lsdi.digitalphenotyping.Topics;
@@ -53,7 +51,7 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManage
  */
 public class MainService extends Service {
     private static final String TAG = MainService.class.getName();
-    Publisher publisher = PublisherFactory.createPublisher();
+    private Publisher publisher = PublisherFactory.createPublisher();
     private CDDL cddl;
     private String hostServer = "";
     private String port = "";
@@ -63,7 +61,7 @@ public class MainService extends Service {
     private ConnectionImpl con;
     private Context context;
     private Activity activity;
-    ActivityParcelable activityParcelable2;
+    //private ActivityParcelable activityParcelable2;
     private Boolean secure = false;
     private TextView messageTextView;
     private String statusConnection = "";
@@ -80,7 +78,7 @@ public class MainService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.P)
     @RequiresPermission(allOf = {
             Manifest.permission.FOREGROUND_SERVICE,
-            Manifest.permission.RECEIVE_BOOT_COMPLETED    // Na dúvida ainda se vai ter esse recurso no framework
+            Manifest.permission.RECEIVE_BOOT_COMPLETED    // Verificar se ainda se vai ter esse recurso no framework
     })
     @Override
     public void onCreate() {
@@ -91,7 +89,7 @@ public class MainService extends Service {
             messageTextView = new TextView(context);
 
             // Create the Foreground Service
-            Log.i(TAG, "#### Criando notificação");
+            Log.i(TAG, "#### Notification create");
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
@@ -143,7 +141,6 @@ public class MainService extends Service {
 
     public class LocalBinder extends Binder {
         public MainService getService() {
-            //return mBinder;
             return MainService.this;
         }
     }
@@ -159,8 +156,8 @@ public class MainService extends Service {
         if(intent != null){
             setCommunicationTechnology(this.communicationTechnology);
             setSecure(this.secure);
-            activityParcelable2 = new ActivityParcelable();
-            activityParcelable2 = (ActivityParcelable) intent.getParcelableExtra("activity");
+            //activityParcelable2 = new ActivityParcelable();
+            //activityParcelable2 = (ActivityParcelable) intent.getParcelableExtra("activity");
 
             startCDDL();
             startServices();
@@ -199,9 +196,6 @@ public class MainService extends Service {
     public ISubscriberListener subscriberConfigurationInformation = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-//                    if (message.getServiceName().equals("Meu serviço")) {
-//                        Log.d(TAG, ">>> #### Read messages +++++: " + message);
-//                    }
             Log.i(TAG, "#### Read messages (subscriber subscriberConfigurationInformation):  " + message);
 
             Object[] valor = message.getServiceValue();
@@ -233,7 +227,6 @@ public class MainService extends Service {
     public void startCDDL(){
         try {
             String host = CDDL.startMicroBroker();
-            //String host = "10.0.2.3";
             Log.i(TAG,"#### ENDEREÇO DO MICROBROKER: " + host);
             //val host = "broker.hivemq.com";
             con = ConnectionFactory.createConnection();
@@ -271,7 +264,7 @@ public class MainService extends Service {
             if(!servicesStarted) {
                 Log.i(TAG, "#### Starts all framework services.");
                 Intent pm = new Intent(getContext(), ProcessorManager.class);
-                pm.putExtra("activity", (Parcelable) activityParcelable2);
+                //pm.putExtra("activity", (Parcelable) activityParcelable2);
                 getContext().startService(pm);
 
                 Intent pc = new Intent(getContext(), PhenotypeComposer.class);

@@ -15,7 +15,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situa
 
 public class Sleep extends DataProcessor {
     private static final String TAG = Sleep.class.getName();
-    int i=0;
+    List<String> sensorList = new ArrayList();
 
     @Override
     public void init(){
@@ -24,10 +24,10 @@ public class Sleep extends DataProcessor {
 
             setDataProcessorName("Sleep");
 
-            List<String> sensorList = new ArrayList();
             sensorList.add("TouchScreen");
-            sensorList.add("SMS");
+            //sensorList.add("Location");
             startSensor(sensorList);
+
         }catch (Exception e){
             Log.e(TAG, "Error: " + e.toString());
         }
@@ -36,12 +36,12 @@ public class Sleep extends DataProcessor {
 
     @Override
     public void onSensorDataArrived(Message message){
-        processedDataMessage(message);
+        inferencePhenotypingEvent(message);
     }
 
 
     @Override
-    public void processedDataMessage(Message message){
+    public void inferencePhenotypingEvent(Message message){
         Log.i(TAG,"#### MSG ORIGINAL SLEEP: " + message);
         DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
         digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
@@ -73,9 +73,11 @@ public class Sleep extends DataProcessor {
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();
+        //msg.setAvailableAttributesList(new [{"DigitalPhenotypeEvent"}]);
+        //msg.setAvailableAttributesList(new [{"RawData"}]);
         msg.setServiceValue(json);
         sendProcessedData(msg);
-    }
+    } //inferencia do evento de fenotipagem
 
 
     @Override

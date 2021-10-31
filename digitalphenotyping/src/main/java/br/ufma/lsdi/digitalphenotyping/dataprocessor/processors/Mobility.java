@@ -51,12 +51,12 @@ public class Mobility extends DataProcessor {
         message.setAvailableAttributesList(finalValor2);
         message.setServiceValue(finalValor1);
 
-        processedDataMessage(message);
+        inferencePhenotypingEvent(message);
     }
 
 
     @Override
-    public void processedDataMessage(Message message){
+    public void inferencePhenotypingEvent(Message message){
         Log.i(TAG,"#### MSG ORIGINAL MOBILITY: " + message);
         DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
         digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());

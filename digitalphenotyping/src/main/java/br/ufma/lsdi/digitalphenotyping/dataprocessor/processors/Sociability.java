@@ -38,12 +38,12 @@ public class Sociability extends DataProcessor {
 
     @Override
     public void onSensorDataArrived(Message message) {
-        processedDataMessage(message);
+        inferencePhenotypingEvent(message);
     }
 
 
     @Override
-    public void processedDataMessage(Message message){
+    public void inferencePhenotypingEvent(Message message){
         Log.i(TAG,"#### MSG ORIGINAL SOCIABILITY: " + message);
         DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
         digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());

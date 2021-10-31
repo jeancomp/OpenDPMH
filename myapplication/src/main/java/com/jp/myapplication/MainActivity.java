@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
         button_recorder.setOnClickListener(clickListener);
 
         this.listProcessors = new ArrayList();
-        listProcessors.add("Sociability");
-        listProcessors.add("Mobility");
+        //listProcessors.add("RawDataCollector");
+        //listProcessors.add("Sociability");
+        //listProcessors.add("Mobility");
         listProcessors.add("Sleep");
 
         try {
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
                 //.setFrequency(15)
                 .build();
-        digitalPhenotypingManager.start();
+        digitalPhenotypingManager.getInstance().start();
     }
 
 

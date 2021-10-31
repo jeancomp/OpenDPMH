@@ -28,12 +28,12 @@ public abstract class DataProcessor extends Service {
     private Context context;
     private String clientID;
     private String dataProcessorName = null;
-    private List<String> listSensors = new ArrayList();
+    private List<String> sensorList = new ArrayList();
     private List<String> listUsedSensors = new ArrayList();
-    private List<String> listUsedSensorsAux = new ArrayList();
+    private List<String> listUsedSensorsSamplingRate = new ArrayList();
     private Publisher publisher = PublisherFactory.createPublisher();
-    private DPUtilities dpUtilities;
-    private DPUtilities dpUtilitiesAux;
+    private DPUtil dpUtil;
+    private DPUtil dpUtilAux;
 
     @Override
     public void onCreate() {
@@ -58,10 +58,10 @@ public abstract class DataProcessor extends Service {
             }
         }
         if(listUsedSensors.size()>0){
-            dpUtilities.configSubscribers();
+            dpUtil.configSubscribers();
         }
-        if(listUsedSensorsAux.size()>0) {
-            dpUtilitiesAux.configSubscribers();
+        if(listUsedSensorsSamplingRate.size()>0) {
+            dpUtilAux.configSubscribers();
         }
 
         return START_STICKY;
@@ -79,8 +79,8 @@ public abstract class DataProcessor extends Service {
             if(!listUsedSensors.isEmpty()) {
                 stopSensor(listUsedSensors);
             }
-            if(!listUsedSensorsAux.isEmpty()) {
-                stopSensor(listUsedSensorsAux);
+            if(!listUsedSensorsSamplingRate.isEmpty()) {
+                stopSensor(listUsedSensorsSamplingRate);
             }
         } catch (InvalidSensorNameException e) {
             e.printStackTrace();
@@ -94,7 +94,7 @@ public abstract class DataProcessor extends Service {
     public void onSensorDataArrived(Message message){}
 
 
-    public void processedDataMessage(Message message){ }
+    public void inferencePhenotypingEvent(Message message){ }
 
 
     public void sendProcessedData(Message message){
@@ -135,15 +135,16 @@ public abstract class DataProcessor extends Service {
 
 
     public List<String> getSensors(){
-        listSensors = CDDL.getInstance().getSensorVirtualList();
+        sensorList = CDDL.getInstance().getSensorVirtualList();
         List<Sensor> sensorInternal = CDDL.getInstance().getInternalSensorList();
 
         if (sensorInternal.size() != 0) {
             for (int i = 0; i < sensorInternal.size(); i++) {
-                listSensors.add(sensorInternal.get(i).getName());
+                sensorList.add(sensorInternal.get(i).getName());
             }
         }
-        return listSensors;
+        sensorList.add("Location");
+        return sensorList;
     }
 
 
@@ -159,7 +160,7 @@ public abstract class DataProcessor extends Service {
 
             listUsedSensors.add(sensorList.get(i).toString());
         }
-        dpUtilities = new DPUtilities(listUsedSensors);
+        dpUtil = new DPUtil(listUsedSensors);
     }
 
 
@@ -182,9 +183,9 @@ public abstract class DataProcessor extends Service {
         for(int i=0; i < sensorList.size(); i++) {
             publishMessage(Topics.ACTIVE_SENSOR_TOPIC.toString(), sensorList.get(i).toString(), samplingRateList.get(i));
 
-            listUsedSensorsAux.add(sensorList.get(i).toString());
+            listUsedSensorsSamplingRate.add(sensorList.get(i).toString());
         }
-        dpUtilitiesAux = new DPUtilities(listUsedSensorsAux);
+        dpUtilAux = new DPUtil(listUsedSensorsSamplingRate);
     }
 
 
@@ -202,7 +203,7 @@ public abstract class DataProcessor extends Service {
                 listUsedSensors.remove(sensorList.get(i).toString());
             }
             else{
-                listUsedSensorsAux.remove(sensorList.get(i).toString());
+                listUsedSensorsSamplingRate.remove(sensorList.get(i).toString());
             }
         }
     }
@@ -225,7 +226,6 @@ public abstract class DataProcessor extends Service {
         message.setServiceValue(value);
         message.setAvailableAttributes(Integer.valueOf(total));
         publisher.publish(message);
-        //Log.i(TAG,"#### RRRRRRRRRRR: " + message.getAvailableAttributes());
     }
 
 
@@ -237,12 +237,12 @@ public abstract class DataProcessor extends Service {
     /**
      * For each started Sensor, a Subcriber is signed.
      */
-    public class DPUtilities {
+    public class DPUtil {
         List<String> nameSensors = new ArrayList();
         Subscriber[] subscribers;
         int numSensors = 0;
 
-        public DPUtilities(List<String> listSensors){
+        public DPUtil(List<String> listSensors){
             numSensors = listSensors.size();
             nameSensors = listSensors;
             subscribers = new Subscriber[numSensors];

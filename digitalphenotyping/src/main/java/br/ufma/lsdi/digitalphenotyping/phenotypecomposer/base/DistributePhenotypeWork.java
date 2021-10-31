@@ -13,13 +13,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
-import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabase;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabaseDP;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
 public class DistributePhenotypeWork extends Worker {
     private static final String TAG = DistributePhenotypeWork.class.getName();
     Context context;
-    AppDatabase db;
+    AppDatabaseDP db;
     Phenotypes phenotype;
     PublishPhenotype publishPhenotype = PublishPhenotype.getInstance();
 
@@ -27,7 +27,7 @@ public class DistributePhenotypeWork extends Worker {
         super(context, workerParams);
 
         db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "database-phenotype").build();
+                AppDatabaseDP.class, "database-phenotype").build();
     }
 
     @NonNull
@@ -36,7 +36,7 @@ public class DistributePhenotypeWork extends Worker {
         try{
             Timestamp stamp = new Timestamp(System.currentTimeMillis());
             Date date = new Date(stamp.getTime());
-            Log.i(TAG,"#### WORK EXECUTE: " + date);
+            Log.i(TAG,"#### WORK EXECUTE PHENOTYPE: " + date);
 
             DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
 

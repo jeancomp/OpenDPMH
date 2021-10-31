@@ -15,29 +15,22 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Digit
 public class PublishPhenotype {
     private static final String TAG = PublishPhenotype.class.getName();
     private Publisher publisher = PublisherFactory.createPublisher();
-    private static Context context;
-    private static ConnectionImpl connection;
     private static PublishPhenotype instance = null;
-
-    //Data SERVIDOR
-    private String host = "broker.hivemq.com";
-    private int port = 1883;
-    private String clientID="febfcfbccaeabda";
-    private String username;
-    private String password;
-    private String topic = "opendmph";
+    private static ConnectionImpl connection;
+    private static Context context;
+    private static String topic = "";
 
     //public PublishPhenotype(){ }
 
-    public PublishPhenotype(ConnectionImpl con, Context cont){
+    public PublishPhenotype(Context context, ConnectionImpl con){
         this.connection = con;
-        this.context = cont;
+        this.context = context;
         publisher.addConnection(connection);
     }
 
     public static PublishPhenotype getInstance() {
         if (instance == null) {
-            instance = new PublishPhenotype(connection, context);
+            instance = new PublishPhenotype(context, connection);
         }
         return instance;
     }

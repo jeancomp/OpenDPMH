@@ -28,7 +28,7 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
+import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
@@ -36,10 +36,11 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
 import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidPluginException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
+import br.ufma.lsdi.digitalphenotyping.rawdatacollector.RawDataCollector;
 
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
-    private ActivityParcelable activityParcelable;
+    //private ActivityParcelable activityParcelable;
     private Activity activity;
     private Context context;
     private Publisher publisher = PublisherFactory.createPublisher();
@@ -54,9 +55,7 @@ public class ProcessorManager extends Service {
     private Subscriber subDeactiveSensor;
     private Subscriber subListSensors;
     private Subscriber subAddPlugin;
-    private String statusCon = "undefined";
-    private String clientID;
-    private int communicationTechnology = 4;
+    private SaveActivity saveActivity = SaveActivity.getInstance();
 
 
     @Override
@@ -86,7 +85,7 @@ public class ProcessorManager extends Service {
             subAddPlugin = SubscriberFactory.createSubscriber();
             subAddPlugin.addConnection(CDDL.getInstance().getConnection());
 
-            activityParcelable = new ActivityParcelable();
+            //activityParcelable = new ActivityParcelable();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -95,7 +94,12 @@ public class ProcessorManager extends Service {
 
     public synchronized void startDataProcessor(String dataProcessorName) {
         try {
-            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
+            if(dataProcessorName.equalsIgnoreCase("RawDataCollector")) {
+                Intent s = new Intent(context, RawDataCollector.class);
+                context.startService(s);
+                Log.i(TAG, "#### Starting services: RawDataCollector");
+            }
+            else if(dataProcessorName.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sociability");
@@ -120,7 +124,12 @@ public class ProcessorManager extends Service {
 
     public synchronized void stopDataProcessor(String dataProcessorName) {
         try {
-            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
+            if(dataProcessorName.equalsIgnoreCase("RawDataCollector")) {
+                Intent s = new Intent(context, RawDataCollector.class);
+                context.stopService(s);
+                Log.i(TAG, "#### Stopping services");
+            }
+            else if(dataProcessorName.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services");
@@ -158,8 +167,9 @@ public class ProcessorManager extends Service {
         Log.i(TAG, "#### CONFIGURATION PROCESSORMANAGER SERVICE");
         super.onStartCommand(intent, flags, startId);
 
-        activityParcelable = (ActivityParcelable) intent.getParcelableExtra("activity");
-        activity = activityParcelable.getActivity();
+        //activityParcelable = (ActivityParcelable) intent.getParcelableExtra("activity");
+        //activity = activityParcelable.getActivity();
+        activity = saveActivity.getActivity();
 
         subscribeMessageStartDataProcessor(Topics.START_DATAPROCESSOR_TOPIC.toString());
         subscribeMessageStopDataProcessor(Topics.STOP_DATAPROCESSOR_TOPIC.toString());
@@ -172,6 +182,8 @@ public class ProcessorManager extends Service {
 
         sensorList.addAll(listInternalSensor());
         sensorList.addAll(listVirtualSensor());
+
+        publishMessage(Topics.MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC.toString(), "alive");
 
         return START_STICKY;
     }
@@ -426,8 +438,9 @@ public class ProcessorManager extends Service {
             for (int i = 0; i < sensorInternal.size(); i++) {
                 s.add(sensorInternal.get(i).getName());
             }
-            return s;
+            //return s;
         }
+        s.add("Location");
         return s;
     }
 
@@ -443,7 +456,12 @@ public class ProcessorManager extends Service {
                     CDDL.getInstance().startSensor(sensorName, 0);
                 } else {
                     initPermissions(sensorName);
-                    CDDL.getInstance().startSensor(sensorName, 0);
+                    if(sensorName.equals("Location")){
+                        CDDL.getInstance().startLocationSensor();
+                    }
+                    else {
+                        CDDL.getInstance().startSensor(sensorName, 0);
+                    }
                 }
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
@@ -470,7 +488,12 @@ public class ProcessorManager extends Service {
                     CDDL.getInstance().startSensor(sensorName, 0);
                 } else {
                     initPermissions(sensorName);
-                    CDDL.getInstance().startSensor(sensorName, samplingRate);
+                    if(sensorName.equals("Location")){
+                        CDDL.getInstance().startLocationSensor(samplingRate);
+                    }
+                    else {
+                        CDDL.getInstance().startSensor(sensorName, samplingRate);
+                    }
                 }
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
@@ -483,12 +506,18 @@ public class ProcessorManager extends Service {
 
     public void stopSensor(String sensorName) {
         if(removeSensorUsageforStop(sensorName)) {
-            CDDL.getInstance().stopSensor(sensorName);
+            if(sensorName.equals("Location")){
+                CDDL.getInstance().stopLocationSensor();
+            }
+            else {
+                CDDL.getInstance().stopSensor(sensorName);
+            }
         }
     }
 
 
     public void startDataProcessorsList() {
+        this.listDataProcessors.add("RawDataCollector");
         this.listDataProcessors.add("Sociability");
         this.listDataProcessors.add("Mobility");
         this.listDataProcessors.add("Sleep");
@@ -662,6 +691,15 @@ public class ProcessorManager extends Service {
                     android.Manifest.permission.READ_CALL_LOG,
                     android.Manifest.permission.WRITE_CALL_LOG,
                     android.Manifest.permission.ADD_VOICEMAIL};
+
+            if (!hasPermissions(activity, PERMISSIONS)) {
+                Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);
+                ActivityCompat.requestPermissions(activity, PERMISSIONS, PERMISSION_ALL);
+            }
+        } else if (sensor.equalsIgnoreCase("Location")) {
+            String[] PERMISSIONS = {
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION};
 
             if (!hasPermissions(activity, PERMISSIONS)) {
                 Log.i(TAG, "##### Permission enabled for the sensor: " + sensor);

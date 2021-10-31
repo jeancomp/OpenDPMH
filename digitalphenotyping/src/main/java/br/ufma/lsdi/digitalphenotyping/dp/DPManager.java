@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -22,8 +21,8 @@ import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
-import br.ufma.lsdi.digitalphenotyping.ActivityParcelable;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
+import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidCompositionModeException;
@@ -51,7 +50,8 @@ public class DPManager implements DPInterface {
     private Boolean secure;
     private MainService myService;
     private boolean servicesStarted = false;
-    private Builder builderCopy;
+    private static Builder builderCopy;
+    private SaveActivity saveActivity;
 
 
     /**
@@ -68,6 +68,8 @@ public class DPManager implements DPInterface {
     public DPManager(final Builder builder) {
         this.activity = builder.activity;
         this.builderCopy = builder;
+
+        saveActivity = new SaveActivity(activity);
     }
 
 
@@ -77,7 +79,7 @@ public class DPManager implements DPInterface {
      */
     public static DPManager getInstance() {
         if (instance == null) {
-            instance = new DPManager();
+            instance = new DPManager(builderCopy);
         }
         return instance;
     }
@@ -103,9 +105,9 @@ public class DPManager implements DPInterface {
                 Log.i(TAG, "#### Started framework MainService.");
                 Intent intent = new Intent(this.activity, MainService.class);
 
-                ActivityParcelable activityParcelable = new ActivityParcelable();
-                activityParcelable.setActivity(this.activity);
-                intent.putExtra("activity", (Parcelable) activityParcelable);
+                //ActivityParcelable activityParcelable = new ActivityParcelable();
+                //activityParcelable.setActivity(this.activity);
+                //intent.putExtra("activity", (Parcelable) activityParcelable);
 
                 intent.putExtra("compositionmode", builderCopy.compositionMode);
                 intent.putExtra("hostserver", builderCopy.hostServer);
@@ -164,7 +166,7 @@ public class DPManager implements DPInterface {
         else if(dataProcessorsName == null){
             throw new InvalidDataProcessorNameException("#### Error: dataProcessorsName cannot be null.");
         }
-        if(!servicesStarted) {
+        if(servicesStarted) {
             Log.i(TAG, "#### Started processors");
             if (!dataProcessorsName.isEmpty()) {
                 for (int i = 0; i < dataProcessorsName.size(); i++) {

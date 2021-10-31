@@ -44,19 +44,19 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Digit
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
-import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabase;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabaseDP;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
 public class PhenotypeComposer extends Service {
     private static final String TAG = PhenotypeComposer.class.getName();
-    Publisher publisher = PublisherFactory.createPublisher();
-    Subscriber subRawDataInferenceResult;
-    Subscriber subConfigurationInformation;
-    Subscriber subCompositionMode;
-    Subscriber subActiveDataProcessor;
-    Subscriber subDeactivateDataProcessor;
+    private Publisher publisher = PublisherFactory.createPublisher();
+    private Subscriber subRawDataInferenceResult;
+    private Subscriber subConfigurationInformation;
+    private Subscriber subCompositionMode;
+    private Subscriber subActiveDataProcessor;
+    private Subscriber subDeactivateDataProcessor;
     private Context context;
-    PublishPhenotype publishPhenotype;
+    private PublishPhenotype publishPhenotype;
     private TextView messageTextView;
     private ConnectionImpl connectionBroker;
     private String statusConnection = "";
@@ -64,8 +64,8 @@ public class PhenotypeComposer extends Service {
     private int lastFrequency = 6;
     private List<String> nameActiveDataProcessors = new ArrayList();
     private List<Boolean> activeDataProcessors = new ArrayList();
-    AppDatabase db;
-    WorkManager workManager;
+    private AppDatabaseDP db;
+    private WorkManager workManager;
 
     @Override
     public void onCreate() {
@@ -96,7 +96,7 @@ public class PhenotypeComposer extends Service {
             messageTextView = new TextView(context);
 
             db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "database-phenotype").build();
+                    AppDatabaseDP.class, "database-phenotype").build();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -173,7 +173,7 @@ public class PhenotypeComposer extends Service {
                 connectionBroker.reconnect();
             }
 
-            publishPhenotype = new PublishPhenotype(connectionBroker, context);
+            publishPhenotype = new PublishPhenotype(context, connectionBroker);
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.getMessage());
         }
@@ -413,16 +413,16 @@ public class PhenotypeComposer extends Service {
     public ISubscriberListener subscriberActiveDataProcessorsListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-            Log.i(TAG, "#### Read messages (active Processor):  " + message);
-
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
-            Log.i(TAG, "#### " + mensagemRecebida);
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            nameActiveDataProcessors.add(atividade);
-            activeDataProcessors.add(false);
+            if(!atividade.equals("RawDataCollector")) {
+                Log.i(TAG, "#### Read messages (active Processor):  " + message);
+                nameActiveDataProcessors.add(atividade);
+                activeDataProcessors.add(false);
+            }
         }
     };
 
@@ -430,15 +430,16 @@ public class PhenotypeComposer extends Service {
     public ISubscriberListener subscriberDeactivateDataProcessorsListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-            Log.i(TAG, "#### Read messages (deactivate processor):  " + message);
-
             Object[] valor = message.getServiceValue();
             String mensagemRecebida = StringUtils.join(valor, ", ");
             String[] separated = mensagemRecebida.split(",");
             String atividade = String.valueOf(separated[0]);
 
-            nameActiveDataProcessors.remove(atividade);
-            activeDataProcessors.remove(false);
+            if(!atividade.equals("RawDataCollector")) {
+                Log.i(TAG, "#### Read messages (deactivate processor):  " + message);
+                nameActiveDataProcessors.remove(atividade);
+                activeDataProcessors.remove(false);
+            }
         }
     };
 

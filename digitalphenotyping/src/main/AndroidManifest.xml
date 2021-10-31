@@ -34,6 +34,7 @@
         <service android:name=".mainservice.MainService" />
         <service android:name=".processormanager.services.ProcessorManager"/>
         <service android:name=".phenotypecomposer.PhenotypeComposer"/>
+        <service android:name=".rawdatacollector.RawDataCollector" />
         <service android:name=".dataprocessor.processors.Sociability" />
         <service android:name=".dataprocessor.processors.Mobility" />
         <service android:name=".dataprocessor.processors.Sleep" />
