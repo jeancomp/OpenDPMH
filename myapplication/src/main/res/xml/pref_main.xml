@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <PreferenceCategory android:title="@string/pref_general_category_title">
+        <ListPreference
+            android:defaultValue="@string/pref_default_language_value"
+            android:entries="@array/pref_language_list_entries"
+            android:entryValues="@array/pref_language_list_values"
+
+            android:key="@string/pref_language_key"
+            android:summary="@string/pref_default_language_entry"
+            android:title="@string/pref_language_title"
+            tools:summary="@string/pref_default_language_entry" />
+        <!--android:icon="@drawable/ic_translate"-->
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_fiat_currency_value"
+            android:entries="@array/pref_fiat_currency_list_entries"
+            android:entryValues="@array/pref_fiat_currency_list_values"
+
+            android:key="@string/pref_fiat_currency_key"
+            android:summary="@string/pref_default_fiat_currency_entry"
+            android:title="@string/pref_fiat_currency_title"
+            tools:summary="@string/pref_default_fiat_currency_entry" />
+        <!--android:icon="@drawable/ic_cash"-->
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_date_format_value"
+            android:entries="@array/pref_date_format_list_entries"
+            android:entryValues="@array/pref_date_format_list_values"
+
+            android:key="@string/pref_date_format_key"
+            android:summary="@string/pref_default_date_format_entry"
+            android:title="@string/pref_date_format_title"
+            tools:summary="@string/pref_default_date_format_entry" />
+        <!--android:icon="@drawable/ic_date_range"-->
+
+        <SwitchPreference
+            android:defaultValue="true"
+
+            android:key="@string/pref_24h_switch_key"
+            android:summaryOff="@string/pref_24h_switch_12h_summary"
+            android:summaryOn="@string/pref_24h_switch_24h_summary"
+            android:title="@string/pref_24h_switch_title" />
+        <!--android:icon="@drawable/ic_calendar_clock"-->
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_support_category_title">
+
+        <Preference
+
+            android:key="@string/pref_rate_app_key"
+            android:title="@string/pref_rate_app_title" />
+        <!--android:icon="@drawable/ic_star"-->
+
+        <Preference
+
+            android:key="@string/pref_share_app_key"
+            android:title="@string/pref_share_app_title" />
+        <!--android:icon="@drawable/ic_share"-->
+
+        <Preference
+
+            android:key="@string/pref_donate_crypto_key"
+            android:summary="@string/pref_donate_crypto_summary"
+            android:title="@string/pref_donate_crypto_title" />
+        <!--android:icon="@drawable/ic_currency_btc"-->
+
+        <Preference
+
+            android:key="@string/pref_buy_me_coffee_key"
+            android:title="@string/pref_buy_me_coffee_title" />
+        <!--android:icon="@drawable/ic_coffee"-->
+
+        <Preference
+
+            android:key="@string/pref_contact_key"
+            android:summary="@string/pref_contact_summary"
+            android:title="@string/pref_contact_title" />
+        <!--android:icon="@drawable/ic_email_outline"-->
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_support_about_title">
+
+        <Preference
+            android:icon="@drawable/ic_web"
+            android:key="@string/pref_website_key"
+            android:summary="@string/pref_website_summary"
+            android:title="@string/pref_website_title" />
+
+        <Preference
+
+            android:key="@string/pref_author_key"
+            android:summary="@string/pref_author_summary"
+            android:title="@string/pref_author_title" />
+        <!--android:icon="@drawable/ic_human_greeting"-->
+
+        <Preference
+
+            android:key="@string/pref_source_key"
+            android:summary="@string/pref_source_summary"
+            android:title="@string/pref_source_title" />
+        <!--android:icon="@drawable/ic_github_circle"-->
+
+        <Preference
+
+            android:key="@string/pref_privacy_policy_key"
+            android:title="@string/pref_privacy_policy_title" />
+        <!--android:icon="@drawable/ic_file_lock"-->
+
+        <Preference
+
+            android:key="@string/pref_third_party_software_key"
+            android:summary="@string/pref_third_party_software_summary"
+            android:title="@string/pref_third_party_software_title" />
+        <!--android:icon="@drawable/ic_file_multiple"-->
+
+        <Preference
+
+            android:key="@string/pref_license_key"
+            android:summary="@string/pref_license_summary"
+            android:title="@string/pref_license_title" />
+        <!--android:icon="@drawable/ic_copyright"-->
+
+        <Preference
+
+            android:key="@string/pref_app_key"
+            android:selectable="false"
+            android:summary="@string/versionName" />
+        <!--android:icon="@drawable/ic_info_outline"-->
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

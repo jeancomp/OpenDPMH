@@ -1,7 +1,8 @@
-<resources>
+    <!--
+      <resources>
     <string name="app_name">OpenDPMH</string>
     <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
+
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Start Processors</string>
@@ -12,7 +13,7 @@
     <string name="hello_first_fragment">OpenDPMH - Framework</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
-    <!-- Código extraído do VAD-->
+
     <string name="speech_detected">Speech detected!</string>
     <string name="noise_detected">Noise detected!</string>
     <string name="press_button_to_start">Press button to start VAD!</string>
@@ -21,4 +22,839 @@
     <string name="sample_rate">Sample Rate:</string>
     <string name="frame_size">Frame Size:</string>
     <string name="mode">Mode:</string>
+        </resources>
+      -->
+
+    <!DOCTYPE resources [<!ENTITY usd "USD"><!ENTITY all "ALL"><!ENTITY dzd "DZD"><!ENTITY ars "ARS">
+        <!ENTITY amd "AMD"><!ENTITY aud "AUD"><!ENTITY azn "AZN"><!ENTITY bhd "BHD"><!ENTITY bdt "BDT">
+        <!ENTITY byn "BYN"><!ENTITY bmd "BMD"><!ENTITY bob "BOB"><!ENTITY bam "BAM"><!ENTITY brl "BRL">
+        <!ENTITY bgn "BGN"><!ENTITY khr "KHR"><!ENTITY cad "CAD"><!ENTITY cad "CAD"><!ENTITY clp "CLP">
+        <!ENTITY cny "CNY"><!ENTITY cop "COP"><!ENTITY crc "CRC"><!ENTITY hrk "HRK"><!ENTITY cup "CUP">
+        <!ENTITY czk "CZK"><!ENTITY dkk "DKK"><!ENTITY dop "DOP"><!ENTITY egp "EGP"><!ENTITY eur "EUR">
+        <!ENTITY gel "GEL"><!ENTITY ghs "GHS"><!ENTITY gtq "GTQ"><!ENTITY hnl "HNL"><!ENTITY hkd "HKD">
+        <!ENTITY huf "HUF"><!ENTITY isk "ISK"><!ENTITY inr "INR"><!ENTITY idr "IDR"><!ENTITY irr "IRR">
+        <!ENTITY iqd "IQD"><!ENTITY ils "ILS"><!ENTITY jmd "JMD"><!ENTITY jpy "JPY"><!ENTITY jod "JOD">
+        <!ENTITY kzt "KZT"><!ENTITY kes "KES"><!ENTITY kwd "KWD"><!ENTITY kgs "KGS"><!ENTITY lbp "LBP">
+        <!ENTITY mkd "MKD"><!ENTITY myr "MYR"><!ENTITY mur "MUR"><!ENTITY mxn "MXN"><!ENTITY mdl "MDL">
+        <!ENTITY mnt "MNT"><!ENTITY mad "MAD"><!ENTITY mmk "MMK"><!ENTITY nad "NAD"><!ENTITY npr "NPR">
+        <!ENTITY twd "TWD"><!ENTITY nzd "NZD"><!ENTITY nio "NIO"><!ENTITY ngn "NGN"><!ENTITY nok "NOK">
+        <!ENTITY omr "OMR"><!ENTITY pkr "PKR"><!ENTITY pab "PAB"><!ENTITY pen "PEN"><!ENTITY php "PHP">
+        <!ENTITY pln "PLN"><!ENTITY gbp "GBP"><!ENTITY qar "QAR"><!ENTITY ron "RON"><!ENTITY rub "RUB">
+        <!ENTITY sar "SAR"><!ENTITY rsd "RSD"><!ENTITY sgd "SGD"><!ENTITY zar "ZAR"><!ENTITY krw "KRW">
+        <!ENTITY ssp "SSP"><!ENTITY ves "VES"><!ENTITY lkr "LKR"><!ENTITY sek "SEK"><!ENTITY chf "CHF">
+        <!ENTITY thb "THB"><!ENTITY ttd "TTD"><!ENTITY tnd "TND"><!ENTITY try "TRY"><!ENTITY ugx "UGX">
+        <!ENTITY uah "UAH"><!ENTITY aed "AED"><!ENTITY uyu "UYU"><!ENTITY uzs "UZS"><!ENTITY vnd "VND">
+        ]>
+
+<resources>
+
+        <string name="app_name">OpenDPMH</string>
+        <!-- Strings used for fragments for navigation -->
+        <string name="first_fragment_label">First Fragment</string>
+        <string name="second_fragment_label">Second Fragment</string>
+        <string name="next">Start Processors</string>
+        <string name="previous">Previous</string>
+        <string name="stop2">Stop Processors</string>
+        <string name="recorder">recorder</string>
+
+        <string name="hello_first_fragment">OpenDPMH - Framework</string>
+        <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+        <!-- Código extraído do VAD-->
+        <string name="speech_detected">Speech detected!</string>
+        <string name="noise_detected">Noise detected!</string>
+        <string name="press_button_to_start">Press button to start VAD!</string>
+        <string name="start">Start</string>
+        <string name="stop">Stop Processors</string>
+        <string name="sample_rate">Sample Rate:</string>
+        <string name="frame_size">Frame Size:</string>
+        <string name="mode">Mode:</string>
+
+<string name="app_subtitle_full" translatable="false">""</string>
+<string name="app_subtitle_demo" translatable="false">"DEMO"</string>
+
+    <string name="versionName">1.0</string>
+
+<string name="action_settings">"Settings"</string>
+    <string name="action_close">"Close"</string>
+
+<string name="retry">"Retry"</string>
+<string name="unable_refresh">"Unable to refresh."</string>
+<string name="load_text">"Loading..."</string>
+<string name="unknown_error">"Unknown error."</string>
+
+<string name="undo">"Undo"</string>
+<string name="deleted">"Deleted: %1$d"</string>
+
+<string name="time_format_am">"AM"</string>
+<string name="time_format_pm">"PM"</string>
+
+<string name="no_application_handle">"No application can handle this request."</string>
+<string name="install_web_browser">"Please install a web browser."</string>
+<string name="install_email">"Please install an email client and contact %s."</string>
+
+
+<!-- Strings related to Main Activity -->
+<string name="total_dataprocessor" translatable="true">"Total data processor modules"</string>
+<string name="string_total_value_on_date_time">" (%1$s UTC)"</string>
+<string name="string_total_value_change_24h_label">"# "</string>
+<string name="string_total_value_change_24h" translatable="false">" 0 "</string>
+<string name="string_separator_value" translatable="false">": "</string>
+<string name="compositionmode" translatable="true">"Composition mode"</string>
+<string name="value" translatable="false">"--"</string>
+<string name="string_separator_code" translatable="false">": "</string>
+<string name="string_crypto_code" translatable="false">"Status"</string>
+
+<string name="string_no_number" translatable="false">"― ― ―"</string>
+
+<string name="default_crypto_code" translatable="false">"BTC"</string>
+<string name="default_crypto_sign" translatable="false">"₿"</string>
+
+<string name="string_crypto_list_empty_primary">"Your list of data processor modules is empty!"</string>
+<string name="string_crypto_list_empty_secondary">"Add your module via the + button below."</string>
+
+<string name="string_column_coin_ranking" translatable="false">"↑↓"</string>
+<string name="string_column_coin_crypto_hold_amount_symbol">"Crypto coin\nAmount &#38; symbol"</string>
+<string name="string_column_coin_fiat_price_amount">"Price %1$s\nAmount %2$s"</string>
+<string name="string_column_coin_change_24h_1h_7d">"± price %% 1 h / 7 d\n± price %% 24 h\n± amount %1$s 24 h"</string>
+<string name="string_column_coin_separator_change" translatable="false">" / "</string>
+
+<string name="sample_text_column_coin_fiat_price_amount">"Price $\nAmount $"</string>
+<string name="sample_text_column_coin_change_24h_1h_7d">"± Event % 1 h / 7 d\n± event % 24 h\n± total $ 24 h"</string>
+
+<string name="sample_text_total_value_on_date_time" translatable="false">"Total Data Processor value (11/03/2018 12:55:08 UTC)"</string>
+<string name="sample_text_total_value_change_24h" translatable="false">"1538.00"</string>
+<string name="sample_text_crypto_value" translatable="false">"Total Digital Phenotyping Events"</string>
+<string name="sample_text_fiat_value" translatable="false">"--"</string>
+
+<string name="sample_text_item_icon" translatable="false">"MMM"</string>
+<string name="sample_text_item_name" translatable="false">"Data Processor Name"</string>
+<string name="sample_text_item_ranking" translatable="false">"1001"</string>
+<string name="sample_text_item_amount_code" translatable="false">"0.56822348 BITSILVER"</string>
+<string name="sample_text_item_price_fiat" translatable="false">"94,893,149,774.13 USD"</string>
+<string name="sample_text_item_amount_fiat" translatable="false">"20,758,463.13 USD"</string>
+<string name="sample_text_item_price_percent_change_1h_7d" translatable="false">"-901.94% / -10909.09%"</string>
+<string name="sample_text_item_price_percent_change_24h" translatable="false">"+4.25%"</string>
+<string name="sample_text_item_amount_fiat_change_24h" translatable="false">"+1,053.12 USD"</string>
+
+
+<string-array name="fiat_currency_code_array" translatable="false">
+    <item>"&usd;"</item>
+    <item>"&all;"</item>
+    <item>"&dzd;"</item>
+    <item>"&ars;"</item>
+    <item>"&amd;"</item>
+    <item>"&aud;"</item>
+    <item>"&azn;"</item>
+    <item>"&bhd;"</item>
+    <item>"&bdt;"</item>
+    <item>"&byn;"</item>
+    <item>"&bmd;"</item>
+    <item>"&bob;"</item>
+    <item>"&bam;"</item>
+    <item>"&brl;"</item>
+    <item>"&bgn;"</item>
+    <item>"&khr;"</item>
+    <item>"&cad;"</item>
+    <item>"&clp;"</item>
+    <item>"&cny;"</item>
+    <item>"&cop;"</item>
+    <item>"&crc;"</item>
+    <item>"&hrk;"</item>
+    <item>"&cup;"</item>
+    <item>"&czk;"</item>
+    <item>"&dkk;"</item>
+    <item>"&dop;"</item>
+    <item>"&egp;"</item>
+    <item>"&eur;"</item>
+    <item>"&gel;"</item>
+    <item>"&ghs;"</item>
+    <item>"&gtq;"</item>
+    <item>"&hnl;"</item>
+    <item>"&hkd;"</item>
+    <item>"&huf;"</item>
+    <item>"&isk;"</item>
+    <item>"&inr;"</item>
+    <item>"&idr;"</item>
+    <item>"&irr;"</item>
+    <item>"&iqd;"</item>
+    <item>"&ils;"</item>
+    <item>"&jmd;"</item>
+    <item>"&jpy;"</item>
+    <item>"&jod;"</item>
+    <item>"&kzt;"</item>
+    <item>"&kes;"</item>
+    <item>"&kwd;"</item>
+    <item>"&kgs;"</item>
+    <item>"&lbp;"</item>
+    <item>"&mkd;"</item>
+    <item>"&myr;"</item>
+    <item>"&mur;"</item>
+    <item>"&mxn;"</item>
+    <item>"&mdl;"</item>
+    <item>"&mnt;"</item>
+    <item>"&mad;"</item>
+    <item>"&mmk;"</item>
+    <item>"&nad;"</item>
+    <item>"&npr;"</item>
+    <item>"&twd;"</item>
+    <item>"&nzd;"</item>
+    <item>"&nio;"</item>
+    <item>"&ngn;"</item>
+    <item>"&nok;"</item>
+    <item>"&omr;"</item>
+    <item>"&pkr;"</item>
+    <item>"&pab;"</item>
+    <item>"&pen;"</item>
+    <item>"&php;"</item>
+    <item>"&pln;"</item>
+    <item>"&gbp;"</item>
+    <item>"&qar;"</item>
+    <item>"&ron;"</item>
+    <item>"&rub;"</item>
+    <item>"&sar;"</item>
+    <item>"&rsd;"</item>
+    <item>"&sgd;"</item>
+    <item>"&zar;"</item>
+    <item>"&krw;"</item>
+    <item>"&ssp;"</item>
+    <item>"&ves;"</item>
+    <item>"&lkr;"</item>
+    <item>"&sek;"</item>
+    <item>"&chf;"</item>
+    <item>"&thb;"</item>
+    <item>"&ttd;"</item>
+    <item>"&tnd;"</item>
+    <item>"&try;"</item>
+    <item>"&ugx;"</item>
+    <item>"&uah;"</item>
+    <item>"&aed;"</item>
+    <item>"&uyu;"</item>
+    <item>"&uzs;"</item>
+    <item>"&vnd;"</item>
+</string-array>
+
+<string-array name="fiat_currency_sign_array" translatable="false">
+    <item>"$"</item>
+    <item>"L"</item>
+    <item>"د.ج"</item>
+    <item>"$"</item>
+    <item>"֏"</item>
+    <item>"$"</item>
+    <item>"₼"</item>
+    <item>".د.ب"</item>
+    <item>"৳"</item>
+    <item>"Br"</item>
+    <item>"$"</item>
+    <item>"Bs."</item>
+    <item>"KM"</item>
+    <item>"R$"</item>
+    <item>"лв"</item>
+    <item>"៛"</item>
+    <item>"$"</item>
+    <item>"$"</item>
+    <item>"¥"</item>
+    <item>"$"</item>
+    <item>"₡"</item>
+    <item>"kn"</item>
+    <item>"$"</item>
+    <item>"Kč"</item>
+    <item>"kr"</item>
+    <item>"$"</item>
+    <item>"£"</item>
+    <item>"€"</item>
+    <item>"₾""</item>
+    <item>"₾₵"</item>
+    <item>"₾Q"</item>
+    <item>"L"</item>
+    <item>"$"</item>
+    <item>"Ft"</item>
+    <item>"kr"</item>
+    <item>"₹"</item>
+    <item>"Rp"</item>
+    <item>"﷼"</item>
+    <item>"ع.د"</item>
+    <item>"₪"</item>
+    <item>"$"</item>
+    <item>"¥"</item>
+    <item>"د.ا"</item>
+    <item>"₸"</item>
+    <item>"Sh"</item>
+    <item>"د.ك"</item>
+    <item>"с"</item>
+    <item>"ل.ل"</item>
+    <item>"ден"</item>
+    <item>"RM"</item>
+    <item>"₨"</item>
+    <item>"$"</item>
+    <item>"L"</item>
+    <item>"₮"</item>
+    <item>"د.م."</item>
+    <item>"Ks"</item>
+    <item>"$"</item>
+    <item>"₨"</item>
+    <item>"$"</item>
+    <item>"$"</item>
+    <item>"C$"</item>
+    <item>"₦"</item>
+    <item>"kr"</item>
+    <item>"ر.ع."</item>
+    <item>"₨"</item>
+    <item>"B/."</item>
+    <item>"S/."</item>
+    <item>"₱"</item>
+    <item>"zł"</item>
+    <item>"£"</item>
+    <item>"ر.ق"</item>
+    <item>"lei"</item>
+    <item>"₽"</item>
+    <item>"ر.س"</item>
+    <item>"дин."</item>
+    <item>"$"</item>
+    <item>"Rs"</item>
+    <item>"₩"</item>
+    <item>"£"</item>
+    <item>"Bs."</item>
+    <item>"Rs"</item>
+    <item>"kr"</item>
+    <item>"Fr"</item>
+    <item>"฿"</item>
+    <item>"$"</item>
+    <item>"د.ت"</item>
+    <item>"₺"</item>
+    <item>"Sh"</item>
+    <item>"₴"</item>
+    <item>"د.إ"</item>
+    <item>"$"</item>
+    <item>"so'm"</item>
+    <item>"₫"</item>
+</string-array>
+
+
+<string name="action_mode_title">"Selected: %1$d"</string>
+<string name="action_select_all">"Select all"</string>
+<string name="action_delete">"Delete"</string>
+
+
+<!-- Strings related to Add Search Activity -->
+
+<string name="activity_add_search_title">"Add crypto coin(-s)"</string>
+<string name="activity_add_search_subtitle">"All cryptocurrencies by ranking"</string>
+
+<string name="string_info_last_updated_on_date_time">"Last updated (%1$s UTC)"</string>
+<string name="string_info_results_of_search">"Results %1$s"</string>
+
+<string name="action_search">"Search"</string>
+
+<string name="search_hint">"Search for specific coin…"</string>
+
+<string name="sample_text_info_last_updated_on_date_time">"Last updated (11/03/2018 12:55:08 UTC)"</string>
+<string name="sample_text_item_code" translatable="false">"BITSILVER"</string>
+
+<string name="dialog_cryptocurrency_amount_title">"How many %1$s coins do you have?"</string>
+<string name="dialog_cryptocurrency_amount_hint">"Enter amount"</string>
+<string name="dialog_cryptocurrency_amount_confirm_button">"OK"</string>
+<string name="dialog_cryptocurrency_amount_cancel_button">"Cancel"</string>
+<string name="dialog_cryptocurrency_amount_error">"Valid number is required!"</string>
+
+
+<!-- Strings related to Settings Activity -->
+
+<string name="title_activity_settings">"Settings"</string>
+
+<string name="pref_general_category_title">"General"</string>
+
+<string name="pref_language_title">"Language"</string>
+
+<string name="pref_language_key" translatable="false">"preference language"</string>
+
+<string name="pref_default_language_entry">"English"</string>
+<string name="pref_default_language_value">"EN"</string>
+
+<string-array name="pref_language_list_entries" translatable="false">
+    <item>"English"</item>
+    <item>"עִברִית"</item>
+    <item>"Lietuvių"</item>
+    <item>"Swahili"</item>
+</string-array>
+
+<string-array name="pref_language_list_values" translatable="false">
+    <item>"EN"</item>
+    <item>"HE"</item>
+    <item>"LT"</item>
+    <item>"SW"</item>
+</string-array>
+
+<string name="pref_fiat_currency_title">"Fiat currency"</string>
+
+<string name="pref_fiat_currency_key" translatable="false">"preference fiat currency"</string>
+
+<string name="pref_default_fiat_currency_entry">"&usd; - United States Dollar ($)"</string>
+<string name="pref_default_fiat_currency_value">"&usd;"</string>
+
+<string-array name="pref_fiat_currency_list_entries">
+    <item>"&usd; - United States Dollar ($)"</item>
+    <item>"&all; - Albanian Lek (L)"</item>
+    <item>"&dzd; - Algerian Dinar (د.ج)"</item>
+    <item>"&ars; - Argentine Peso ($)"</item>
+    <item>"&amd; - Armenian Dram (֏)"</item>
+    <item>"&aud; - Australian Dollar ($)"</item>
+    <item>"&azn; - Azerbaijani Manat (₼)"</item>
+    <item>"&bhd; - Bahraini Dinar (.د.ب)"</item>
+    <item>"&bdt; - Bangladeshi Taka (৳)"</item>
+    <item>"&byn; - Belarusian Ruble (Br)"</item>
+    <item>"&bmd; - Bermudan Dollar ($)"</item>
+    <item>"&bob; - Bolivian Boliviano (Bs.)"</item>
+    <item>"&bam; - Bosnia-Herzegovina Convertible Mark (KM)"</item>
+    <item>"&brl; - Brazilian Real (R$)"</item>
+    <item>"&bgn; - Bulgarian Lev (лв)"</item>
+    <item>"&khr; - Cambodian Riel (៛)"</item>
+    <item>"&cad; - Canadian Dollar ($)"</item>
+    <item>"&clp; - Chilean Peso ($)"</item>
+    <item>"&cny; - Chinese Yuan (¥)"</item>
+    <item>"&cop; - Colombian Peso ($)"</item>
+    <item>"&crc; - Costa Rican Colón (₡)"</item>
+    <item>"&hrk; - Croatian Kuna (kn)"</item>
+    <item>"&cup; - Cuban Peso ($)"</item>
+    <item>"&czk; - Czech Koruna (Kč)"</item>
+    <item>"&dkk; - Danish Krone (kr)"</item>
+    <item>"&dop; - Dominican Peso ($)"</item>
+    <item>"&egp; - Egyptian Pound (£)"</item>
+    <item>"&eur; - Euro (€)"</item>
+    <item>"&gel; - Georgian Lari (₾))"</item>
+    <item>"&ghs; - Ghanaian Cedi (₵)"</item>
+    <item>"&gtq; - Guatemalan Quetzal (Q)"</item>
+    <item>"&hnl; - Honduran Lempira (L)"</item>
+    <item>"&hkd; - Hong Kong Dollar ($)"</item>
+    <item>"&huf; - Hungarian Forint (Ft)"</item>
+    <item>"&isk; - Icelandic Króna (kr)"</item>
+    <item>"&inr; - Indian Rupee (₹)"</item>
+    <item>"&idr; - Indonesian Rupiah (Rp)"</item>
+    <item>"&irr; - Iranian Rial (﷼)"</item>
+    <item>"&iqd; - Iraqi Dinar (ع.د)"</item>
+    <item>"&ils; - Israeli New Shekel (₪)"</item>
+    <item>"&jmd; - Jamaican Dollar ($)"</item>
+    <item>"&jpy; - Japanese Yen (¥)"</item>
+    <item>"&jod; - Jordanian Dinar (د.ا)"</item>
+    <item>"&kzt; - Kazakhstani Tenge (₸)"</item>
+    <item>"&kes; - Kenyan Shilling (Sh)"</item>
+    <item>"&kwd; - Kuwaiti Dinar (د.ك)"</item>
+    <item>"&kgs; - Kyrgystani Som (с)"</item>
+    <item>"&lbp; - Lebanese Pound (ل.ل)"</item>
+    <item>"&mkd; - Macedonian Denar (ден)"</item>
+    <item>"&myr; - Malaysian Ringgit (RM)"</item>
+    <item>"&mur; - Mauritian Rupee (₨)"</item>
+    <item>"&mxn; - Mexican Peso ($)"</item>
+    <item>"&mdl; - Moldovan Leu (L)"</item>
+    <item>"&mnt; - Mongolian Tugrik (₮)"</item>
+    <item>"&mad; - Moroccan Dirham (د.م.)"</item>
+    <item>"&mmk; - Myanma Kyat (Ks)"</item>
+    <item>"&nad; - Namibian Dollar ($)"</item>
+    <item>"&npr; - Nepalese Rupee (₨)"</item>
+    <item>"&twd; - New Taiwan Dollar ($)"</item>
+    <item>"&nzd; - New Zealand Dollar ($)"</item>
+    <item>"&nio; - Nicaraguan Córdoba (C$)"</item>
+    <item>"&ngn; - Nigerian Naira (₦)"</item>
+    <item>"&nok; - Norwegian Krone (kr)"</item>
+    <item>"&omr; - Omani Rial (ر.ع.)"</item>
+    <item>"&pkr; - Pakistani Rupee (₨)"</item>
+    <item>"&pab; - Panamanian Balboa (B/.)"</item>
+    <item>"&pen; - Peruvian Sol (S/.)"</item>
+    <item>"&php; - Philippine Peso (₱)"</item>
+    <item>"&pln; - Polish Złoty (zł)"</item>
+    <item>"&gbp; - Pound Sterling (£)"</item>
+    <item>"&qar; - Qatari Rial (ر.ق)"</item>
+    <item>"&ron; - Romanian Leu (lei)"</item>
+    <item>"&rub; - Russian Ruble (₽)"</item>
+    <item>"&sar; - Saudi Riyal (ر.س)"</item>
+    <item>"&rsd; - Serbian Dinar (дин.)"</item>
+    <item>"&sgd; - Singapore Dollar ($)"</item>
+    <item>"&zar; - South African Rand (Rs)"</item>
+    <item>"&krw; - South Korean Won (₩)"</item>
+    <item>"&ssp; - South Sudanese Pound (£)"</item>
+    <item>"&ves; - Sovereign Bolivar (Bs.)"</item>
+    <item>"&lkr; - Sri Lankan Rupee (Rs)"</item>
+    <item>"&sek; - Swedish Krona ( kr)"</item>
+    <item>"&chf; - Swiss Franc (Fr)"</item>
+    <item>"&thb; - Thai Baht (฿)"</item>
+    <item>"&ttd; - Trinidad and Tobago Dollar ($)"</item>
+    <item>"&tnd; - Tunisian Dinar (د.ت)"</item>
+    <item>"&try; - Turkish Lira (₺)"</item>
+    <item>"&ugx; - Ugandan Shilling (Sh)"</item>
+    <item>"&uah; - Ukrainian Hryvnia (₴)"</item>
+    <item>"&aed; - United Arab Emirates Dirham (د.إ)"</item>
+    <item>"&uyu; - Uruguayan Peso ($)"</item>
+    <item>"&uzs; - Uzbekistan Som (so'm)"</item>
+    <item>"&vnd; - Vietnamese Dong (₫)"</item>
+</string-array>
+
+<string-array name="pref_fiat_currency_list_values" translatable="false">
+    <item>"&usd;"</item>
+    <item>"&all;"</item>
+    <item>"&dzd;"</item>
+    <item>"&ars;"</item>
+    <item>"&amd;"</item>
+    <item>"&aud;"</item>
+    <item>"&azn;"</item>
+    <item>"&bhd;"</item>
+    <item>"&bdt;"</item>
+    <item>"&byn;"</item>
+    <item>"&bmd;"</item>
+    <item>"&bob;"</item>
+    <item>"&bam;"</item>
+    <item>"&brl;"</item>
+    <item>"&bgn;"</item>
+    <item>"&khr;"</item>
+    <item>"&cad;"</item>
+    <item>"&clp;"</item>
+    <item>"&cny;"</item>
+    <item>"&cop;"</item>
+    <item>"&crc;"</item>
+    <item>"&hrk;"</item>
+    <item>"&cup;"</item>
+    <item>"&czk;"</item>
+    <item>"&dkk;"</item>
+    <item>"&dop;"</item>
+    <item>"&egp;"</item>
+    <item>"&eur;"</item>
+    <item>"&gel;"</item>
+    <item>"&ghs;"</item>
+    <item>"&gtq;"</item>
+    <item>"&hnl;"</item>
+    <item>"&hkd;"</item>
+    <item>"&huf;"</item>
+    <item>"&isk;"</item>
+    <item>"&inr;"</item>
+    <item>"&idr;"</item>
+    <item>"&irr;"</item>
+    <item>"&iqd;"</item>
+    <item>"&ils;"</item>
+    <item>"&jmd;"</item>
+    <item>"&jpy;"</item>
+    <item>"&jod;"</item>
+    <item>"&kzt;"</item>
+    <item>"&kes;"</item>
+    <item>"&kwd;"</item>
+    <item>"&kgs;"</item>
+    <item>"&lbp;"</item>
+    <item>"&mkd;"</item>
+    <item>"&myr;"</item>
+    <item>"&mur;"</item>
+    <item>"&mxn;"</item>
+    <item>"&mdl;"</item>
+    <item>"&mnt;"</item>
+    <item>"&mad;"</item>
+    <item>"&mmk;"</item>
+    <item>"&nad;"</item>
+    <item>"&npr;"</item>
+    <item>"&twd;"</item>
+    <item>"&nzd;"</item>
+    <item>"&nio;"</item>
+    <item>"&ngn;"</item>
+    <item>"&nok;"</item>
+    <item>"&omr;"</item>
+    <item>"&pkr;"</item>
+    <item>"&pab;"</item>
+    <item>"&pen;"</item>
+    <item>"&php;"</item>
+    <item>"&pln;"</item>
+    <item>"&gbp;"</item>
+    <item>"&qar;"</item>
+    <item>"&ron;"</item>
+    <item>"&rub;"</item>
+    <item>"&sar;"</item>
+    <item>"&rsd;"</item>
+    <item>"&sgd;"</item>
+    <item>"&zar;"</item>
+    <item>"&krw;"</item>
+    <item>"&ssp;"</item>
+    <item>"&ves;"</item>
+    <item>"&lkr;"</item>
+    <item>"&sek;"</item>
+    <item>"&chf;"</item>
+    <item>"&thb;"</item>
+    <item>"&ttd;"</item>
+    <item>"&tnd;"</item>
+    <item>"&try;"</item>
+    <item>"&ugx;"</item>
+    <item>"&uah;"</item>
+    <item>"&aed;"</item>
+    <item>"&uyu;"</item>
+    <item>"&uzs;"</item>
+    <item>"&vnd;"</item>
+</string-array>
+
+<string name="pref_date_format_title">"Date format"</string>
+
+<string name="pref_date_format_key" translatable="false">"preference date format"</string>
+
+<string name="pref_default_date_format_entry">"dd/MM/yyyy"</string>
+<string name="pref_default_date_format_value">"dd/MM/yyyy"</string>
+
+<string-array name="pref_date_format_list_entries" translatable="false">
+    <item>"dd/MM/yyyy"</item>
+    <item>"MM/dd/yyyy"</item>
+    <item>"yyyy-MM-dd"</item>
+</string-array>
+
+<string-array name="pref_date_format_list_values" translatable="false">
+    <item>"dd/MM/yyyy"</item> <!-- English (Europe, UK), Hebrew, Swahili -->
+    <item>"MM/dd/yyyy"</item> <!-- English (USA) -->
+    <item>"yyyy-MM-dd"</item> <!-- Lithuanian -->
+</string-array>
+
+<string name="pref_24h_switch_title">"Use 24-hour format"</string>
+
+<string name="pref_24h_switch_key" translatable="false">"preference 24h switch"</string>
+
+<string name="pref_24h_switch_24h_summary" translatable="false">"13:00"</string>
+<string name="pref_24h_switch_12h_summary">"01:00 PM"</string>
+
+
+<string name="pref_support_category_title">"Support"</string>
+
+<string name="pref_rate_app_title">"Rate app in Google Play"</string>
+<string name="pref_rate_app_key" translatable="false">"rate app"</string>
+
+
+<string name="pref_share_app_title">"Share with your friends"</string>
+<string name="pref_share_app_key" translatable="false">"share app"</string>
+
+<string name="share_app_message">"I suggest this free cryptocurrencies portfolio Android app for you: "</string>
+<string name="share_app_chooser">"Share with: "</string>
+
+
+<string name="pref_donate_crypto_key" translatable="false">"preference donate crypto"</string>
+
+<string name="pref_donate_crypto_title">"Donate with crypto"</string>
+<string name="pref_donate_crypto_summary">"Send your Bitcoin or Etherium"</string>
+
+<string name="dialog_donate_crypto_title">"Donate with crypto"</string>
+<string name="dialog_donate_crypto_message_first">"Send any amount of Bitcoin or Ethereum to the author. Click to copy particular cryptocurrency address."</string>
+<string name="dialog_donate_crypto_positive_button">"Got it"</string>
+
+<string name="dialog_donate_crypto_bitcoin_address_title">"Copy Bitcoin Address"</string>
+<string name="dialog_donate_crypto_bitcoin_address" translatable="false">"3Db5NAnFTfNSqc9P851SUcGoosfdm4ZJXW"</string>
+
+<string name="dialog_donate_crypto_ethereum_address_title">"Copy Ethereum Address"</string>
+<string name="dialog_donate_crypto_ethereum_address" translatable="false">"0x3b402CaF8921d79467B6A319A014413081C28c3E"</string>
+
+<string name="dialog_donate_crypto_message_second">"Your any donation would help not only to inspire the author to continue development but also to cover API data service subscription costs if the need arise."</string>
+<string name="dialog_donate_crypto_message_third">"Thank you! 😇"</string>
+
+<string name="dialog_donate_crypto_bitcoin_address_copy_confirmation">"Bitcoin address copied!"</string>
+<string name="dialog_donate_crypto_ethereum_address_copy_confirmation">"Ethereum address copied!"</string>
+
+
+<string name="pref_buy_me_coffee_key" translatable="false">"buy me coffee"</string>
+<string name="pref_buy_me_coffee_title">"Buy me a coffee"</string>
+<string name="pref_buy_me_coffee_url" translatable="false">"https://www.buymeacoffee.com/baruckis"</string>
+
+
+<string name="pref_contact_title">"Contact"</string>
+<string name="pref_contact_summary">"Have any feedback? Email your questions, suggestions, bug reports"</string>
+<string name="pref_contact_key" translatable="false">"contact"</string>
+
+<string name="feedback_email_subject" translatable="false">"Feedback %s for Android"</string>
+
+
+<string name="pref_support_about_title">"About"</string>
+
+<string name="pref_website_title">"Website"</string>
+<string name="pref_website_summary" translatable="false">"kriptofolio.app"</string>
+<string name="pref_website_key" translatable="false">"website"</string>
+<string name="pref_website_url" translatable="false">"https://kriptofolio.app"</string>
+
+<string name="pref_author_title">"Author Andrius Baruckis"</string>
+<string name="pref_author_summary" translatable="false">"www.baruckis.com"</string>
+<string name="pref_author_key" translatable="false">"author"</string>
+<string name="pref_author_url" translatable="false">"https://www.baruckis.com"</string>
+
+<string name="pref_source_title">"View source on"</string>
+<string name="pref_source_summary" translatable="false">"GitHub"</string>
+<string name="pref_source_key" translatable="false">"source"</string>
+<string name="pref_source_url" translatable="false">"https://github.com/baruckis/Kriptofolio"</string>
+
+<string name="pref_privacy_policy_title">"Privacy policy"</string>
+<string name="pref_privacy_policy_key" translatable="false">"privacy policy"</string>
+<string name="pref_privacy_policy_url" translatable="false">"https://kriptofolio.app/privacy-policy-app"</string>
+
+<string name="pref_third_party_software_title">"Third-party software"</string>
+<string name="pref_third_party_software_summary">"Free &#38; open source licenses"</string>
+<string name="pref_third_party_software_key" translatable="false">"third party software"</string>
+
+<string name="pref_license_title">"License"</string>
+<string name="pref_license_summary">"Copyright"</string>
+<string name="pref_license_key" translatable="false">"license"</string>
+
+<string name="pref_app_key" translatable="false">"app"</string>
+
+
+<!-- Strings related to Libraries Licenses List Fragment -->
+
+<string name="fragment_libraries_licenses_list_title">"Third-party software"</string>
+<string name="fragment_libraries_licenses_list_subtitle">"Main libraries"</string>
+
+<string name="action_more">"More"</string>
+
+<string name="button_read_license">"Read license"</string>
+<string name="button_project_link">"Project link"</string>
+
+<string name="library_title_kotlin" translatable="false">"Kotlin Standard"</string>
+<string name="library_developer_kotlin" translatable="false">"JetBrains"</string>
+<string name="library_link_kotlin" translatable="false">"https://github.com/JetBrains/kotlin/tree/master/libraries/stdlib"</string>
+<string name="library_license_name_kotlin" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_coroutines" translatable="false">"Kotlinx Coroutines Core"</string>
+<string name="library_developer_coroutines" translatable="false">"JetBrains"</string>
+<string name="library_link_coroutines" translatable="false">"https://github.com/Kotlin/kotlinx.coroutines/tree/master/core"</string>
+<string name="library_license_name_coroutines" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_coroutines_android" translatable="false">"Kotlinx Coroutines Android"</string>
+<string name="library_developer_coroutines_android" translatable="false">"JetBrains"</string>
+<string name="library_link_coroutines_android" translatable="false">"https://github.com/Kotlin/kotlinx.coroutines/tree/master/ui/kotlinx-coroutines-android"</string>
+<string name="library_license_name_coroutines_android" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_ktx" translatable="false">"Android KTX"</string>
+<string name="library_developer_ktx" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_ktx" translatable="false">"https://android.github.io/android-ktx/core-ktx"</string>
+<string name="library_license_name_ktx" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_appcompat" translatable="false">"Android AppCompat"</string>
+<string name="library_developer_android_appcompat" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_appcompat" translatable="false">"https://developer.android.com/topic/libraries/support-library/packages#v7-appcompat"</string>
+<string name="library_license_name_android_appcompat" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_cardview" translatable="false">"Android CardView"</string>
+<string name="library_developer_android_cardview" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_cardview" translatable="false">"https://developer.android.com/topic/libraries/support-library/packages#v7-cardview"</string>
+<string name="library_license_name_android_cardview" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_preference" translatable="false">"Android Preference"</string>
+<string name="library_developer_android_preference" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_preference" translatable="false">"https://developer.android.com/guide/topics/ui/settings"</string>
+<string name="library_license_name_android_preference" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_recyclerview" translatable="false">"Android RecyclerView"</string>
+<string name="library_developer_android_recyclerview" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_recyclerview" translatable="false">"https://developer.android.com/guide/topics/ui/layout/recyclerview"</string>
+<string name="library_license_name_android_recyclerview" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_recyclerview_selection" translatable="false">"Android RecyclerView Selection"</string>
+<string name="library_developer_android_recyclerview_selection" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_recyclerview_selection" translatable="false">"https://developer.android.com/reference/androidx/recyclerview/selection/package-summary"</string>
+<string name="library_license_name_android_recyclerview_selection" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_constraint_layout" translatable="false">"Android Constraint Layout"</string>
+<string name="library_developer_android_constraint_layout" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_constraint_layout" translatable="false">"https://developer.android.com/reference/android/support/constraint/ConstraintLayout"</string>
+<string name="library_license_name_android_constraint_layout" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_material_components" translatable="false">"Android Material Components"</string>
+<string name="library_developer_android_material_components" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_material_components" translatable="false">"https://github.com/material-components/material-components-android"</string>
+<string name="library_license_name_android_material_components" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_data_binding" translatable="false">"Android Data Binding"</string>
+<string name="library_developer_android_data_binding" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_data_binding" translatable="false">"https://developer.android.com/topic/libraries/data-binding"</string>
+<string name="library_license_name_android_data_binding" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_lifecycle_aware" translatable="false">"Android Lifecycle-Aware Components"</string>
+<string name="library_developer_android_lifecycle_aware" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_lifecycle_aware" translatable="false">"https://developer.android.com/topic/libraries/architecture/lifecycle"</string>
+<string name="library_license_name_android_lifecycle_aware" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_room" translatable="false">"Android Room Persistence"</string>
+<string name="library_developer_android_room" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_room" translatable="false">"https://developer.android.com/topic/libraries/architecture/room"</string>
+<string name="library_license_name_android_room" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_navigation" translatable="false">"Android Navigation"</string>
+<string name="library_developer_android_navigation" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_navigation" translatable="false">"https://developer.android.com/topic/libraries/architecture/navigation.html"</string>
+<string name="library_license_name_android_navigation" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_dagger" translatable="false">"Dagger"</string>
+<string name="library_developer_dagger" translatable="false">"Square / Google"</string>
+<string name="library_link_dagger" translatable="false">"https://google.github.io/dagger"</string>
+<string name="library_license_name_dagger" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_retrofit" translatable="false">"Retrofit"</string>
+<string name="library_developer_retrofit" translatable="false">"Square"</string>
+<string name="library_link_retrofit" translatable="false">"https://square.github.io/retrofit"</string>
+<string name="library_license_name_retrofit" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_okhttp" translatable="false">"OkHttp"</string>
+<string name="library_developer_okhttp" translatable="false">"Square"</string>
+<string name="library_link_okhttp" translatable="false">"https://square.github.io/okhttp"</string>
+<string name="library_license_name_okhttp" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_okhttp_logging_interceptor" translatable="false">"OkHttp Logging Interceptor"</string>
+<string name="library_developer_okhttp_logging_interceptor" translatable="false">"Square"</string>
+<string name="library_link_okhttp_logging_interceptor" translatable="false">"https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor"</string>
+<string name="library_license_name_okhttp_logging_interceptor" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_gson" translatable="false">"Gson"</string>
+<string name="library_developer_gson" translatable="false">"Google"</string>
+<string name="library_link_gson" translatable="false">"https://github.com/google/gson"</string>
+<string name="library_license_name_gson" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_glide" translatable="false">"Glide"</string>
+<string name="library_developer_glide" translatable="false">"Google"</string>
+<string name="library_link_glide" translatable="false">"https://bumptech.github.io/glide"</string>
+<string name="library_license_name_glide">"BSD, part MIT and Apache 2.0"</string>
+
+<string name="library_title_glide_okhttp" translatable="false">"Glide OkHttp Integration"</string>
+<string name="library_developer_glide_okhttp" translatable="false">"Google"</string>
+<string name="library_link_glide_okhttp" translatable="false">"http://bumptech.github.io/glide/int/okhttp3.html"</string>
+<string name="library_license_name_glide_okhttp">@string/library_license_name_glide</string>
+
+<string name="library_title_flipview" translatable="false">"FlipView"</string>
+<string name="library_developer_flipview" translatable="false">"Davide Steduto"</string>
+<string name="library_link_flipview" translatable="false">"https://github.com/davideas/FlipView"</string>
+<string name="library_license_name_flipview" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_stetho" translatable="false">"Stetho"</string>
+<string name="library_developer_stetho" translatable="false">"Facebook"</string>
+<string name="library_link_stetho" translatable="false">"http://facebook.github.io/stetho"</string>
+<string name="library_license_name_stetho" translatable="false">@string/library_license_name_bsd</string>
+
+<string name="library_title_oss_licenses" translatable="false">"OSS Licenses Gradle Plugin"</string>
+<string name="library_developer_oss_licenses" translatable="false">"Google"</string>
+<string name="library_link_oss_licenses" translatable="false">"https://github.com/google/play-services-plugins"</string>
+<string name="library_license_name_oss_licenses" translatable="false">@string/library_license_name_android_sdk</string>
+
+<string name="library_title_android_test" translatable="false">"Android Test"</string>
+<string name="library_developer_android_test" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_test" translatable="false">"https://android.github.io/android-test"</string>
+<string name="library_license_name_android_test" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_android_test_espresso" translatable="false">"Android Test Espresso"</string>
+<string name="library_developer_android_test_espresso" translatable="false">"Android Open Source Project"</string>
+<string name="library_link_android_test_espresso" translatable="false">"https://developer.android.com/training/testing/espresso"</string>
+<string name="library_license_name_android_test_espresso" translatable="false">@string/library_license_name_apache_v2</string>
+
+<string name="library_title_junit" translatable="false">"JUnit"</string>
+<string name="library_developer_junit">"Erich Gamma, Kent Beck &#38; JUnit team"</string>
+<string name="library_link_junit" translatable="false">"https://junit.org"</string>
+<string name="library_license_name_junit" translatable="false">@string/library_license_name_epl_v1</string>
+
+
+<string name="library_license_name_apache_v2" translatable="false">"Apache 2.0"</string>
+<string name="library_license_name_bsd" translatable="false">"BSD"</string>
+<string name="library_license_name_android_sdk" translatable="false">"Android Software Development Kit License Agreement"</string>
+<string name="library_license_name_epl_v1" translatable="false">"Eclipse Public License 1.0"</string>
+
+
+<!-- Strings related to License Fragment -->
+
+<string name="fragment_license_title">"License"</string>
+
+
+<!-- Strings related to Oss Licenses Menu Activity -->
+
+<string name="activity_oss_licenses_menu_title">"All libraries licenses"</string>
+
+
 </resources>

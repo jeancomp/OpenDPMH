@@ -45,6 +45,8 @@ import br.ufma.lsdi.digitalphenotyping.R;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.PhenotypeComposer;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 
 /**
  * System Bus to framework, MainService
@@ -86,6 +88,7 @@ public class MainService extends Service {
             super.onCreate();
             Log.i(TAG, "#### Starting service BusSystem");
             context = this;
+
             messageTextView = new TextView(context);
 
             // Create the Foreground Service
@@ -152,36 +155,45 @@ public class MainService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "#### CONFIGURATION MAINSERVICE");
-        if(intent != null){
-            setCommunicationTechnology(this.communicationTechnology);
-            setSecure(this.secure);
-            //activityParcelable2 = new ActivityParcelable();
-            //activityParcelable2 = (ActivityParcelable) intent.getParcelableExtra("activity");
+        try {
+            Log.i(TAG, "#### CONFIGURATION MAINSERVICE");
+            if (intent != null) {
+                ActiveDataProcessorManager activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
+                ListDataProcessorManager listDataProcessorManager = new ListDataProcessorManager(getContext());
 
-            startCDDL();
-            startServices();
+                setCommunicationTechnology(this.communicationTechnology);
+                setSecure(this.secure);
+                //activityParcelable2 = new ActivityParcelable();
+                //activityParcelable2 = (ActivityParcelable) intent.getParcelableExtra("activity");
 
-            if(servicesStarted) {
-                //String clientID = intent.getStringExtra("clientID");
-                compositionmode = (CompositionMode) intent.getSerializableExtra("compositionmode");
-                hostServer = intent.getStringExtra("hostserver");
-                port = intent.getStringExtra("port");
-                username = intent.getStringExtra("username");
-                password = intent.getStringExtra("password");
-                frequency = 0;
-                if (compositionmode == FREQUENCY) {
-                    frequency = intent.getIntExtra("frequency", 1);
-                    Log.i(TAG, "#### MainService receives Frequency: " + frequency);
+                startCDDL();
+                startServices();
+
+                if (servicesStarted) {
+                    //String clientID = intent.getStringExtra("clientID");
+                    compositionmode = (CompositionMode) intent.getSerializableExtra("compositionmode");
+                    hostServer = intent.getStringExtra("hostserver");
+                    port = intent.getStringExtra("port");
+                    username = intent.getStringExtra("username");
+                    password = intent.getStringExtra("password");
+                    frequency = 0;
+                    if (compositionmode == FREQUENCY) {
+                        frequency = intent.getIntExtra("frequency", 1);
+                        Log.i(TAG, "#### MainService receives Frequency: " + frequency);
+                    }
+                    Log.i(TAG, "#### MainService receives CompositionMode: " + compositionmode.name().toString());
                 }
-                Log.i(TAG, "#### MainService receives CompositionMode: " + compositionmode.name().toString());
+
+                subConfigurationInformation = SubscriberFactory.createSubscriber();
+                subConfigurationInformation.addConnection(CDDL.getInstance().getConnection());
+                subscribeMessageConfigurationInformation(Topics.MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC.toString());
+
+                publishMessage(Topics.NOTIFICATION.toString(), "aliveMainService");
             }
-
-            subConfigurationInformation = SubscriberFactory.createSubscriber();
-            subConfigurationInformation.addConnection(CDDL.getInstance().getConnection());
-            subscribeMessageConfigurationInformation(Topics.MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC.toString());
         }
-
+        catch (Exception e){
+            e.printStackTrace();
+        }
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
@@ -492,6 +504,17 @@ public class MainService extends Service {
         Message message = new Message();
         message.setServiceName(service);
         message.setServiceValue(valor);
+        publisher.publish(message);
+    }
+
+
+    public void publishMessage(String service, String text) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        Message message = new Message();
+        message.setServiceName(service);
+        message.setTopic(service);
+        message.setServiceValue(text);
         publisher.publish(message);
     }
 }

@@ -1,6 +1,7 @@
 package br.ufma.lsdi.digitalphenotyping;
 
 public enum Topics {
+    NOTIFICATION("notification"),
     ADD_PLUGIN_TOPIC("addplugin"),
     REMOVE_PLUGIN_TOPIC("removeplugin"),
     START_DATAPROCESSOR_TOPIC("startdataprocessor"),

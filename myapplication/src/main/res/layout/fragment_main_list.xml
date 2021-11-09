@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.jp.myapplication.MainListFragment"
+    tools:showIn="@layout/activity_main2">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_labels"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_cardview_column_names_height"
+            android:layout_marginStart="@dimen/main_cardview_column_names_outer_margin"
+            android:layout_marginTop="@dimen/main_cardview_column_names_outer_margin"
+            android:layout_marginEnd="@dimen/main_cardview_column_names_outer_margin"
+            app:cardBackgroundColor="@color/colorForMainColumnNames"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/main_cardview_column_names_inner_margin"
+                android:layout_marginEnd="@dimen/main_cardview_column_names_inner_margin"
+                android:paddingTop="@dimen/main_cardview_column_names_outer_margin"
+                android:paddingBottom="@dimen/main_cardview_column_names_outer_margin">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline1_fixed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_end="323dp" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline1_percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="@dimen/main_guide1_percent" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline2_percent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="@dimen/main_guide2_percent" />
+
+                <!--<androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_init"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:foreground="@drawable/ic_add"
+                    tools:layout_editor_absoluteY="8dp"
+                    tools:ignore="MissingConstraints" />-->
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/button_init"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:background="@color/colorWhite"
+                    android:foreground="@android:drawable/ic_lock_power_off"
+                    app:layout_constraintBottom_toBottomOf="parent"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="MissingConstraints" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_column_coin_name_amount_symbol"
+                    style="@style/MainListColumnNamesText"
+                    android:layout_marginStart="@dimen/main_cardview_column_names_outer_margin"
+                    android:layout_marginEnd="@dimen/main_cardview_column_names_text_between_margin"
+                    android:text="@string/string_column_coin_crypto_hold_amount_symbol"
+                    android:textAlignment="viewStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline1_percent"
+                    app:layout_constraintStart_toEndOf="@+id/button_init"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_column_coin_fiat_btc_price"
+                    style="@style/MainListColumnNamesText"
+                    android:layout_marginStart="@dimen/main_cardview_column_names_text_between_margin"
+                    android:layout_marginEnd="@dimen/main_cardview_column_names_text_between_margin"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline2_percent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline1_percent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/sample_text_column_coin_fiat_price_amount" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/text_column_coin_change_24h_1h_7d"
+                    style="@style/MainListColumnNamesText"
+                    android:layout_marginStart="@dimen/main_cardview_column_names_text_between_margin"
+                    android:lines="3"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline2_percent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/sample_text_column_coin_change_24h_1h_7d" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- emptyList is a boxed field but needs to be un-boxed to execute app:visibleGone.
+             This may cause NPE so Data Binding will safely unbox it. That is why we wrap emptyList
+             with safeUnbox() to prevent the warning. -->
+        <LinearLayout
+            android:id="@+id/layout_fragment_main_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/add_search_list_item_inner_margin"
+            android:layout_marginTop="@dimen/add_search_list_item_inner_margin"
+            android:layout_marginEnd="@dimen/add_search_list_item_inner_margin"
+            android:layout_marginBottom="@dimen/add_search_list_item_inner_margin"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardview_labels">
+            <!--app:visibleGone="@{safeUnbox(emptyList)}">-->
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_primary_empty"
+                style="@style/MainListEmptyText.Primary"
+                android:text="@string/string_crypto_list_empty_primary" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/text_secondary_empty"
+                style="@style/MainListEmptyText.Secondary"
+                android:text="@string/string_crypto_list_empty_secondary" />
+
+        </LinearLayout>
+
+        <include
+            layout="@layout/loading_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/add_search_list_item_inner_margin"
+            android:layout_marginTop="@dimen/add_search_list_item_inner_margin"
+            android:layout_marginEnd="@dimen/add_search_list_item_inner_margin"
+            android:layout_marginBottom="@dimen/add_search_list_item_inner_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardview_labels"/>
+            <!--app:callback="@{() -> retryCallback.retry()}"
+            app:resource="@{listResource}" />-->
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh_fragment_main_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cardview_labels">
+            <!--app:visibleGone="@{listResource.data != null}">-->
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview_fragment_main_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="5dp"
+                android:paddingBottom="72dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:scrollbars="vertical" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

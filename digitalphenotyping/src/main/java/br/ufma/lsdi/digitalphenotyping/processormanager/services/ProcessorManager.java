@@ -33,20 +33,32 @@ import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidPluginException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 import br.ufma.lsdi.digitalphenotyping.rawdatacollector.RawDataCollector;
 
+
+/*
+Observação:
+Criar HashMap<String, String> sensorXDataprocessor.
+Essa tabela conterá os nomes dos sensores versos os dataprocessor, para quando der uma exceção
+em tempo de execução de um start sensor ou um stop sensor, mostrar quem são os dataprocessor que
+estão compartilhando o mesmo sensor.
+* */
+
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
     //private ActivityParcelable activityParcelable;
-    private Activity activity;
-    private Context context;
     private Publisher publisher = PublisherFactory.createPublisher();
     private List<String> listDataProcessors = new ArrayList();
     private List<String> listActiveDataProcessors = new ArrayList();
     private HashMap<String, Integer> listActiveSensor = new HashMap<>();
+    private SaveActivity saveActivity = SaveActivity.getInstance();
+    private ActiveDataProcessorManager activeDataProcessorManager = ActiveDataProcessorManager.getInstance();
+    private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
     private List<String> sensorList = new ArrayList();
     private List<String> pluginList = new ArrayList();
     private Subscriber subStartDataProcessor;
@@ -55,7 +67,8 @@ public class ProcessorManager extends Service {
     private Subscriber subDeactiveSensor;
     private Subscriber subListSensors;
     private Subscriber subAddPlugin;
-    private SaveActivity saveActivity = SaveActivity.getInstance();
+    private Activity activity;
+    private Context context;
 
 
     @Override
@@ -84,6 +97,9 @@ public class ProcessorManager extends Service {
 
             subAddPlugin = SubscriberFactory.createSubscriber();
             subAddPlugin.addConnection(CDDL.getInstance().getConnection());
+
+            //activeDataProcessorManager = new ActiveDataProcessorManager(context);
+            //listDataProcessorManager = new ListDataProcessorManager(context);
 
             //activityParcelable = new ActivityParcelable();
         }catch (Exception e){
@@ -114,6 +130,8 @@ public class ProcessorManager extends Service {
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sleep");
             }
+            activeDataProcessorManager.getInstance().insert(dataProcessorName);
+            publishMessage("aliveNewDataProcessor");
             listActiveDataProcessors.add(dataProcessorName); // Update active DataProcessor list
             publishMessage(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString(),dataProcessorName); //PhenotypeComposer recebe informação que o processor foi ativado.
         }catch (Exception e){
@@ -144,6 +162,8 @@ public class ProcessorManager extends Service {
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services: Sleep");
             }
+            activeDataProcessorManager.getInstance().delete(dataProcessorName);
+            publishMessage("aliveRemoveDataProcessor");
             listActiveDataProcessors.remove(dataProcessorName);
             publishMessage(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString(),dataProcessorName);
         }catch (Exception e){
@@ -516,11 +536,20 @@ public class ProcessorManager extends Service {
     }
 
 
+    /**
+     * Contains all data processor modules available for use.
+     */
     public void startDataProcessorsList() {
         this.listDataProcessors.add("RawDataCollector");
         this.listDataProcessors.add("Sociability");
         this.listDataProcessors.add("Mobility");
         this.listDataProcessors.add("Sleep");
+
+        //Save in database
+        /*listDataProcessorManager.getInstance().insert("RawDataCollector");
+        listDataProcessorManager.getInstance().insert("Sociability");
+        listDataProcessorManager.getInstance().insert("Mobility");
+        listDataProcessorManager.getInstance().insert("Sleep");*/
     }
 
 
@@ -627,6 +656,17 @@ public class ProcessorManager extends Service {
 
         Message message = new Message();
         message.setServiceName(service);
+        message.setServiceValue(text);
+        publisher.publish(message);
+    }
+
+
+    public void publishMessage(String text) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        Message message = new Message();
+        message.setServiceName(Topics.NOTIFICATION.toString());
+        message.setTopic(Topics.NOTIFICATION.toString());
         message.setServiceValue(text);
         publisher.publish(message);
     }

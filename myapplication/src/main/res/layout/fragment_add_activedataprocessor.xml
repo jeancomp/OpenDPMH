@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    card_view:cardBackgroundColor="@color/white"
+    android:layout_marginRight="5dp"
+    android:layout_marginLeft="5dp"
+    card_view:cardCornerRadius="5dp"
+    app:ignore="NamespaceTypo">
+
+    <LinearLayout
+        android:id="@+id/rlInner"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_height="match_parent" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/txtName_dataprocessor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:text="Medium Text"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/txtContentId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:visibility="gone"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/txtDescription_dataprocessor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="test"
+                android:inputType="textMultiLine"
+                android:padding="5dp"
+                android:textColor="#000000"
+                />
+        </LinearLayout>
+        <CheckBox
+            android:id="@+id/chbSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

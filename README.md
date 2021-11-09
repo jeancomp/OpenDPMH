@@ -35,7 +35,7 @@ The general objective of this work is to provide a framework focused on Digital 
 Componentes:
 * DPManager: responsible for managing the framework (e.g., start/stop, start/stop the processors, configuring the composition mode of PhenotypeComposer).
 * MainService: bus responsible for ensuring the exchange of messages between the framework components.
-* ProcessorManager: manages dataprocessor (e.g., start/stop dataprocessor), start/stop sensors, and identifies new plugin that has been installed.
+* ProcessorManager: manages activeDataprocessor (e.g., start/stop activeDataprocessor), start/stop sensors, and identifies new plugin that has been installed.
 * DataProcessor: the class where the processors will be implemented (e.g., sociability, mobility, sleep, physical activity).
 * PhenotypeComposer: composes digital phenotypes of users, receiving directly from the data processor of detected events (eg phone calls, sms, GPS, accelerometer).
 
@@ -117,7 +117,7 @@ Stop-framework:
 ```sh
 digitalPhenotypingManager.stop();
 ```
-Start-dataprocessor:
+Start-activeDataprocessor:
 ```sh
 List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
 digitalPhenotypingManager.getInstance().startDataProcessors(listProcessors);

@@ -1,6 +1,7 @@
-<resources>
+<!--
+  <resources>
 
-    <!-- Base application theme. -->
+    &lt;!&ndash; Base application theme. &ndash;&gt;
     <style name="AppTheme" parent="Theme.AppCompat">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
@@ -13,6 +14,168 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+    </style>
+
+</resources>
+  -->
+
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Flag to replace the toolbar with action mode or show it above your toolbar. -->
+        <item name="windowActionModeOverlay">true</item>
+
+        <!-- Icon on the left, which you want the user to click to close the ActionMode.
+        If you leave it as default, it will be the back arrow. -->
+        <item name="actionModeCloseDrawable">@drawable/ic_close</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+
+    <style name="MainListColumnNamesText" parent="AutoSizeText">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:lines">2</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/colorForMainColumnNamesText</item>
+        <item name="autoSizeMaxTextSize">14sp</item>
+    </style>
+
+    <style name="MainListItemPrimeText" parent="AutoSizeText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/colorForMainListItemPrimeText</item>
+        <item name="android:textDirection">firstStrongLtr</item>
+    </style>
+
+    <style name="MainListItemText" parent="AutoSizeText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textColor">@color/colorForMainListItemText</item>
+        <item name="android:textDirection">firstStrongLtr</item>
+        <item name="autoSizeMaxTextSize">14sp</item>
+    </style>
+
+    <style name="MainListEmptyText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:layout_marginEnd">@dimen/main_cardview_column_names_outer_margin</item>
+        <item name="android:layout_marginStart">@dimen/main_cardview_column_names_outer_margin
+        </item>
+    </style>
+
+    <style name="MainListEmptyText.Primary" parent="MainListEmptyText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MainListEmptyText.Secondary" parent="MainListEmptyText" />
+
+    <style name="AddSearchListItemPrimeText" parent="AutoSizeText">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textColor">@color/colorForAddSearchListItemPrimeText</item>
+        <item name="android:textDirection">firstStrongLtr</item>
+    </style>
+
+    <style name="AddSearchListItemText" parent="AutoSizeText">
+        <item name="android:textColor">@color/colorForAddSearchListItemText</item>
+        <item name="android:textDirection">firstStrongLtr</item>
+    </style>
+
+    <style name="AutoSizeText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">7sp</item>
+    </style>
+
+    <!--<style name="FlipView">
+        <item name="android:layout_height">@dimen/main_cardview_list_item_image_icon_width_height
+        </item>
+        <item name="android:layout_width">@dimen/main_cardview_list_item_image_icon_width_height
+        </item>
+        <item name="android:padding">4dp</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="checked">false</item>
+        <item name="frontBackgroundColor">@color/colorForImageIconFrontTextBackground</item>
+        <item name="frontLayout">@layout/flipview_front_custom</item>
+        <item name="rearBackgroundColor">@color/colorForImageIconRearBackground</item>
+        <item name="rearImageAnimationDelay">0</item>
+        <item name="enableInitialAnimation">false</item>
+    </style>-->
+
+    <style name="Dialog" />
+
+    <style name="Dialog.DonateCrypto" />
+
+    <style name="Dialog.DonateCrypto.ClickableItemImageIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="Dialog.DonateCrypto.ClickableItemTextView" parent="AutoSizeText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="CardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="CardStyle.LibrariesLicenses" parent="CardStyle">
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="CardStyle.LibrariesLicensesTitle" parent="TextAppearance.AppCompat.Large">
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="CardStyle.LibrariesLicensesDeveloper" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="CardStyle.LibrariesLicensesLicense" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+    </style>
+
+    <style name="CardStyle.BorderlessButton" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">0dp</item>
     </style>
 
 </resources>

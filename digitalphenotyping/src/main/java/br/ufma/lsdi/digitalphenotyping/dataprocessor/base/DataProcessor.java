@@ -21,7 +21,7 @@ import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.Topics;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
 public abstract class DataProcessor extends Service {

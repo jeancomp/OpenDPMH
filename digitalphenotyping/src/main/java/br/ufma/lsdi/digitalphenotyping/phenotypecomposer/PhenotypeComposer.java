@@ -44,7 +44,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Digit
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
-import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabaseDP;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabasePC;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
 public class PhenotypeComposer extends Service {
@@ -64,7 +64,7 @@ public class PhenotypeComposer extends Service {
     private int lastFrequency = 6;
     private List<String> nameActiveDataProcessors = new ArrayList();
     private List<Boolean> activeDataProcessors = new ArrayList();
-    private AppDatabaseDP db;
+    private AppDatabasePC db;
     private WorkManager workManager;
 
     @Override
@@ -96,7 +96,7 @@ public class PhenotypeComposer extends Service {
             messageTextView = new TextView(context);
 
             db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabaseDP.class, "database-phenotype").build();
+                    AppDatabasePC.class, "database-phenotype").build();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }

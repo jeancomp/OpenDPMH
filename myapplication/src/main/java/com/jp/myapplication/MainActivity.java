@@ -21,16 +21,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
-import br.ufma.lsdi.digitalphenotyping.dp.DPManager;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidActivityException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidCompositionModeException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidDataProcessorNameException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidFrequencyException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidHostServerException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidMainServiceException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidPasswordException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidPortException;
-import br.ufma.lsdi.digitalphenotyping.dp.handlingexceptions.InvalidUsernameException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidFrequencyException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidHostServerException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidMainServiceException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPasswordException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
 import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
 
 public class MainActivity extends AppCompatActivity {

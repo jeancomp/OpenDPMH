@@ -23,6 +23,17 @@ android {
         }
     }
 
+    /*
+     * Liberando o trabalho com Data Binding
+     * */
+    buildFeatures {
+
+        dataBinding true
+
+        // for view binding:
+        viewBinding true
+    }
+
     compileOptions {
         sourceCompatibility = '1.8'
         targetCompatibility = '1.8'
@@ -39,6 +50,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.5'
     implementation project(path: ':digitalphenotyping')
     implementation 'androidx.room:room-runtime:2.3.0'
+    implementation 'org.jetbrains:annotations:15.0'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'com.google.android.gms:play-services-nearby:18.0.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -70,4 +84,9 @@ dependencies {
     annotationProcessor 'org.permissionsdispatcher:permissionsdispatcher-processor:4.8.0'
 
     implementation 'com.airbnb.android:lottie:3.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.preference:preference:1.1.1'
+
+//    implementation 'com.androidx.support:appcompat-v7:28.0.0'
+ //   implementation 'com.androidx.support:recyclerview-v7:28.0.0'
 }

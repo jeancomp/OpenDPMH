@@ -24,7 +24,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".dataprocessor.util.Alarm" android:label="BroadcastReceiverAux">
+        <receiver android:name=".activeDataprocessor.util.Alarm" android:label="BroadcastReceiverAux">
             <intent-filter>
                 <action android:name="ALARME_DISPARADO"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -35,9 +35,9 @@
         <service android:name=".processormanager.services.ProcessorManager"/>
         <service android:name=".phenotypecomposer.PhenotypeComposer"/>
         <service android:name=".rawdatacollector.RawDataCollector" />
-        <service android:name=".dataprocessor.processors.Sociability" />
-        <service android:name=".dataprocessor.processors.Mobility" />
-        <service android:name=".dataprocessor.processors.Sleep" />
+        <service android:name=".activeDataprocessor.processors.Sociability" />
+        <service android:name=".activeDataprocessor.processors.Mobility" />
+        <service android:name=".activeDataprocessor.processors.Sleep" />
     </application>
 
 </manifest>
