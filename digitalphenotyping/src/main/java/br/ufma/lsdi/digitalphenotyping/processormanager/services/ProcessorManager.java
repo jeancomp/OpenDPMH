@@ -131,7 +131,7 @@ public class ProcessorManager extends Service {
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sleep");
             }
-            activeDataProcessorManager.getInstance().insert(dataProcessorName);
+            saveDatabaseActiveDataProcessorList(dataProcessorName);
             publishMessage("aliveNewDataProcessor");
             listActiveDataProcessors.add(dataProcessorName); // Update active DataProcessor list
             publishMessage(Topics.ACTIVE_DATAPROCESSOR_TOPIC.toString(),dataProcessorName); //PhenotypeComposer recebe informação que o processor foi ativado.
@@ -163,7 +163,7 @@ public class ProcessorManager extends Service {
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services: Sleep");
             }
-            activeDataProcessorManager.getInstance().delete(dataProcessorName);
+            removeDatabaseActiveDataProcessorList(dataProcessorName);
             publishMessage("aliveRemoveDataProcessor");
             listActiveDataProcessors.remove(dataProcessorName);
             publishMessage(Topics.DEACTIVATE_DATAPROCESSOR_TOPIC.toString(),dataProcessorName);
@@ -212,6 +212,40 @@ public class ProcessorManager extends Service {
     }
 
 
+    public void saveDatabaseActiveDataProcessorList(String name){
+        //Save in database
+        new AddItemTaskActive().execute(name);
+    }
+
+
+    private class AddItemTaskActive extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... item) {
+            activeDataProcessorManager.getInstance().insert(item[0]);
+            //Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
+            return null;
+        }
+    }
+
+
+    public void removeDatabaseActiveDataProcessorList(String name){
+        //Save in database
+        new AddItemTaskRemove().execute(name);
+    }
+
+
+    private class AddItemTaskRemove extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... item) {
+            activeDataProcessorManager.getInstance().delete(item[0]);
+            //Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
+            return null;
+        }
+    }
+
+
     public void saveDatabaseDataProcessorList(){
         List<String> backupDataProcessorList = getDataProcessors();
         /*Thread thread = new Thread() {
@@ -225,8 +259,6 @@ public class ProcessorManager extends Service {
             }
         };
         thread.start();*/
-
-        Log.i(TAG,"#### TTTT: " + backupDataProcessorList.size());
         //Save in database
         for(int i=0; i < backupDataProcessorList.size(); i++){
             //listDataProcessorManager.getInstance().insert(backupDataProcessorList.get(i).toString());
@@ -235,16 +267,12 @@ public class ProcessorManager extends Service {
     }
 
 
-    /*public void addNewItemToDatabase(String item){
-        new AddItemTask().execute(item);
-    }*/
-
     private class AddItemTask extends AsyncTask<String, Void, Void> {
 
         @Override
         protected Void doInBackground(String... item) {
             listDataProcessorManager.getInstance().insert(item[0]);
-            Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
+            //Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
             return null;
         }
     }

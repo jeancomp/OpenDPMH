@@ -38,19 +38,6 @@ public class ListDataProcessorManager {
     }
 
     public void insert(String name) {
-        /*Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    ListDataProcessor listDataProcessor = new ListDataProcessor();
-                    listDataProcessor.setDataProcessorName(name);
-                    db.listDataProcessorDAO().insert(listDataProcessor);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        thread.start();*/
         try {
             ListDataProcessor listDataProcessor = new ListDataProcessor();
             listDataProcessor.setDataProcessorName(name);

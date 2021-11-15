@@ -36,7 +36,6 @@ import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
-import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidFrequencyException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidHostServerException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidMainServiceException;
@@ -197,7 +196,7 @@ public class MainActivity2 extends AppCompatActivity {
                             if(notification == null) {
                                 notification = new Notification();
                             }
-                            dpManager.getInstance().startDataProcessors(listProcessors);
+                            //dpManager.getInstance().startDataProcessors(listProcessors);
                             flag_on_off = true;
                             txtStatus.setText("on");
                             vibe.vibrate(50);
@@ -206,10 +205,10 @@ public class MainActivity2 extends AppCompatActivity {
                             button_init.setBackgroundResource(R.color.colorWhite);
                             flag_on_off = false;
                             txtStatus.setText("off");
-                            dpManager.getInstance().stop();
+                            //dpManager.getInstance().stop();
                             vibe.vibrate(50);
                         }
-                    } catch (InvalidDataProcessorNameException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
@@ -228,7 +227,6 @@ public class MainActivity2 extends AppCompatActivity {
 
 
     public void startAddDataProcessorFragment(){
-        Log.i(TAG,"#### Ativando ADD");
         Intent i = new Intent(this, AddActiveDataProcessorActivity.class);
         startActivity(i);
     }

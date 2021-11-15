@@ -23,10 +23,10 @@ public class ListDataProcessorAdapter extends RecyclerView.Adapter<ListDataProce
     private static final String TAG = ListDataProcessorAdapter.class.getName();
     private Context context;
     private List<ListDataProcessor> listDataProcessors = new ArrayList();
-    private List<String> dataProcessorBackup = new ArrayList();
+    public List<String> dataProcessorBackup = new ArrayList();
+    List<String> listProcessors = new ArrayList();
 
     public ListDataProcessorAdapter(Context context, List<ListDataProcessor> listDataProcessors, List<String> dataProcessorBackup){
-        Log.i(TAG,"#### cc: " + listDataProcessors.size());
         this.context = context;
         this.dataProcessorBackup = dataProcessorBackup;
         this.listDataProcessors = listDataProcessors;
@@ -43,21 +43,21 @@ public class ListDataProcessorAdapter extends RecyclerView.Adapter<ListDataProce
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, @SuppressLint("RecyclerView") int position) {
         if(viewHolder == null){
-            viewHolder.txtName_dataprocessor.setText("No data processors enabled!");
+            viewHolder.txtName_dataprocessor.setText("No data processors!");
         }
         else {
             viewHolder.txtName_dataprocessor.setText(listDataProcessors.get(position).getDataProcessorName());
 
-            //in some cases, it will prevent unwanted situations
-            viewHolder.chbSelect.setOnCheckedChangeListener(null);
+            viewHolder.chbSelect.setText(viewHolder.txtName_dataprocessor.getText());
 
-            //if true, your checkbox will be selected, else unselected
-            viewHolder.chbSelect.setChecked(true);
+            viewHolder.chbSelect.setOnCheckedChangeListener(null);
 
             viewHolder.chbSelect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.i(TAG,"#### Position: " + viewHolder.getAdapterPosition());
+                    viewHolder.chbSelect.setChecked(isChecked);
+                    Log.i(TAG,"#### Position: " + viewHolder.getAdapterPosition() + ", " + viewHolder.chbSelect.getText());
+                    listProcessors.add(viewHolder.chbSelect.getText().toString());
                 }
             });
         }
@@ -85,6 +85,7 @@ public class ListDataProcessorAdapter extends RecyclerView.Adapter<ListDataProce
             txtName_dataprocessor = (TextView) itemView.findViewById(R.id.txtName_dataprocessor);
             txtDescription_dataprocessor = (TextView)itemView.findViewById(R.id.txtDescription_dataprocessor);
             chbSelect = (CheckBox) itemView.findViewById(R.id.chbSelect);
+
         }
     }
 }

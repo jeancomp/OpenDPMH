@@ -27,31 +27,34 @@ public class ActiveDataProcessorManager {
         return instance;
     }
 
-    public ActiveDataProcessor select(){
-        activeDataProcessor = db.activeDataProcessorDAO().findByActiveDataProcessorAll();
-        return activeDataProcessor;
-    }
-
-    public List<ActiveDataProcessor> selectAll(){
-        List<ActiveDataProcessor> activeDataProcessorsList = new ArrayList();
-        activeDataProcessor = db.activeDataProcessorDAO().findByActiveDataProcessorAll();
-        while(activeDataProcessor != null) {
-            activeDataProcessorsList.add(activeDataProcessor);
-            activeDataProcessor = db.activeDataProcessorDAO().findByActiveDataProcessorAll();
-        }
-        return activeDataProcessorsList;
+    public List<ActiveDataProcessor> select(){
+        List<ActiveDataProcessor> list = new ArrayList();
+        list = db.activeDataProcessorDAO().findByActiveDataProcessorAll();
+        return list;
     }
 
     public void insert(String name) {
-        ActiveDataProcessor activeDataProcessor = new ActiveDataProcessor();
-        activeDataProcessor.setDataProcessorName(name);
-        db.activeDataProcessorDAO().insertAll(activeDataProcessor);
+        try {
+            ActiveDataProcessor activeDataProcessor = new ActiveDataProcessor();
+            activeDataProcessor.setDataProcessorName(name);
+            db.activeDataProcessorDAO().insert(activeDataProcessor);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public int totalRecords(){
+        return db.activeDataProcessorDAO().totalActiveDataProcessorAll();
     }
 
     public void delete(String name) {
-        // Remove from database
-        ActiveDataProcessor activeDataProcessor = new ActiveDataProcessor();
-        activeDataProcessor.setDataProcessorName(name);
-        db.activeDataProcessorDAO().delete(activeDataProcessor);
+        try {
+            // Remove from database
+            ActiveDataProcessor activeDataProcessor = new ActiveDataProcessor();
+            activeDataProcessor.setDataProcessorName(name);
+            db.activeDataProcessorDAO().delete(activeDataProcessor);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

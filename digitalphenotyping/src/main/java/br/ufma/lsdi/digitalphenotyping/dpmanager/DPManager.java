@@ -227,7 +227,7 @@ public class DPManager implements DPInterface {
     public List<ActiveDataProcessor> getActiveDataProcessorsList(){
         ActiveDataProcessorManager adpManager = ActiveDataProcessorManager.getInstance();
         List<ActiveDataProcessor> activeDataProcessorList = new ArrayList();
-        activeDataProcessorList = adpManager.getInstance().selectAll();
+        activeDataProcessorList = adpManager.getInstance().select();
         return activeDataProcessorList;
     }
 

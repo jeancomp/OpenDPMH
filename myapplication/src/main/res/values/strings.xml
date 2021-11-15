@@ -130,7 +130,7 @@
 <string name="sample_text_fiat_value" translatable="false">"--"</string>
 
 <string name="sample_text_item_icon" translatable="false">"MMM"</string>
-<string name="sample_text_item_name" translatable="false">"Data Processor Name"</string>
+<string name="sample_text_item_name" translatable="false">"Situation of interest"</string>
 <string name="sample_text_item_ranking" translatable="false">"1001"</string>
 <string name="sample_text_item_amount_code" translatable="false">"0.56822348 BITSILVER"</string>
 <string name="sample_text_item_price_fiat" translatable="false">"94,893,149,774.13 USD"</string>

@@ -30,14 +30,14 @@
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:text="Medium Text"
+                android:text="Name"
                 android:textColor="#000000" />
 
             <TextView
                 android:id="@+id/txtContentId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="position"
                 android:visibility="gone"
                 android:textColor="#000000" />
 
@@ -45,19 +45,23 @@
                 android:id="@+id/txtDescription_dataprocessor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="test"
+                android:text="Description"
                 android:inputType="textMultiLine"
                 android:padding="5dp"
                 android:textColor="#000000"
                 />
         </LinearLayout>
+
         <CheckBox
             android:id="@+id/chbSelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp" />
+            android:layout_marginRight="10dp"
+            android:text="Name"
+            android:textColor="#FFFCFC"
+            android:textSize="0sp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

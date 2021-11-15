@@ -8,6 +8,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.42735042735042733" />
         <entry key="myapplication/src/main/res/drawable-v24/ic_add.xml" value="0.209375" />
         <entry key="myapplication/src/main/res/drawable-v24/ic_close.xml" value="0.1" />
         <entry key="myapplication/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1925925925925926" />
@@ -17,7 +18,7 @@
         <entry key="myapplication/src/main/res/drawable/ic_web.xml" value="0.1" />
         <entry key="myapplication/src/main/res/layout/activity_add_dataprocessor.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/activity_main.xml" value="0.21" />
-        <entry key="myapplication/src/main/res/layout/activity_main2.xml" value="0.33" />
+        <entry key="myapplication/src/main/res/layout/activity_main2.xml" value="0.1295971978984238" />
         <entry key="myapplication/src/main/res/layout/activity_settings.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/appbar_elevation.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/content_main.xml" value="0.151268115942029" />

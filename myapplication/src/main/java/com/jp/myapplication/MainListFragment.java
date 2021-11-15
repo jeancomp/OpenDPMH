@@ -1,6 +1,6 @@
 package com.jp.myapplication;
 
-import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -20,23 +20,25 @@ import java.util.List;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 
 public class MainListFragment extends Fragment {
     private static final String TAG = MainListFragment.class.getName();
+    private ActiveDataProcessorManager activeDataProcessorManager;// = ActiveDataProcessorManager.getInstance();
     private RecyclerViewAdapter adapter;
     private MainService myService;
     private DPManager dpManager;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView textLoad;
-    private Context context;
+    private TextView text_primary_empty;
+    private TextView text_secondary_empty;
     private View button_init;
     private View pag;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getContext();
     }
 
     @Override
@@ -45,20 +47,39 @@ public class MainListFragment extends Fragment {
         pag = view;
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerview_fragment_main_list);
         button_init = view.findViewById(R.id.button_init);
-        LinearLayoutManager llm = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(llm);
         textLoad = (TextView) view.findViewById(R.id.error_msg);
+        text_primary_empty = (TextView) view.findViewById(R.id.text_primary_empty);
+        text_secondary_empty = (TextView) view.findViewById(R.id.text_secondary_empty);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
-
-        ActiveDataProcessor adp = new ActiveDataProcessor();
-        adp.setDataProcessorName("No data processor");
-        List<ActiveDataProcessor> activeDataProcessors = new ArrayList();
-        //activeDataProcessors.add(adp);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(context, activeDataProcessors);
-        recyclerView.setAdapter(adapter);
 
         return view;
     }
+
+    public void processValue(List<ActiveDataProcessor> myValue) {
+        adapter = new RecyclerViewAdapter(getContext(), myValue);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter);
+
+        if(myValue.size() > 0){
+            text_primary_empty.setVisibility(View.INVISIBLE);
+            text_secondary_empty.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private class AddItemTaskFrag extends AsyncTask<Void, Void, List<ActiveDataProcessor>> {
+        @Override
+        protected List<ActiveDataProcessor> doInBackground(Void... params) {
+            List<ActiveDataProcessor> l = new ArrayList();
+            l = activeDataProcessorManager.getInstance().select();
+            return l;
+        }
+
+        @Override
+        protected void onPostExecute(List<ActiveDataProcessor> result) {
+            processValue(result);
+        }
+    }
+
 
     @Override
     public void onStart() {
@@ -81,6 +102,7 @@ public class MainListFragment extends Fragment {
                     progressBar.setVisibility(View.INVISIBLE);
                     textLoad.setVisibility(View.INVISIBLE);
                     pag.setEnabled(true);
+                    new AddItemTaskFrag().execute();
                 }
             }).start();
     }

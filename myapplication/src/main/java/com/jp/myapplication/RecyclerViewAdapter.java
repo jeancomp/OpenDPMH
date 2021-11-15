@@ -15,7 +15,7 @@ import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ActiveDataProcessorViewHolder> {
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private Context context;
     private List<ActiveDataProcessor> activeDataProcessorList = new ArrayList();
 
@@ -26,19 +26,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @NonNull
     @Override
-    public ActiveDataProcessorViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.fragment_main_list_item, viewGroup, false);
-        ActiveDataProcessorViewHolder adpvh = new ActiveDataProcessorViewHolder(v);
+        ViewHolder adpvh = new ViewHolder(v);
         return adpvh;
     }
 
     @Override
-    public void onBindViewHolder(ActiveDataProcessorViewHolder activeDataProcessorViewHolder, int position) {
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
         if(activeDataProcessorList == null){
-            activeDataProcessorViewHolder.dataProcessorName.setText("No data processors enabled!");
+            viewHolder.dataProcessorName.setText("No data processors enabled!");
         }
         else {
-            activeDataProcessorViewHolder.dataProcessorName.setText(activeDataProcessorList.get(position).getDataProcessorName());
+            viewHolder.dataProcessorName.setText(activeDataProcessorList.get(position).getDataProcessorName());
         }
     }
 
@@ -52,11 +52,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public static class ActiveDataProcessorViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
         CardView cardView;
         TextView dataProcessorName;
 
-        public ActiveDataProcessorViewHolder(View itemView){
+        public ViewHolder(View itemView){
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.cardview_list_item);
             dataProcessorName = (TextView) itemView.findViewById(R.id.item_name);
