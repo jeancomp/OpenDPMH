@@ -148,7 +148,7 @@
                     app:popupTheme="@style/AppTheme.PopupOverlay" />-->
 
                 <TextView
-                    android:id="@+id/spinner_fiat_code"
+                    android:id="@+id/txtStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="off"

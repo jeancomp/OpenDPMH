@@ -73,7 +73,9 @@
 <string name="app_subtitle_full" translatable="false">""</string>
 <string name="app_subtitle_demo" translatable="false">"DEMO"</string>
 
-    <string name="versionName">1.0</string>
+    <string name="pref_version_key">1.0</string>
+    <string name="pref_version_summary">1.0</string>
+    <string name="versionName">Version</string>
 
 <string name="action_settings">"Settings"</string>
     <string name="action_close">"Close"</string>
@@ -95,7 +97,7 @@
 
 
 <!-- Strings related to Main Activity -->
-<string name="total_dataprocessor" translatable="true">"Total data processor modules"</string>
+<string name="total_dataprocessor" translatable="true">"Total situations of interest"</string>
 <string name="string_total_value_on_date_time">" (%1$s UTC)"</string>
 <string name="string_total_value_change_24h_label">"# "</string>
 <string name="string_total_value_change_24h" translatable="false">" 0 "</string>
@@ -110,8 +112,8 @@
 <string name="default_crypto_code" translatable="false">"BTC"</string>
 <string name="default_crypto_sign" translatable="false">"₿"</string>
 
-<string name="string_crypto_list_empty_primary">"Your list of data processor modules is empty!"</string>
-<string name="string_crypto_list_empty_secondary">"Add your module via the + button below."</string>
+<string name="string_crypto_list_empty_primary">"Your list of situations of interest is empty!"</string>
+<string name="string_crypto_list_empty_secondary">"Add via the + button below."</string>
 
 <string name="string_column_coin_ranking" translatable="false">"↑↓"</string>
 <string name="string_column_coin_crypto_hold_amount_symbol">"Crypto coin\nAmount &#38; symbol"</string>
@@ -364,252 +366,59 @@
 
 <string name="pref_general_category_title">"General"</string>
 
-<string name="pref_language_title">"Language"</string>
+    <string name="hostname">Host name</string>
+    <string name="defaulthost">192.168.0.7</string>
+    <string name="valuehost"></string>
+    <string name="message"></string>
+
+    <string name="portnumber">Number port</string>
+    <string name="defaultport">1883</string>
+    <string name="valueport"></string>
+    <string name="messageport"></string>
+
+<string name="pref_language_title">"Composition mode"</string>
 
 <string name="pref_language_key" translatable="false">"preference language"</string>
 
-<string name="pref_default_language_entry">"English"</string>
-<string name="pref_default_language_value">"EN"</string>
+<string name="pref_default_language_entry">"SEND_WHEN_IT_ARRIVES"</string>
+<string name="pref_default_language_value">"SWIA"</string>
 
 <string-array name="pref_language_list_entries" translatable="false">
-    <item>"English"</item>
-    <item>"עִברִית"</item>
-    <item>"Lietuvių"</item>
-    <item>"Swahili"</item>
+    <item>"SEND_WHEN_IT_ARRIVES"</item>
+    <item>"GROUP_ALL"</item>
+    <item>"FREQUENCY"</item>
 </string-array>
 
 <string-array name="pref_language_list_values" translatable="false">
-    <item>"EN"</item>
-    <item>"HE"</item>
-    <item>"LT"</item>
-    <item>"SW"</item>
+    <item>"SWIA"</item>
+    <item>"GRO"</item>
+    <item>"FREQ"</item>
 </string-array>
 
-<string name="pref_fiat_currency_title">"Fiat currency"</string>
+<string name="pref_fiat_currency_title">"Set value frequency(minute)"</string>
 
 <string name="pref_fiat_currency_key" translatable="false">"preference fiat currency"</string>
 
-<string name="pref_default_fiat_currency_entry">"&usd; - United States Dollar ($)"</string>
-<string name="pref_default_fiat_currency_value">"&usd;"</string>
+<string name="pref_default_fiat_currency_entry">"0"</string>
+<string name="pref_default_fiat_currency_value">"0"</string>
 
 <string-array name="pref_fiat_currency_list_entries">
-    <item>"&usd; - United States Dollar ($)"</item>
-    <item>"&all; - Albanian Lek (L)"</item>
-    <item>"&dzd; - Algerian Dinar (د.ج)"</item>
-    <item>"&ars; - Argentine Peso ($)"</item>
-    <item>"&amd; - Armenian Dram (֏)"</item>
-    <item>"&aud; - Australian Dollar ($)"</item>
-    <item>"&azn; - Azerbaijani Manat (₼)"</item>
-    <item>"&bhd; - Bahraini Dinar (.د.ب)"</item>
-    <item>"&bdt; - Bangladeshi Taka (৳)"</item>
-    <item>"&byn; - Belarusian Ruble (Br)"</item>
-    <item>"&bmd; - Bermudan Dollar ($)"</item>
-    <item>"&bob; - Bolivian Boliviano (Bs.)"</item>
-    <item>"&bam; - Bosnia-Herzegovina Convertible Mark (KM)"</item>
-    <item>"&brl; - Brazilian Real (R$)"</item>
-    <item>"&bgn; - Bulgarian Lev (лв)"</item>
-    <item>"&khr; - Cambodian Riel (៛)"</item>
-    <item>"&cad; - Canadian Dollar ($)"</item>
-    <item>"&clp; - Chilean Peso ($)"</item>
-    <item>"&cny; - Chinese Yuan (¥)"</item>
-    <item>"&cop; - Colombian Peso ($)"</item>
-    <item>"&crc; - Costa Rican Colón (₡)"</item>
-    <item>"&hrk; - Croatian Kuna (kn)"</item>
-    <item>"&cup; - Cuban Peso ($)"</item>
-    <item>"&czk; - Czech Koruna (Kč)"</item>
-    <item>"&dkk; - Danish Krone (kr)"</item>
-    <item>"&dop; - Dominican Peso ($)"</item>
-    <item>"&egp; - Egyptian Pound (£)"</item>
-    <item>"&eur; - Euro (€)"</item>
-    <item>"&gel; - Georgian Lari (₾))"</item>
-    <item>"&ghs; - Ghanaian Cedi (₵)"</item>
-    <item>"&gtq; - Guatemalan Quetzal (Q)"</item>
-    <item>"&hnl; - Honduran Lempira (L)"</item>
-    <item>"&hkd; - Hong Kong Dollar ($)"</item>
-    <item>"&huf; - Hungarian Forint (Ft)"</item>
-    <item>"&isk; - Icelandic Króna (kr)"</item>
-    <item>"&inr; - Indian Rupee (₹)"</item>
-    <item>"&idr; - Indonesian Rupiah (Rp)"</item>
-    <item>"&irr; - Iranian Rial (﷼)"</item>
-    <item>"&iqd; - Iraqi Dinar (ع.د)"</item>
-    <item>"&ils; - Israeli New Shekel (₪)"</item>
-    <item>"&jmd; - Jamaican Dollar ($)"</item>
-    <item>"&jpy; - Japanese Yen (¥)"</item>
-    <item>"&jod; - Jordanian Dinar (د.ا)"</item>
-    <item>"&kzt; - Kazakhstani Tenge (₸)"</item>
-    <item>"&kes; - Kenyan Shilling (Sh)"</item>
-    <item>"&kwd; - Kuwaiti Dinar (د.ك)"</item>
-    <item>"&kgs; - Kyrgystani Som (с)"</item>
-    <item>"&lbp; - Lebanese Pound (ل.ل)"</item>
-    <item>"&mkd; - Macedonian Denar (ден)"</item>
-    <item>"&myr; - Malaysian Ringgit (RM)"</item>
-    <item>"&mur; - Mauritian Rupee (₨)"</item>
-    <item>"&mxn; - Mexican Peso ($)"</item>
-    <item>"&mdl; - Moldovan Leu (L)"</item>
-    <item>"&mnt; - Mongolian Tugrik (₮)"</item>
-    <item>"&mad; - Moroccan Dirham (د.م.)"</item>
-    <item>"&mmk; - Myanma Kyat (Ks)"</item>
-    <item>"&nad; - Namibian Dollar ($)"</item>
-    <item>"&npr; - Nepalese Rupee (₨)"</item>
-    <item>"&twd; - New Taiwan Dollar ($)"</item>
-    <item>"&nzd; - New Zealand Dollar ($)"</item>
-    <item>"&nio; - Nicaraguan Córdoba (C$)"</item>
-    <item>"&ngn; - Nigerian Naira (₦)"</item>
-    <item>"&nok; - Norwegian Krone (kr)"</item>
-    <item>"&omr; - Omani Rial (ر.ع.)"</item>
-    <item>"&pkr; - Pakistani Rupee (₨)"</item>
-    <item>"&pab; - Panamanian Balboa (B/.)"</item>
-    <item>"&pen; - Peruvian Sol (S/.)"</item>
-    <item>"&php; - Philippine Peso (₱)"</item>
-    <item>"&pln; - Polish Złoty (zł)"</item>
-    <item>"&gbp; - Pound Sterling (£)"</item>
-    <item>"&qar; - Qatari Rial (ر.ق)"</item>
-    <item>"&ron; - Romanian Leu (lei)"</item>
-    <item>"&rub; - Russian Ruble (₽)"</item>
-    <item>"&sar; - Saudi Riyal (ر.س)"</item>
-    <item>"&rsd; - Serbian Dinar (дин.)"</item>
-    <item>"&sgd; - Singapore Dollar ($)"</item>
-    <item>"&zar; - South African Rand (Rs)"</item>
-    <item>"&krw; - South Korean Won (₩)"</item>
-    <item>"&ssp; - South Sudanese Pound (£)"</item>
-    <item>"&ves; - Sovereign Bolivar (Bs.)"</item>
-    <item>"&lkr; - Sri Lankan Rupee (Rs)"</item>
-    <item>"&sek; - Swedish Krona ( kr)"</item>
-    <item>"&chf; - Swiss Franc (Fr)"</item>
-    <item>"&thb; - Thai Baht (฿)"</item>
-    <item>"&ttd; - Trinidad and Tobago Dollar ($)"</item>
-    <item>"&tnd; - Tunisian Dinar (د.ت)"</item>
-    <item>"&try; - Turkish Lira (₺)"</item>
-    <item>"&ugx; - Ugandan Shilling (Sh)"</item>
-    <item>"&uah; - Ukrainian Hryvnia (₴)"</item>
-    <item>"&aed; - United Arab Emirates Dirham (د.إ)"</item>
-    <item>"&uyu; - Uruguayan Peso ($)"</item>
-    <item>"&uzs; - Uzbekistan Som (so'm)"</item>
-    <item>"&vnd; - Vietnamese Dong (₫)"</item>
+    <item>"0"</item>
+    <item>"15"</item>
+    <item>"20"</item>
+    <item>"25"</item>
+    <item>"30"</item>
+    <item>"60"</item>
 </string-array>
 
 <string-array name="pref_fiat_currency_list_values" translatable="false">
-    <item>"&usd;"</item>
-    <item>"&all;"</item>
-    <item>"&dzd;"</item>
-    <item>"&ars;"</item>
-    <item>"&amd;"</item>
-    <item>"&aud;"</item>
-    <item>"&azn;"</item>
-    <item>"&bhd;"</item>
-    <item>"&bdt;"</item>
-    <item>"&byn;"</item>
-    <item>"&bmd;"</item>
-    <item>"&bob;"</item>
-    <item>"&bam;"</item>
-    <item>"&brl;"</item>
-    <item>"&bgn;"</item>
-    <item>"&khr;"</item>
-    <item>"&cad;"</item>
-    <item>"&clp;"</item>
-    <item>"&cny;"</item>
-    <item>"&cop;"</item>
-    <item>"&crc;"</item>
-    <item>"&hrk;"</item>
-    <item>"&cup;"</item>
-    <item>"&czk;"</item>
-    <item>"&dkk;"</item>
-    <item>"&dop;"</item>
-    <item>"&egp;"</item>
-    <item>"&eur;"</item>
-    <item>"&gel;"</item>
-    <item>"&ghs;"</item>
-    <item>"&gtq;"</item>
-    <item>"&hnl;"</item>
-    <item>"&hkd;"</item>
-    <item>"&huf;"</item>
-    <item>"&isk;"</item>
-    <item>"&inr;"</item>
-    <item>"&idr;"</item>
-    <item>"&irr;"</item>
-    <item>"&iqd;"</item>
-    <item>"&ils;"</item>
-    <item>"&jmd;"</item>
-    <item>"&jpy;"</item>
-    <item>"&jod;"</item>
-    <item>"&kzt;"</item>
-    <item>"&kes;"</item>
-    <item>"&kwd;"</item>
-    <item>"&kgs;"</item>
-    <item>"&lbp;"</item>
-    <item>"&mkd;"</item>
-    <item>"&myr;"</item>
-    <item>"&mur;"</item>
-    <item>"&mxn;"</item>
-    <item>"&mdl;"</item>
-    <item>"&mnt;"</item>
-    <item>"&mad;"</item>
-    <item>"&mmk;"</item>
-    <item>"&nad;"</item>
-    <item>"&npr;"</item>
-    <item>"&twd;"</item>
-    <item>"&nzd;"</item>
-    <item>"&nio;"</item>
-    <item>"&ngn;"</item>
-    <item>"&nok;"</item>
-    <item>"&omr;"</item>
-    <item>"&pkr;"</item>
-    <item>"&pab;"</item>
-    <item>"&pen;"</item>
-    <item>"&php;"</item>
-    <item>"&pln;"</item>
-    <item>"&gbp;"</item>
-    <item>"&qar;"</item>
-    <item>"&ron;"</item>
-    <item>"&rub;"</item>
-    <item>"&sar;"</item>
-    <item>"&rsd;"</item>
-    <item>"&sgd;"</item>
-    <item>"&zar;"</item>
-    <item>"&krw;"</item>
-    <item>"&ssp;"</item>
-    <item>"&ves;"</item>
-    <item>"&lkr;"</item>
-    <item>"&sek;"</item>
-    <item>"&chf;"</item>
-    <item>"&thb;"</item>
-    <item>"&ttd;"</item>
-    <item>"&tnd;"</item>
-    <item>"&try;"</item>
-    <item>"&ugx;"</item>
-    <item>"&uah;"</item>
-    <item>"&aed;"</item>
-    <item>"&uyu;"</item>
-    <item>"&uzs;"</item>
-    <item>"&vnd;"</item>
+    <item>"0"</item>
+    <item>"15"</item>
+    <item>"20"</item>
+    <item>"25"</item>
+    <item>"30"</item>
+    <item>"60"</item>
 </string-array>
-
-<string name="pref_date_format_title">"Date format"</string>
-
-<string name="pref_date_format_key" translatable="false">"preference date format"</string>
-
-<string name="pref_default_date_format_entry">"dd/MM/yyyy"</string>
-<string name="pref_default_date_format_value">"dd/MM/yyyy"</string>
-
-<string-array name="pref_date_format_list_entries" translatable="false">
-    <item>"dd/MM/yyyy"</item>
-    <item>"MM/dd/yyyy"</item>
-    <item>"yyyy-MM-dd"</item>
-</string-array>
-
-<string-array name="pref_date_format_list_values" translatable="false">
-    <item>"dd/MM/yyyy"</item> <!-- English (Europe, UK), Hebrew, Swahili -->
-    <item>"MM/dd/yyyy"</item> <!-- English (USA) -->
-    <item>"yyyy-MM-dd"</item> <!-- Lithuanian -->
-</string-array>
-
-<string name="pref_24h_switch_title">"Use 24-hour format"</string>
-
-<string name="pref_24h_switch_key" translatable="false">"preference 24h switch"</string>
-
-<string name="pref_24h_switch_24h_summary" translatable="false">"13:00"</string>
-<string name="pref_24h_switch_12h_summary">"01:00 PM"</string>
-
 
 <string name="pref_support_category_title">"Support"</string>
 
@@ -617,17 +426,11 @@
 <string name="pref_rate_app_key" translatable="false">"rate app"</string>
 
 
-<string name="pref_share_app_title">"Share with your friends"</string>
+<string name="pref_share_app_title">"Share"</string>
 <string name="pref_share_app_key" translatable="false">"share app"</string>
 
 <string name="share_app_message">"I suggest this free cryptocurrencies portfolio Android app for you: "</string>
 <string name="share_app_chooser">"Share with: "</string>
-
-
-<string name="pref_donate_crypto_key" translatable="false">"preference donate crypto"</string>
-
-<string name="pref_donate_crypto_title">"Donate with crypto"</string>
-<string name="pref_donate_crypto_summary">"Send your Bitcoin or Etherium"</string>
 
 <string name="dialog_donate_crypto_title">"Donate with crypto"</string>
 <string name="dialog_donate_crypto_message_first">"Send any amount of Bitcoin or Ethereum to the author. Click to copy particular cryptocurrency address."</string>
@@ -646,11 +449,6 @@
 <string name="dialog_donate_crypto_ethereum_address_copy_confirmation">"Ethereum address copied!"</string>
 
 
-<string name="pref_buy_me_coffee_key" translatable="false">"buy me coffee"</string>
-<string name="pref_buy_me_coffee_title">"Buy me a coffee"</string>
-<string name="pref_buy_me_coffee_url" translatable="false">"https://www.buymeacoffee.com/baruckis"</string>
-
-
 <string name="pref_contact_title">"Contact"</string>
 <string name="pref_contact_summary">"Have any feedback? Email your questions, suggestions, bug reports"</string>
 <string name="pref_contact_key" translatable="false">"contact"</string>
@@ -661,19 +459,19 @@
 <string name="pref_support_about_title">"About"</string>
 
 <string name="pref_website_title">"Website"</string>
-<string name="pref_website_summary" translatable="false">"kriptofolio.app"</string>
+<string name="pref_website_summary" translatable="false">"github.com/jeancomp"</string>
 <string name="pref_website_key" translatable="false">"website"</string>
-<string name="pref_website_url" translatable="false">"https://kriptofolio.app"</string>
+<string name="pref_website_url" translatable="false">"https://github.com/jeancomp"</string>
 
-<string name="pref_author_title">"Author Andrius Baruckis"</string>
-<string name="pref_author_summary" translatable="false">"www.baruckis.com"</string>
+<string name="pref_author_title">"Author"</string>
+<string name="pref_author_summary" translatable="false">"github.com/jeancomp"</string>
 <string name="pref_author_key" translatable="false">"author"</string>
-<string name="pref_author_url" translatable="false">"https://www.baruckis.com"</string>
+<string name="pref_author_url" translatable="false">"https://github.com/jeancomp"</string>
 
 <string name="pref_source_title">"View source on"</string>
 <string name="pref_source_summary" translatable="false">"GitHub"</string>
 <string name="pref_source_key" translatable="false">"source"</string>
-<string name="pref_source_url" translatable="false">"https://github.com/baruckis/Kriptofolio"</string>
+<string name="pref_source_url" translatable="false">"https://github.com/jeancomp/fenotipagem_digital_saude_vs_0_1"</string>
 
 <string name="pref_privacy_policy_title">"Privacy policy"</string>
 <string name="pref_privacy_policy_key" translatable="false">"privacy policy"</string>

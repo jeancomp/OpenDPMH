@@ -31,6 +31,7 @@ public class MainListFragment extends Fragment {
     private TextView textLoad;
     private Context context;
     private View button_init;
+    private View pag;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class MainListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_list, viewGroup, false);
+        pag = view;
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerview_fragment_main_list);
         button_init = view.findViewById(R.id.button_init);
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
@@ -66,6 +68,7 @@ public class MainListFragment extends Fragment {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
+                    pag.setEnabled(false);
                     SystemClock.sleep(tempoDeEspera);
                     Log.i(TAG,"#### Aguardando1");
                     SystemClock.sleep(tempoDeEspera);
@@ -77,6 +80,7 @@ public class MainListFragment extends Fragment {
                     SystemClock.sleep(tempoDeEspera);
                     progressBar.setVisibility(View.INVISIBLE);
                     textLoad.setVisibility(View.INVISIBLE);
+                    pag.setEnabled(true);
                 }
             }).start();
     }

@@ -1,14 +1,17 @@
 package br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "listdataprocessor")
+@Entity(tableName = "listdataprocessor", indices = @Index(value = {"dataProcessor"}, unique = true))
 public class ListDataProcessor {
-    @PrimaryKey(autoGenerate = true)
-    public int id;
-
-    public String dataProcessorName = null;
+    @NonNull
+    @PrimaryKey
+    @ColumnInfo(name = "dataProcessor")
+    public String dataProcessorName;
 
     public void setDataProcessorName(String dataProcessorName) {
         this.dataProcessorName = dataProcessorName;

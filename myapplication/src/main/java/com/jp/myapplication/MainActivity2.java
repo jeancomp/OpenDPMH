@@ -1,5 +1,6 @@
 package com.jp.myapplication;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
+import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
@@ -52,11 +54,15 @@ public class MainActivity2 extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView textLoad;
+    private TextView txtStatus;
     private View button_init;
     private View fab;
     private Notification notification;
     private boolean flag_on_off = false;
+    private boolean isInitialized = false;
     private Vibrator vibe;
+    private Activity activity;
+    private SaveActivity saveActivity;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,10 +70,13 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
+        activity = (Activity) this;
+        saveActivity = new SaveActivity(this);
         recyclerView = findViewById(R.id.recyclerview_fragment_main_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
         textLoad = findViewById(R.id.error_msg);
+        txtStatus = findViewById(R.id.txtStatus);
         progressBar = findViewById(R.id.progress_bar);
         button_init = findViewById(R.id.button_init);
         button_init.setOnClickListener(clickListener);
@@ -76,8 +85,8 @@ public class MainActivity2 extends AppCompatActivity {
         vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
         //listProcessors.add("RawDataCollector");
-        //listProcessors.add("Sociability");
         //listProcessors.add("Mobility");
+        listProcessors.add("Sociability");
         listProcessors.add("Sleep");
 
         try {
@@ -183,15 +192,20 @@ public class MainActivity2 extends AppCompatActivity {
                         /*ColorDrawable buttonColor = (ColorDrawable) button_init.getBackground();
                         int colorId = buttonColor.getColor();*/
                         if(!flag_on_off){
+                            isInitialized = true;
                             button_init.setBackgroundResource(R.color.colorGreen);
-                            notification = new Notification();
+                            if(notification == null) {
+                                notification = new Notification();
+                            }
                             dpManager.getInstance().startDataProcessors(listProcessors);
                             flag_on_off = true;
+                            txtStatus.setText("on");
                             vibe.vibrate(50);
                         }
                         else {
                             button_init.setBackgroundResource(R.color.colorWhite);
                             flag_on_off = false;
+                            txtStatus.setText("off");
                             dpManager.getInstance().stop();
                             vibe.vibrate(50);
                         }
@@ -231,9 +245,34 @@ public class MainActivity2 extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
+
     public void notificationDataProcessor(){
         //Carrega no RecyclerView os DataProcessor ativos
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent i = new Intent(this, SettingsActivity.class);
+            startActivity(i);
+            return true;
+        }
+        else if(id == R.id.action_close){
+            dpManager.getInstance().stop();
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -270,29 +309,6 @@ public class MainActivity2 extends AppCompatActivity {
                 }
             }
         };
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            Intent i = new Intent(this, SettingsActivity.class);
-            startActivity(i);
-            return true;
-        }
-        else if(id == R.id.action_close){
-            dpManager.getInstance().stop();
-            finish();
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
 

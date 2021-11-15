@@ -53,6 +53,8 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.L
  */
 public class MainService extends Service {
     private static final String TAG = MainService.class.getName();
+    private ActiveDataProcessorManager activeDataProcessorManager;
+    private ListDataProcessorManager listDataProcessorManager;
     private Publisher publisher = PublisherFactory.createPublisher();
     private CDDL cddl;
     private String hostServer = "";
@@ -158,8 +160,8 @@ public class MainService extends Service {
         try {
             Log.i(TAG, "#### CONFIGURATION MAINSERVICE");
             if (intent != null) {
-                ActiveDataProcessorManager activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
-                ListDataProcessorManager listDataProcessorManager = new ListDataProcessorManager(getContext());
+                activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
+                listDataProcessorManager = new ListDataProcessorManager(getContext());
 
                 setCommunicationTechnology(this.communicationTechnology);
                 setSecure(this.secure);

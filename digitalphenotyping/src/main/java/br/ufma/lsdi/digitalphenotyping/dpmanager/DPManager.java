@@ -23,7 +23,6 @@ import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
-import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
@@ -55,7 +54,6 @@ public class DPManager implements DPInterface {
     private MainService myService;
     private boolean servicesStarted = false;
     private static Builder builderCopy;
-    private SaveActivity saveActivity;
 
 
     /**
@@ -72,8 +70,6 @@ public class DPManager implements DPInterface {
     public DPManager(final Builder builder) {
         this.activity = builder.activity;
         this.builderCopy = builder;
-
-        saveActivity = new SaveActivity(activity);
     }
 
 
@@ -218,7 +214,7 @@ public class DPManager implements DPInterface {
     public List<ListDataProcessor> getDataProcessorsList(){
         ListDataProcessorManager ldpManager = ListDataProcessorManager.getInstance();
         List<ListDataProcessor> listDataProcessor = new ArrayList();
-        listDataProcessor = ldpManager.getInstance().selectAll();
+        listDataProcessor = ldpManager.getInstance().select();
         return listDataProcessor;
     }
 

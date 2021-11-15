@@ -14,6 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.Fenotipagem_digital_saude_vs_0_1">
 
@@ -24,7 +25,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".activeDataprocessor.util.Alarm" android:label="BroadcastReceiverAux">
+        <receiver android:name=".dataprocessor.util.Alarm" android:label="BroadcastReceiverAux">
             <intent-filter>
                 <action android:name="ALARME_DISPARADO"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -35,9 +36,9 @@
         <service android:name=".processormanager.services.ProcessorManager"/>
         <service android:name=".phenotypecomposer.PhenotypeComposer"/>
         <service android:name=".rawdatacollector.RawDataCollector" />
-        <service android:name=".activeDataprocessor.processors.Sociability" />
-        <service android:name=".activeDataprocessor.processors.Mobility" />
-        <service android:name=".activeDataprocessor.processors.Sleep" />
+        <service android:name=".dataprocessor.processors.Sociability" />
+        <service android:name=".dataprocessor.processors.Mobility" />
+        <service android:name=".dataprocessor.processors.Sleep" />
     </application>
 
 </manifest>

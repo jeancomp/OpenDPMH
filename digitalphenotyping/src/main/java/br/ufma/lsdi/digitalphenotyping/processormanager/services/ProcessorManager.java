@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -205,7 +206,47 @@ public class ProcessorManager extends Service {
 
         publishMessage(Topics.MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC.toString(), "alive");
 
+        saveDatabaseDataProcessorList();
+
         return START_STICKY;
+    }
+
+
+    public void saveDatabaseDataProcessorList(){
+        List<String> backupDataProcessorList = getDataProcessors();
+        /*Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();*/
+
+        Log.i(TAG,"#### TTTT: " + backupDataProcessorList.size());
+        //Save in database
+        for(int i=0; i < backupDataProcessorList.size(); i++){
+            //listDataProcessorManager.getInstance().insert(backupDataProcessorList.get(i).toString());
+            new AddItemTask().execute(backupDataProcessorList.get(i).toString());
+        }
+    }
+
+
+    /*public void addNewItemToDatabase(String item){
+        new AddItemTask().execute(item);
+    }*/
+
+    private class AddItemTask extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... item) {
+            listDataProcessorManager.getInstance().insert(item[0]);
+            Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
+            return null;
+        }
     }
 
 
@@ -544,12 +585,6 @@ public class ProcessorManager extends Service {
         this.listDataProcessors.add("Sociability");
         this.listDataProcessors.add("Mobility");
         this.listDataProcessors.add("Sleep");
-
-        //Save in database
-        /*listDataProcessorManager.getInstance().insert("RawDataCollector");
-        listDataProcessorManager.getInstance().insert("Sociability");
-        listDataProcessorManager.getInstance().insert("Mobility");
-        listDataProcessorManager.getInstance().insert("Sleep");*/
     }
 
 

@@ -26,13 +26,9 @@ public class ListDataProcessorAdapter extends RecyclerView.Adapter<ListDataProce
     private List<String> dataProcessorBackup = new ArrayList();
 
     public ListDataProcessorAdapter(Context context, List<ListDataProcessor> listDataProcessors, List<String> dataProcessorBackup){
+        Log.i(TAG,"#### cc: " + listDataProcessors.size());
         this.context = context;
         this.dataProcessorBackup = dataProcessorBackup;
-        if(listDataProcessors.size() == 0) {
-            ListDataProcessor ldp = new ListDataProcessor();
-            ldp.setDataProcessorName("Empty");
-            listDataProcessors.add(ldp);
-        }
         this.listDataProcessors = listDataProcessors;
     }
 
