@@ -25,9 +25,17 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".dataprocessor.util.Alarm" android:label="BroadcastReceiverAux">
+        <receiver android:name=".dataprocessor.util.AlarmStudentLife" android:label="BroadcastReceiverAux">
             <intent-filter>
                 <action android:name="ALARME_DISPARADO"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".dataprocessor.processors.Voice" android:label="BroadcastReceiverAudio"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="ALARME_DISPARADO_AUDIO"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>

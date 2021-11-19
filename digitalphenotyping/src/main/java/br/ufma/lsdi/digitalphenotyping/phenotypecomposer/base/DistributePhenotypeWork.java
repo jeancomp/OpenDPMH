@@ -57,11 +57,9 @@ public class DistributePhenotypeWork extends Worker {
                 publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
             }
         }catch (Exception e){
-            Log.e(TAG,"Error: " + e.toString());
+            Log.e(TAG,"#### Error: " + e.toString());
             return ListenableWorker.Result.retry();
         }
-
         return ListenableWorker.Result.success();
     }
-
 }

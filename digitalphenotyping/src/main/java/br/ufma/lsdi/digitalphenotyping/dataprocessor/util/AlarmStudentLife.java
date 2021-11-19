@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 
-public class Alarm extends BroadcastReceiver {
+public class AlarmStudentLife extends BroadcastReceiver {
     Context context;
     Send send;
 
@@ -37,7 +37,7 @@ public class Alarm extends BroadcastReceiver {
         send.getInstance().setContext(context);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(context, Alarm.class);
+        Intent i = new Intent(context, AlarmStudentLife.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 1, pi); // Millisec * Second * Minute
     }

@@ -119,7 +119,8 @@ public class DPManager implements DPInterface {
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    getContext().startForegroundService(intent);
+                    getContext().startService(intent);
+                    //getContext().startForegroundService(intent);
                 } else {
                     getContext().startService(intent);
                 }
@@ -139,7 +140,9 @@ public class DPManager implements DPInterface {
     public void stop(){
         Log.i(TAG,"#### Stopped framework MainService.");
         // Stop the foreground service
-        myService.stopForeground(true);
+        if(myService != null) {
+            myService.stopForeground(true);
+        }
 
         try {
             if(servicesStarted) {
@@ -151,6 +154,11 @@ public class DPManager implements DPInterface {
         }catch (Exception e){
             Log.e(TAG,e.toString());
         }
+    }
+
+
+    public void foregroundAPP(){
+        myService.foregroundAPP();
     }
 
 
@@ -369,10 +377,10 @@ public class DPManager implements DPInterface {
                 // Service location
 //                Manifest.permission.ACCESS_FINE_LOCATION,
 //                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.FOREGROUND_SERVICE,
-                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.FOREGROUND_SERVICE
+                /*Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE*/
 
                 // Outros services
         };

@@ -3,13 +3,10 @@ package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 import static android.media.AudioFormat.CHANNEL_IN_MONO;
 import static android.media.AudioFormat.CHANNEL_IN_STEREO;
 
-import android.Manifest;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
-
-import androidx.annotation.RequiresPermission;
 
 import com.konovalov.vad.Vad;
 import com.konovalov.vad.VadConfig;
@@ -19,25 +16,36 @@ import com.konovalov.vad.VadListener;
  * VoiceRecorder: responsável por identificar se o áudio possui voz humana
  */
 public class VoiceRecorder {
+    private static final String TAG = VoiceRecorder.class.getSimpleName();
+    private static VoiceRecorder instance = null;
     private static final int PCM_CHANNEL = CHANNEL_IN_MONO;
     private static final int PCM_ENCODING_BIT = AudioFormat.ENCODING_PCM_16BIT;
     private Vad vad;
     private AudioRecord audioRecord;
-    private Listener callback;
+    private static Listener callback;
+    private static VadConfig config;
     private Thread thread;
     private boolean isListening = false;
-    private static final String TAG = VoiceRecorder.class.getSimpleName();
 
-    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
+    //@RequiresPermission(Manifest.permission.RECORD_AUDIO)
     public VoiceRecorder(Listener callback, VadConfig config) {
         this.callback = callback;
+        this.config = config;
         this.vad = new Vad(config);
+    }
+
+    public static VoiceRecorder getInstance() {
+        if (instance == null) {
+            instance = new VoiceRecorder(callback, config);
+        }
+        return instance;
     }
 
     public void updateConfig(VadConfig config) {
         vad.setConfig(config);
     }
 
+    //@NeedsPermission({Manifest.permission.RECORD_AUDIO})
     public void start() {
         stop();
         audioRecord = createAudioRecord();
@@ -49,7 +57,7 @@ public class VoiceRecorder {
             thread.start();
             vad.start();
         } else {
-            Log.w(TAG, "Failed start Voice Recorder!");
+            Log.e(TAG, "Failed start Voice Recorder!");
         }
     }
 

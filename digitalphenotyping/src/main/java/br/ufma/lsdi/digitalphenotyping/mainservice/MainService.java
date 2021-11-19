@@ -93,7 +93,19 @@ public class MainService extends Service {
 
             messageTextView = new TextView(context);
 
-            // Create the Foreground Service
+
+
+            this.processors = new ArrayList();
+
+            createClientID();
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
+        }
+    }
+
+
+    public void foregroundAPP(){
+        // Create the Foreground Service
             Log.i(TAG, "#### Notification create");
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
@@ -107,13 +119,6 @@ public class MainService extends Service {
                     .build();
 
             startForeground(ID_SERVICE, notification);
-
-            this.processors = new ArrayList();
-
-            createClientID();
-        }catch (Exception e){
-            Log.e(TAG,"#### Error: " + e.toString());
-        }
     }
 
 
@@ -160,7 +165,7 @@ public class MainService extends Service {
         try {
             Log.i(TAG, "#### CONFIGURATION MAINSERVICE");
             if (intent != null) {
-                activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
+                //activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
                 listDataProcessorManager = new ListDataProcessorManager(getContext());
 
                 setCommunicationTechnology(this.communicationTechnology);

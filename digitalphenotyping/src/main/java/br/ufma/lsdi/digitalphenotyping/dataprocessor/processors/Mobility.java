@@ -12,11 +12,11 @@ import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.Alarm;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.AlarmStudentLife;
 
 public class Mobility extends DataProcessor {
     private static final String TAG = Mobility.class.getName();
-    private Alarm alarm = new Alarm();
+    private AlarmStudentLife alarm = new AlarmStudentLife();
 
     @Override
     public void init(){

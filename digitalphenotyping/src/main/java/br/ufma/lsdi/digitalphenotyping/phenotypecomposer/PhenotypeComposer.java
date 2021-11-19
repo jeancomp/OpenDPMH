@@ -207,7 +207,7 @@ public class PhenotypeComposer extends Service {
     public void startWorkManager(){
         Log.i(TAG,"#### Started WorkManager");
         // Adicionamos restrições ao Work: 1 - esteja conectado a internet,
-        //                                  2 - o nível de baterial não pode estar baixa.
+        //                                  2 - o nível de bateria não pode estar baixa.
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.UNMETERED)
                 .setRequiresBatteryNotLow(true)

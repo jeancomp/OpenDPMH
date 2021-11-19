@@ -224,6 +224,4 @@ public class MainActivityRecorder extends AppCompatActivity implements VoiceReco
         // NOTE: delegate the permission handling to generated method
         //MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
-
-
 }

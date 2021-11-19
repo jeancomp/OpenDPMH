@@ -3,8 +3,10 @@ package com.jp.myapplication;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,8 +37,11 @@ import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOff;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOffManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidFrequencyException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidHostServerException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidMainServiceException;
@@ -43,9 +49,13 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPassw
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
 import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 
 public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = MainActivity2.class.getName();
+    private ActiveDataProcessorManager activeDataProcessorManager;
+    private FrameworkOnOffManager frameworkStatus;
     private List<String> listProcessors = new ArrayList();
     private RecyclerViewAdapter adapter;
     private MainService myService;
@@ -58,7 +68,6 @@ public class MainActivity2 extends AppCompatActivity {
     private View fab;
     private Notification notification;
     private boolean flag_on_off = false;
-    private boolean isInitialized = false;
     private Vibrator vibe;
     private Activity activity;
     private SaveActivity saveActivity;
@@ -70,6 +79,8 @@ public class MainActivity2 extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         activity = (Activity) this;
+        frameworkStatus = new FrameworkOnOffManager(this);
+        activeDataProcessorManager = new ActiveDataProcessorManager(this);
         saveActivity = new SaveActivity(this);
         recyclerView = findViewById(R.id.recyclerview_fragment_main_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -82,11 +93,12 @@ public class MainActivity2 extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(clickListener);
         vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+        new AddItemTaskGet().execute(); // verifica status do framework on/off
 
-        //listProcessors.add("RawDataCollector");
-        //listProcessors.add("Mobility");
-        listProcessors.add("Sociability");
-        listProcessors.add("Sleep");
+//        listProcessors.add("RawDataCollector");
+//        listProcessors.add("Mobility");
+//        listProcessors.add("Sociability");
+//        listProcessors.add("Sleep");
 
         try {
             startFramework();
@@ -131,24 +143,6 @@ public class MainActivity2 extends AppCompatActivity {
             } else {
                 startService(intent);
             }
-
-            /*final int tempoDeEspera = 1000;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    SystemClock.sleep(tempoDeEspera);
-                    Log.i(TAG,"#### Aguardando1");
-                    SystemClock.sleep(tempoDeEspera);
-                    Log.i(TAG,"#### Aguardando2");
-                    SystemClock.sleep(tempoDeEspera);
-                    Log.i(TAG,"#### Aguardando3");
-                    SystemClock.sleep(tempoDeEspera);
-                    Log.i(TAG,"#### Aguardando4");
-                    SystemClock.sleep(tempoDeEspera);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    textLoad.setVisibility(View.INVISIBLE);
-                }
-            }).start();*/
         } catch (Exception e) {
             Log.e(TAG, "#### Error: " + e.getMessage());
         }
@@ -188,24 +182,20 @@ public class MainActivity2 extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.button_init: {
                     try {
-                        /*ColorDrawable buttonColor = (ColorDrawable) button_init.getBackground();
-                        int colorId = buttonColor.getColor();*/
                         if(!flag_on_off){
-                            isInitialized = true;
-                            button_init.setBackgroundResource(R.color.colorGreen);
+                            processValue(true);
+                            new AddItemTaskSet().execute(true);
                             if(notification == null) {
                                 notification = new Notification();
                             }
-                            //dpManager.getInstance().startDataProcessors(listProcessors);
-                            flag_on_off = true;
-                            txtStatus.setText("on");
+                            dpManager.getInstance().foregroundAPP();
                             vibe.vibrate(50);
                         }
                         else {
-                            button_init.setBackgroundResource(R.color.colorWhite);
-                            flag_on_off = false;
-                            txtStatus.setText("off");
-                            //dpManager.getInstance().stop();
+                            processValue(false);
+                            new AddItemTaskSet().execute(false);
+                            new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
+                            new AddItemTaskClear().execute();
                             vibe.vibrate(50);
                         }
                     } catch (Exception e) {
@@ -266,12 +256,126 @@ public class MainActivity2 extends AppCompatActivity {
             return true;
         }
         else if(id == R.id.action_close){
-            dpManager.getInstance().stop();
-            finish();
+            new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setTitle("Closing OpenDPMH")
+                    .setMessage("Are you sure you want to close this app? It will stop the data collection.")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            processValue(false);
+                            new AddItemTaskSet().execute(false);
+                            new AddItemTaskOn().execute();
+                            new AddItemTaskClear().execute();
+                            dpManager.getInstance().stop();
+                            finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         }
+        /*else if(id == R.id.action_audio){
+            //Start função recorder
+            Intent startRecorder = new Intent(getApplicationContext(), MainActivityRecorder.class);
+            startActivity(startRecorder);
+        }*/
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    public void processValue(Boolean myValue) {
+        Log.i(TAG,"#### myValue: " + myValue);
+        if(!myValue){
+            button_init.setBackgroundResource(R.color.colorWhite);
+            txtStatus.setText("off");
+        }
+        else if(myValue){
+            button_init.setBackgroundResource(R.color.colorGreen);
+            txtStatus.setText("on");
+        }
+        flag_on_off = myValue;
+    }
+
+
+    private class AddItemTaskGet extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            FrameworkOnOff frameworkOnOff = new FrameworkOnOff();
+            frameworkOnOff = frameworkStatus.getInstance().select();
+            int tam = frameworkStatus.getInstance().totalRecords();
+            Log.i(TAG,"#### Registro: " + tam);
+            Boolean value = true;
+            if(tam == 0){
+                value = false;
+            }
+            return value;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            processValue(result);
+        }
+    }
+
+
+    private class AddItemTaskClear extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            frameworkStatus.getInstance().delete();
+            return null;
+        }
+    }
+
+
+    private class AddItemTaskSet extends AsyncTask<Boolean, Void, Void> {
+        @Override
+        protected Void doInBackground(Boolean... params) {
+            Log.i(TAG,"#### valor: " + params[0]);
+            frameworkStatus.getInstance().update(params[0]);
+            return null;
+        }
+    }
+
+
+    public void processValue(List<ActiveDataProcessor> myValue) {
+        if(myValue.size() > 0){
+            List<String> list = new ArrayList();
+            for(int i=0; i < myValue.size(); i++) {
+                list.add(myValue.get(i).getDataProcessorName());
+            }
+            try {
+                dpManager.getInstance().stopDataProcessors(list);
+            } catch (InvalidDataProcessorNameException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class AddItemTaskOn extends AsyncTask<Void, Void, List<ActiveDataProcessor>> {
+        @Override
+        protected List<ActiveDataProcessor> doInBackground(Void... params) {
+            List<ActiveDataProcessor> l = new ArrayList();
+            l = activeDataProcessorManager.getInstance().select();
+            return l;
+        }
+
+        @Override
+        protected void onPostExecute(List<ActiveDataProcessor> result) {
+            processValue(result);
+        }
+    }
+
+
+/*    private class AddItemTaskOff extends AsyncTask<List<ActiveDataProcessor>, Void, Void> {
+        @Override
+        protected Void doInBackground(List<ActiveDataProcessor>... params) {
+            activeDataProcessorManager.getInstance().delete(params[0]);
+            return null;
+        }
+    }*/
 
 
     public class Notification {
@@ -310,7 +414,7 @@ public class MainActivity2 extends AppCompatActivity {
     }
 }
 
-//Backup
+// --Backup-------------------------------------
 /*//Start DataProcessor
         try {
             dpManager.getInstance().startDataProcessors(listProcessors);
@@ -327,6 +431,21 @@ public class MainActivity2 extends AppCompatActivity {
         dpManager.getInstance().stop();
         finish();*/
 
-        /*//Start função recorder
-        Intent startRecorder = new Intent(getApplicationContext(), MainActivityRecorder.class);
-        startActivity(startRecorder);*/
+//--Backup-----------------------------------------
+            /*final int tempoDeEspera = 1000;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    SystemClock.sleep(tempoDeEspera);
+                    Log.i(TAG,"#### Aguardando1");
+                    SystemClock.sleep(tempoDeEspera);
+                    Log.i(TAG,"#### Aguardando2");
+                    SystemClock.sleep(tempoDeEspera);
+                    Log.i(TAG,"#### Aguardando3");
+                    SystemClock.sleep(tempoDeEspera);
+                    Log.i(TAG,"#### Aguardando4");
+                    SystemClock.sleep(tempoDeEspera);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    textLoad.setVisibility(View.INVISIBLE);
+                }
+            }).start();*/
