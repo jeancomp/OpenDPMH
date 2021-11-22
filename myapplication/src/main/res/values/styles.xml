@@ -105,20 +105,20 @@
         <item name="autoSizeMinTextSize">7sp</item>
     </style>
 
-    <!--<style name="FlipView">
+    <style name="FlipView">
         <item name="android:layout_height">@dimen/main_cardview_list_item_image_icon_width_height
         </item>
         <item name="android:layout_width">@dimen/main_cardview_list_item_image_icon_width_height
         </item>
         <item name="android:padding">4dp</item>
         <item name="android:clipToPadding">false</item>
-        <item name="checked">false</item>
+<!--        <item name="checked">false</item>
         <item name="frontBackgroundColor">@color/colorForImageIconFrontTextBackground</item>
         <item name="frontLayout">@layout/flipview_front_custom</item>
         <item name="rearBackgroundColor">@color/colorForImageIconRearBackground</item>
         <item name="rearImageAnimationDelay">0</item>
-        <item name="enableInitialAnimation">false</item>
-    </style>-->
+        <item name="enableInitialAnimation">false</item>-->
+    </style>
 
     <style name="Dialog" />
 

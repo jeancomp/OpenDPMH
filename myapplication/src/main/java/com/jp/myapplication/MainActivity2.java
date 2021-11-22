@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,12 +74,26 @@ public class MainActivity2 extends AppCompatActivity {
     private Activity activity;
     private SaveActivity saveActivity;
 
+    private SharedPreferences sharedpreferences;
+    private static final String MyPREFERENCES = "pref_main" ;
+    private static final String Host = "hostKey";
+    private static final String Port = "portKey";
+    private static final String Compositionmode = "compositioModeKey";
+    private static final String Frequency = "frequencyKey";
+
+    private String host = null;
+    private String port = null ;
+    private String compositionmode = null;
+    private String frequency = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
+
+        //getSupportActionBar().setSubtitle("LSDi");
         activity = (Activity) this;
         frameworkStatus = new FrameworkOnOffManager(this);
         activeDataProcessorManager = new ActiveDataProcessorManager(this);
@@ -95,11 +111,19 @@ public class MainActivity2 extends AppCompatActivity {
         vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
         new AddItemTaskGet().execute(); // verifica status do framework on/off
 
+        sharedpreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        //PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
+        //Preference preferenceHost = findViewById();
+
 //        listProcessors.add("RawDataCollector");
 //        listProcessors.add("Mobility");
 //        listProcessors.add("Sociability");
 //        listProcessors.add("Sleep");
+    }
 
+
+    public void initAPP(){
         try {
             startFramework();
         } catch (InvalidCompositionModeException e) {
@@ -121,12 +145,31 @@ public class MainActivity2 extends AppCompatActivity {
 
 
     public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException {
-        dpManager = new DPManager.Builder(this)
-                .setExternalServer("192.168.0.7", "1883")
-                //.setExternalServer("broker.hivemq.com","1883")
-                .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
-                //.setFrequency(15)
-                .build();
+        if(compositionmode.equals("SEND_WHEN_IT_ARRIVES")) {
+            dpManager = new DPManager.Builder(this)
+                    .setExternalServer(host, port)
+                    //.setExternalServer("broker.hivemq.com","1883")
+                    .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
+                    //.setFrequency(15)
+                    .build();
+        }
+        else if(compositionmode.equals("GROUP_ALL")){
+            dpManager = new DPManager.Builder(this)
+                    .setExternalServer(host, port)
+                    //.setExternalServer("broker.hivemq.com","1883")
+                    .setCompositionMode(CompositionMode.GROUP_ALL)
+                    //.setFrequency(15)
+                    .build();
+        }
+        else if(compositionmode.equals("FREQUENCY")){
+            int freq = Integer.parseInt(frequency);
+            dpManager = new DPManager.Builder(this)
+                    .setExternalServer(host, port)
+                    //.setExternalServer("broker.hivemq.com","1883")
+                    .setCompositionMode(CompositionMode.FREQUENCY)
+                    .setFrequency(freq)
+                    .build();
+        }
         dpManager.getInstance().start();
     }
 
@@ -135,13 +178,26 @@ public class MainActivity2 extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        try {
-            Intent intent = new Intent(this, MainService.class);
+        if(sharedpreferences != null){
+            host = sharedpreferences.getString(Host,"");
+            port = sharedpreferences.getString(Port,"");
+            compositionmode = sharedpreferences.getString(Compositionmode,"");
+            frequency = sharedpreferences.getString(Frequency,"");
+            Log.i(TAG,"#### thost: " + host);
+            Log.i(TAG,"#### tport: " + port);
+            Log.i(TAG,"#### tcomp: " + compositionmode);
+            Log.i(TAG,"#### tfreq: " + frequency);
+        }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            } else {
-                startService(intent);
+        try {
+            if(flag_on_off) {
+                Intent intent = new Intent(this, MainService.class);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                } else {
+                    startService(intent);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "#### Error: " + e.getMessage());
@@ -182,14 +238,20 @@ public class MainActivity2 extends AppCompatActivity {
             switch (view.getId()) {
                 case R.id.button_init: {
                     try {
-                        if(!flag_on_off){
-                            processValue(true);
-                            new AddItemTaskSet().execute(true);
-                            if(notification == null) {
-                                notification = new Notification();
-                            }
-                            dpManager.getInstance().foregroundAPP();
+                        if (!flag_on_off) {
                             vibe.vibrate(50);
+                            initAPP();
+                            if((host != null) && (port != null) && (compositionmode != null)) {
+                                processValue(true);
+                                new AddItemTaskSet().execute(true);
+                                if (notification == null) {
+                                    notification = new Notification();
+                                }
+                                dpManager.getInstance().foregroundAPP();
+                            }
+                            else{
+                                Toast.makeText(getBaseContext(), "Required to configure host, port and composition mode!",Toast.LENGTH_SHORT).show();
+                            }
                         }
                         else {
                             processValue(false);
@@ -205,7 +267,12 @@ public class MainActivity2 extends AppCompatActivity {
                 }
                 case R.id.fab: {
                     try {
-                        startAddDataProcessorFragment();
+                        if(flag_on_off){
+                            startAddDataProcessorFragment();
+                        }
+                        else {
+                            Toast.makeText(getBaseContext(), "Click start application button",Toast.LENGTH_SHORT).show();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -252,6 +319,7 @@ public class MainActivity2 extends AppCompatActivity {
 
         if (id == R.id.action_settings) {
             Intent i = new Intent(this, SettingsActivity.class);
+            i.putExtra("flag_on_off", flag_on_off);
             startActivity(i);
             return true;
         }

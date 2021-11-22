@@ -9,7 +9,7 @@
     tools:context=".SettingsActivity">
 
     <fragment
-        android:id="@+id/nav_host_fragment"
+        android:id="@+id/nav_host_fragment_settings"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

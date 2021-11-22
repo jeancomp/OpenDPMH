@@ -378,8 +378,6 @@
 
 <string name="pref_language_title">"Composition mode"</string>
 
-<string name="pref_language_key" translatable="false">"preference language"</string>
-
 <string name="pref_default_language_entry">"SEND_WHEN_IT_ARRIVES"</string>
 <string name="pref_default_language_value">"SWIA"</string>
 
@@ -396,8 +394,6 @@
 </string-array>
 
 <string name="pref_fiat_currency_title">"Set value frequency(minute)"</string>
-
-<string name="pref_fiat_currency_key" translatable="false">"preference fiat currency"</string>
 
 <string name="pref_default_fiat_currency_entry">"0"</string>
 <string name="pref_default_fiat_currency_value">"0"</string>

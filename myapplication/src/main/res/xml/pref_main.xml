@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory android:title="@string/pref_general_category_title">
         <EditTextPreference
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_baseline_cloud_queue_24"
             android:key="host"
             android:title="@string/hostname"
             android:persistent="true"
@@ -11,6 +14,8 @@
             android:summary="@string/defaulthost"
             android:defaultValue="" />
         <EditTextPreference
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_baseline_dns_24"
             android:key="port"
             android:title="@string/portnumber"
             android:persistent="true"
@@ -19,18 +24,22 @@
             android:summary="@string/defaultport"
             android:defaultValue="" />
         <ListPreference
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_baseline_settings_input_composite_24"
             android:defaultValue="@string/pref_default_language_value"
             android:entries="@array/pref_language_list_entries"
             android:entryValues="@array/pref_language_list_values"
-            android:key="@string/pref_language_key"
+            android:key="compositionmode"
             android:summary="@string/pref_default_language_entry"
             android:title="@string/pref_language_title"
             tools:summary="@string/pref_default_language_entry" />
         <ListPreference
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_baseline_more_time_24"
             android:defaultValue="@string/pref_default_fiat_currency_value"
             android:entries="@array/pref_fiat_currency_list_entries"
             android:entryValues="@array/pref_fiat_currency_list_values"
-            android:key="@string/pref_fiat_currency_key"
+            android:key="frequency"
             android:summary="@string/pref_default_fiat_currency_entry"
             android:title="@string/pref_fiat_currency_title"
             tools:summary="@string/pref_default_fiat_currency_entry" />
@@ -38,12 +47,11 @@
 
     <PreferenceCategory android:title="@string/pref_support_category_title">
         <Preference
-            android:key="@string/pref_rate_app_key"
-            android:title="@string/pref_rate_app_title" />
-        <Preference
+            android:icon="@drawable/ic_baseline_share_24"
             android:key="@string/pref_share_app_key"
             android:title="@string/pref_share_app_title" />
         <Preference
+            android:icon="@drawable/ic_baseline_email_24"
             android:key="@string/pref_contact_key"
             android:summary="@string/pref_contact_summary"
             android:title="@string/pref_contact_title" />
@@ -51,30 +59,21 @@
 
     <PreferenceCategory android:title="@string/pref_support_about_title">
         <Preference
-            android:icon="@drawable/ic_web"
-            android:key="@string/pref_website_key"
-            android:summary="@string/pref_website_summary"
-            android:title="@string/pref_website_title" />
-        <Preference
-            android:key="@string/pref_author_key"
-            android:summary="@string/pref_author_summary"
-            android:title="@string/pref_author_title" />
-        <Preference
+            android:icon="@drawable/ic_baseline_source_24"
             android:key="@string/pref_source_key"
             android:summary="@string/pref_source_summary"
             android:title="@string/pref_source_title" />
         <Preference
+            android:icon="@drawable/ic_baseline_policy_24"
             android:key="@string/pref_privacy_policy_key"
             android:title="@string/pref_privacy_policy_title" />
         <Preference
-            android:key="@string/pref_third_party_software_key"
-            android:summary="@string/pref_third_party_software_summary"
-            android:title="@string/pref_third_party_software_title" />
-        <Preference
+            android:icon="@drawable/ic_baseline_local_police_24"
             android:key="@string/pref_license_key"
             android:summary="@string/pref_license_summary"
             android:title="@string/pref_license_title" />
         <Preference
+            android:icon="@drawable/ic_baseline_123_24"
             android:key="@string/pref_version_key"
             android:summary="@string/pref_version_summary"
             android:title="@string/versionName" />

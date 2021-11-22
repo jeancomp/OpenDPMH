@@ -90,13 +90,8 @@ public class MainService extends Service {
             super.onCreate();
             Log.i(TAG, "#### Starting service BusSystem");
             context = this;
-
             messageTextView = new TextView(context);
-
-
-
             this.processors = new ArrayList();
-
             createClientID();
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
