@@ -31,7 +31,7 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidMainS
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPasswordException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
-import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     View button_stop;
     View button_closeFramework;
     View button_recorder;
-    MainService myService;
+    DPManagerService myService;
     List<String> listProcessors = null;
     Activity activity;
 
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         try{
-            Intent intent = new Intent(this, MainService.class);
+            Intent intent = new Intent(this, DPManagerService.class);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.i(TAG,"#### Connection service MainService");
-            MainService.LocalBinder binder = (MainService.LocalBinder) iBinder;
+            DPManagerService.LocalBinder binder = (DPManagerService.LocalBinder) iBinder;
             myService = binder.getService();
 
             try {

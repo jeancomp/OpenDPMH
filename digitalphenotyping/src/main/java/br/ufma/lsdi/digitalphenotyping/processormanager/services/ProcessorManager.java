@@ -39,7 +39,6 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidPluginException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
-import br.ufma.lsdi.digitalphenotyping.rawdatacollector.RawDataCollector;
 
 
 /*
@@ -111,12 +110,7 @@ public class ProcessorManager extends Service {
 
     public synchronized void startDataProcessor(String dataProcessorName) {
         try {
-            if(dataProcessorName.equalsIgnoreCase("RawDataCollector")) {
-                Intent s = new Intent(context, RawDataCollector.class);
-                context.startService(s);
-                Log.i(TAG, "#### Starting services: RawDataCollector");
-            }
-            else if(dataProcessorName.equalsIgnoreCase("Sociability")) {
+            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sociability");
@@ -143,12 +137,7 @@ public class ProcessorManager extends Service {
 
     public synchronized void stopDataProcessor(String dataProcessorName) {
         try {
-            if(dataProcessorName.equalsIgnoreCase("RawDataCollector")) {
-                Intent s = new Intent(context, RawDataCollector.class);
-                context.stopService(s);
-                Log.i(TAG, "#### Stopping services");
-            }
-            else if(dataProcessorName.equalsIgnoreCase("Sociability")) {
+            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
                 Intent s = new Intent(context, Sociability.class);
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services");
@@ -609,7 +598,6 @@ public class ProcessorManager extends Service {
      * Contains all data processor modules available for use.
      */
     public void startDataProcessorsList() {
-        this.listDataProcessors.add("RawDataCollector");
         this.listDataProcessors.add("Sociability");
         this.listDataProcessors.add("Mobility");
         this.listDataProcessors.add("Sleep");

@@ -22,7 +22,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
-public class Sociability extends DataProcessor {
+public class Sociability extends DataProcessor{
     private static final String TAG = Sociability.class.getName();
     private SaveActivity saveActivity = SaveActivity.getInstance();
     private List<String> listSensors = new ArrayList();
@@ -124,6 +124,7 @@ public class Sociability extends DataProcessor {
             Message msg = new Message();
             msg.setServiceValue(json);
             sendProcessedData(msg);
+            saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
         }catch (Exception e){
             e.printStackTrace();
         }

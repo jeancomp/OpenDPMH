@@ -95,6 +95,7 @@ public class AddActiveDataProcessorActivity extends AppCompatActivity implements
                 dpManager.getInstance().startDataProcessors(listDataProcessors);
                 Intent homepage = new Intent(this, MainActivity2.class);
                 startActivity(homepage);
+                finish();
             }
             else{
                 Toast.makeText(getBaseContext(), "No interest situation selected!", Toast.LENGTH_SHORT).show();

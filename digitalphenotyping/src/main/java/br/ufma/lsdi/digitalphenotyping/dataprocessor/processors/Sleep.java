@@ -77,6 +77,7 @@ public class Sleep extends DataProcessor {
         //msg.setAvailableAttributesList(new [{"RawData"}]);
         msg.setServiceValue(json);
         sendProcessedData(msg);
+        saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
     } //inferencia do evento de fenotipagem
 
 

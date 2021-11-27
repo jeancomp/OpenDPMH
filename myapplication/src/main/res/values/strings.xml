@@ -102,7 +102,7 @@
 <string name="string_total_value_change_24h_label">"# "</string>
 <string name="string_total_value_change_24h" translatable="false">" 0 "</string>
 <string name="string_separator_value" translatable="false">": "</string>
-<string name="compositionmode" translatable="true">"Composition mode"</string>
+<string name="clientID" translatable="true">"ClientID"</string>
 <string name="value" translatable="false">"--"</string>
 <string name="string_separator_code" translatable="false">": "</string>
 <string name="string_crypto_code" translatable="false">"Status"</string>

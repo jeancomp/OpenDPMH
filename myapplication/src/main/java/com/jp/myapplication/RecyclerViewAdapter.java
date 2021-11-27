@@ -1,6 +1,8 @@
 package com.jp.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +62,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.cardview_list_item);
             dataProcessorName = (TextView) itemView.findViewById(R.id.item_name);
+
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(v.getContext(), StreamActivity.class);
+                    i.putExtra("dataprocessorname", dataProcessorName.getText());
+                    Log.i("RecyclerViewAdapter","#### DataProcessorName selected:" + dataProcessorName.getText());
+                    v.getContext().startActivity(i);
+                }
+            });
         }
     }
 }

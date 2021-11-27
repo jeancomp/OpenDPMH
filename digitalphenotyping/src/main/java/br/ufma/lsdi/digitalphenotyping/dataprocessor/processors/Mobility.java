@@ -84,6 +84,7 @@ public class Mobility extends DataProcessor {
         Message msg = new Message();
         msg.setServiceValue(json);
         sendProcessedData(msg);
+        saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
     }
 
 

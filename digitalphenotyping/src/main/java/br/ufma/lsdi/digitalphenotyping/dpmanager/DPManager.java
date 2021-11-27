@@ -6,10 +6,14 @@ import static br.ufma.lsdi.digitalphenotyping.CompositionMode.SEND_WHEN_IT_ARRIV
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -17,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
@@ -24,6 +29,8 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.DataProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidContextException;
@@ -34,7 +41,6 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidMainS
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPasswordException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
-import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessor;
@@ -49,11 +55,13 @@ public class DPManager implements DPInterface {
     private static DPManager instance = null;
     private Context context;
     private Activity activity;
+    private String clientID;
     private int communicationTechnology;
     private Boolean secure;
-    private MainService myService;
+    private DPManagerService myService;
     private boolean servicesStarted = false;
     private static Builder builderCopy;
+    private List<Phenotypes> phenotypesList = new ArrayList();
 
 
     /**
@@ -103,7 +111,7 @@ public class DPManager implements DPInterface {
 
             if(!servicesStarted) {
                 Log.i(TAG, "#### Started framework MainService.");
-                Intent intent = new Intent(this.activity, MainService.class);
+                Intent intent = new Intent(this.activity, DPManagerService.class);
 
                 //ActivityParcelable activityParcelable = new ActivityParcelable();
                 //activityParcelable.setActivity(this.activity);
@@ -114,6 +122,8 @@ public class DPManager implements DPInterface {
                 intent.putExtra("port", builderCopy.port);
                 intent.putExtra("username", builderCopy.username);
                 intent.putExtra("password", builderCopy.password);
+                intent.putExtra("clientid", createClientID());
+                intent.putExtra("activerawdatacollector", builderCopy.activerawdatacollector);
                 if(builderCopy.compositionMode == FREQUENCY) {
                     intent.putExtra("frequency", builderCopy.frequency);
                 }
@@ -146,7 +156,7 @@ public class DPManager implements DPInterface {
 
         try {
             if(servicesStarted) {
-                Intent intent = new Intent(getContext(), MainService.class);
+                Intent intent = new Intent(getContext(), DPManagerService.class);
                 getContext().stopService(intent);
 
                 servicesStarted = false;
@@ -157,9 +167,45 @@ public class DPManager implements DPInterface {
     }
 
 
-    public void foregroundAPP(){
-        myService.foregroundAPP();
+    public String createClientID(){
+        this.clientID = UUID.randomUUID().toString().replaceAll("-","");
+        this.clientID = this.clientID.toString().replaceAll("[0-9]","");
+        //this.clientID = "febfcfbccaeabda";
+        Log.i(TAG,"#### New clientID: " + this.clientID);
+        return clientID;
     }
+
+
+    public String getClientID(){
+        return this.clientID;
+    }
+
+
+    public void foregroundAPP(){
+        Log.i(TAG,"#### Ativa foreground app");
+        Intent intent = new Intent(getContext(), DPManagerService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            getContext().startService(intent);
+        }
+    }
+
+    ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.i(TAG, "#### Connection service MainService");
+            DPManagerService.LocalBinder binder = (DPManagerService.LocalBinder) iBinder;
+            myService = binder.getService();
+
+            myService.foregroundAPP();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Log.i(TAG, "#### Disconnection service MainService");
+        }
+    };
 
 
     /**
@@ -240,6 +286,24 @@ public class DPManager implements DPInterface {
     }
 
 
+    @Override
+    public List<Phenotypes> getPhenotypesList(String situationInterest){
+        DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
+        if(dataProcessorManager.checkDatabaseCreation()){
+            Log.i(TAG,"#### dpm");
+            try {
+                new AddItemTask().execute(situationInterest);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            phenotypesList = null;
+        }
+        return phenotypesList;
+    }
+
+
     /**
      * Search the application context.
      * @return the context.
@@ -314,13 +378,13 @@ public class DPManager implements DPInterface {
 
     /**
      *
-     * @param mainService
+     * @param DPManagerService
      */
-    public void setMainService(MainService mainService) throws InvalidMainServiceException {
-        if(mainService == null){
+    public void setMainService(DPManagerService DPManagerService) throws InvalidMainServiceException {
+        if(DPManagerService == null){
             throw new InvalidMainServiceException("#### Error: mainService cannot be null.");
         }
-        this.myService = mainService;
+        this.myService = DPManagerService;
     }
 
 
@@ -328,7 +392,7 @@ public class DPManager implements DPInterface {
      *
      * @return
      */
-    public MainService getMainService(){
+    public DPManagerService getMainService(){
         return myService;
     }
 
@@ -419,6 +483,7 @@ public class DPManager implements DPInterface {
         private String password = "12345";
         private CompositionMode compositionMode = null;
         private Integer frequency = null;
+        private boolean activerawdatacollector = false;
 
         public Builder(Activity activity){
             this.activity = activity;
@@ -457,6 +522,11 @@ public class DPManager implements DPInterface {
 
         public Builder setPort(@NonNull final String port){
             this.port = port;
+            return this;
+        }
+
+        public Builder setRawDataCollector(@NonNull final boolean activerawdatacollector){
+            this.activerawdatacollector = activerawdatacollector;
             return this;
         }
 
@@ -515,5 +585,27 @@ public class DPManager implements DPInterface {
             }
             return new DPManager(this);
         }
+    }
+
+
+    private class AddItemTask extends AsyncTask<String, Void, List<Phenotypes>> {
+        DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
+
+        @Override
+        protected List<Phenotypes> doInBackground(String... params) {
+            List<Phenotypes> l = new ArrayList();
+            l = dataProcessorManager.select(params[0]);
+            return l;
+        }
+
+        @Override
+        protected void onPostExecute(List<Phenotypes> result) {
+            processValue(result);
+        }
+    }
+
+
+    public void processValue(List<Phenotypes> myValue) {
+        phenotypesList = myValue;
     }
 }

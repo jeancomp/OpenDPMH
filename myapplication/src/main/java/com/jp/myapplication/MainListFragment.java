@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
-import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 
@@ -26,7 +26,7 @@ public class MainListFragment extends Fragment {
     private static final String TAG = MainListFragment.class.getName();
     private ActiveDataProcessorManager activeDataProcessorManager;// = ActiveDataProcessorManager.getInstance();
     private RecyclerViewAdapter adapter;
-    private MainService myService;
+    private DPManagerService myService;
     private DPManager dpManager;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;

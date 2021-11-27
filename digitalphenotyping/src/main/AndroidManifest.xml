@@ -40,7 +40,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".mainservice.MainService" />
+        <service android:name=".dpmanager.DPManagerService" />
         <service android:name=".processormanager.services.ProcessorManager"/>
         <service android:name=".phenotypecomposer.PhenotypeComposer"/>
         <service android:name=".rawdatacollector.RawDataCollector" />

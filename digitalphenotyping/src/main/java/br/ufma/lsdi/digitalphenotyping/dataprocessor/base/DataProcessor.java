@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
+import android.os.AsyncTask;
 import android.os.IBinder;
 
 import com.google.gson.Gson;
@@ -21,6 +22,9 @@ import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.DataProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
@@ -34,6 +38,7 @@ public abstract class DataProcessor extends Service {
     private Publisher publisher = PublisherFactory.createPublisher();
     private DPUtil dpUtil;
     private DPUtil dpUtilAux;
+    private DataProcessorManager dataProcessorManager;
 
     @Override
     public void onCreate() {
@@ -42,6 +47,8 @@ public abstract class DataProcessor extends Service {
         this.clientID = CDDL.getInstance().getConnection().getClientId();
 
         publisher.addConnection(CDDL.getInstance().getConnection());
+
+        dataProcessorManager = new DataProcessorManager(context);
 
         init();
     }
@@ -111,6 +118,19 @@ public abstract class DataProcessor extends Service {
         Gson gson = new Gson();
         String json = gson.toJson(o);
         return json;
+    }
+
+
+    public void saveDigitalPhenotypeEvent(DigitalPhenotypeEvent digitalPhenotypeEvent){
+        Phenotypes phenotypes = new Phenotypes();
+        phenotypes.setDataProcessorName(digitalPhenotypeEvent.getDataProcessorName());
+        phenotypes.stringFromObject(digitalPhenotypeEvent);
+
+        try {
+            new AddItemTask().execute(phenotypes);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -290,4 +310,14 @@ public abstract class DataProcessor extends Service {
         }
     }
     //public class ProcessedInformation extends Message{ }
+
+    private class AddItemTask extends AsyncTask<Phenotypes, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(Phenotypes... params) {
+            dataProcessorManager.getInstance().insert(params[0]);
+            return null;
+        }
+    }
 }

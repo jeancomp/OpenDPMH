@@ -100,6 +100,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".StreamActivity"
+            android:parentActivityName=".MainActivity2">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jp.myapplication.MainActivity2" />
+        </activity>
+
     </application>
 
 </manifest>

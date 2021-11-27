@@ -42,6 +42,18 @@ public class Voice extends BroadcastReceiver implements VoiceRecorder.Listener {
     private boolean isRecording = false;
 
     public void config(Context context){
+//        while(true){
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            start.sensorAudio
+//        }
+
+
+
+
         try {
             this.context = context;
 

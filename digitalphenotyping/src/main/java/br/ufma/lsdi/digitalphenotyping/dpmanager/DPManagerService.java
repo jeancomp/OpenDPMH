@@ -1,4 +1,4 @@
-package br.ufma.lsdi.digitalphenotyping.mainservice;
+package br.ufma.lsdi.digitalphenotyping.dpmanager;
 
 import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
 import static br.ufma.lsdi.digitalphenotyping.CompositionMode.FREQUENCY;
@@ -47,12 +47,13 @@ import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.PhenotypeComposer;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.rawdatacollector.RawDataCollector;
 
 /**
- * System Bus to framework, MainService
+ * System Bus to framework, DPManagerService
  */
-public class MainService extends Service {
-    private static final String TAG = MainService.class.getName();
+public class DPManagerService extends Service {
+    private static final String TAG = DPManagerService.class.getName();
     private ActiveDataProcessorManager activeDataProcessorManager;
     private ListDataProcessorManager listDataProcessorManager;
     private Publisher publisher = PublisherFactory.createPublisher();
@@ -62,6 +63,7 @@ public class MainService extends Service {
     private String username = "username";
     private String password = "";
     private String clientID;
+    private boolean isActiveRawDataCollector;
     private ConnectionImpl con;
     private Context context;
     private Activity activity;
@@ -88,11 +90,10 @@ public class MainService extends Service {
     public void onCreate() {
         try {
             super.onCreate();
-            Log.i(TAG, "#### Starting service BusSystem");
+            Log.i(TAG, "#### Starting service main service");
             context = this;
             messageTextView = new TextView(context);
             this.processors = new ArrayList();
-            createClientID();
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.toString());
         }
@@ -131,22 +132,12 @@ public class MainService extends Service {
     }
 
 
-    public void createClientID(){
-//        this.clientID = UUID.randomUUID().toString().replaceAll("-","");
-//        this.clientID = this.clientID.toString().replaceAll("[0-9]","");
-//        configurations.getInstance().setClientID(this.clientID);
-
-        this.clientID = "febfcfbccaeabda";
-        Log.i(TAG,"#### ClientID: " + this.clientID);
-    }
-
-
     public final IBinder mBinder = new LocalBinder();
 
 
     public class LocalBinder extends Binder {
-        public MainService getService() {
-            return MainService.this;
+        public DPManagerService getService() {
+            return DPManagerService.this;
         }
     }
 
@@ -160,6 +151,8 @@ public class MainService extends Service {
         try {
             Log.i(TAG, "#### CONFIGURATION MAINSERVICE");
             if (intent != null) {
+                clientID = intent.getStringExtra("clientid");
+                isActiveRawDataCollector = intent.getBooleanExtra("activerawdatacollector", false);
                 //activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
                 listDataProcessorManager = new ListDataProcessorManager(getContext());
 
@@ -244,11 +237,6 @@ public class MainService extends Service {
             Log.i(TAG,"#### ENDEREÇO DO MICROBROKER: " + host);
             //val host = "broker.hivemq.com";
             con = ConnectionFactory.createConnection();
-
-            if(this.clientID.isEmpty()) {
-                createClientID();
-            }
-
             con.setClientId(this.clientID);
             con.setHost(host);
             con.addConnectionListener(connectionListener);
@@ -284,6 +272,11 @@ public class MainService extends Service {
                 Intent pc = new Intent(getContext(), PhenotypeComposer.class);
                 getContext().startService(pc);
 
+                if(isActiveRawDataCollector){
+                    Intent rdc = new Intent(getContext(), RawDataCollector.class);
+                    getContext().startService(rdc);
+                }
+
                 servicesStarted = true;
             }
         }catch (Exception e){
@@ -300,6 +293,11 @@ public class MainService extends Service {
 
                 Intent pc = new Intent(getContext(), PhenotypeComposer.class);
                 getContext().startService(pc);
+
+                if(isActiveRawDataCollector){
+                    Intent rdc = new Intent(getContext(), RawDataCollector.class);
+                    getContext().startService(rdc);
+                }
 
                 servicesStarted = false;
             }

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
 
 public class BootCompletedReceiver extends BroadcastReceiver {
     private static final String TAG = BootCompletedReceiver.class.getName();
@@ -26,7 +26,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
 //            }
 
             Log.i(TAG,"#### Dispositivo reiniciado.");
-            Intent i = new Intent(context, MainService.class);
+            Intent i = new Intent(context, DPManagerService.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(i);
         }

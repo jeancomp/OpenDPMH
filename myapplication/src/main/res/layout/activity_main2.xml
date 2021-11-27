@@ -43,8 +43,7 @@
                     android:textAlignment="center"
                     app:layout_constraintBottom_toTopOf="@+id/textview_total_value_change_24h"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:text="@string/sample_text_total_value_on_date_time" />
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/textview_total_value_change_24h_label"
@@ -70,8 +69,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/textview_separator_value"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textview_total_value_change_24h_label"
-                    tools:background="@color/colorForValueChangePositive"
-                    tools:text="@string/sample_text_total_value_change_24h" />
+                    tools:background="@color/colorForValueChangePositive" />
 
                 <TextView
                     android:id="@+id/textview_separator_value"
@@ -87,29 +85,26 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/textview_crypto_value"
+                    android:id="@+id/txtClientID"
                     style="@style/AutoSizeText"
                     android:gravity="center_vertical|end"
                     android:paddingEnd="@dimen/main_collapsing_toolbar_layout_text_between_margin"
-                    android:text="@string/compositionmode"
+                    android:text="@string/clientID"
                     android:textAlignment="viewEnd"
-                    android:textAppearance="@android:style/TextAppearance.Large"
                     android:textDirection="firstStrongLtr"
                     app:layout_constraintBottom_toBottomOf="@+id/textview_separator_value"
                     app:layout_constraintEnd_toStartOf="@+id/textview_separator_code"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/textview_separator_value"
-                    tools:ignore="RtlSymmetry"
-                    tools:text="@string/sample_text_crypto_value" />
+                    tools:ignore="RtlSymmetry"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/textview_fiat_value"
+                    android:id="@+id/txtClientID_value"
                     style="@style/AutoSizeText"
                     android:gravity="center_vertical|start"
                     android:paddingStart="@dimen/main_collapsing_toolbar_layout_text_between_margin"
                     android:text="@string/value"
                     android:textAlignment="viewStart"
-                    android:textAppearance="@android:style/TextAppearance.Large"
                     android:textDirection="firstStrongLtr"
                     app:layout_constraintBottom_toBottomOf="@+id/textview_separator_value"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -130,7 +125,7 @@
 
                 <TextView
                     android:id="@+id/textview_crypto_code"
-                    style="@style/Widget.AppCompat.DropDownItem.Spinner"
+                    style="@style/AutoSizeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/string_crypto_code"

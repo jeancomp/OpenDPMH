@@ -26,19 +26,13 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufma.lsdi.cddl.CDDL;
-import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
-import br.ufma.lsdi.cddl.pubsub.Subscriber;
-import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
-import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOff;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOffManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
@@ -50,7 +44,6 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidMainS
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPasswordException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
-import br.ufma.lsdi.digitalphenotyping.mainservice.MainService;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 
@@ -60,15 +53,17 @@ public class MainActivity2 extends AppCompatActivity {
     private FrameworkOnOffManager frameworkStatus;
     private List<String> listProcessors = new ArrayList();
     private RecyclerViewAdapter adapter;
-    private MainService myService;
+    private DPManagerService myService;
     private DPManager dpManager;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
-    private TextView textLoad;
+
+    private TextView txtClientID;
     private TextView txtStatus;
+
     private View button_init;
     private View fab;
-    private Notification notification;
+
     private boolean flag_on_off = false;
     private Vibrator vibe;
     private Activity activity;
@@ -101,7 +96,7 @@ public class MainActivity2 extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerview_fragment_main_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
-        textLoad = findViewById(R.id.error_msg);
+        txtClientID = findViewById(R.id.txtClientID_value);
         txtStatus = findViewById(R.id.txtStatus);
         progressBar = findViewById(R.id.progress_bar);
         button_init = findViewById(R.id.button_init);
@@ -112,14 +107,6 @@ public class MainActivity2 extends AppCompatActivity {
         new AddItemTaskGet().execute(); // verifica status do framework on/off
 
         sharedpreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
-        //PreferenceManager.setDefaultValues(this, R.xml.pref_main, false);
-        //Preference preferenceHost = findViewById();
-
-//        listProcessors.add("RawDataCollector");
-//        listProcessors.add("Mobility");
-//        listProcessors.add("Sociability");
-//        listProcessors.add("Sleep");
     }
 
 
@@ -150,27 +137,35 @@ public class MainActivity2 extends AppCompatActivity {
                     .setExternalServer(host, port)
                     //.setExternalServer("broker.hivemq.com","1883")
                     .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
-                    //.setFrequency(15)
                     .build();
         }
         else if(compositionmode.equals("GROUP_ALL")){
             dpManager = new DPManager.Builder(this)
                     .setExternalServer(host, port)
-                    //.setExternalServer("broker.hivemq.com","1883")
                     .setCompositionMode(CompositionMode.GROUP_ALL)
-                    //.setFrequency(15)
                     .build();
         }
         else if(compositionmode.equals("FREQUENCY")){
             int freq = Integer.parseInt(frequency);
             dpManager = new DPManager.Builder(this)
                     .setExternalServer(host, port)
-                    //.setExternalServer("broker.hivemq.com","1883")
                     .setCompositionMode(CompositionMode.FREQUENCY)
                     .setFrequency(freq)
                     .build();
         }
         dpManager.getInstance().start();
+        dpManager.getInstance().foregroundAPP();
+        txtClientID.setText(dpManager.getInstance().getClientID());
+        try {
+            Intent intent = new Intent(this, DPManagerService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            } else {
+                startService(intent);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "#### Error: " + e.getMessage());
+        }
     }
 
 
@@ -183,16 +178,11 @@ public class MainActivity2 extends AppCompatActivity {
             port = sharedpreferences.getString(Port,"");
             compositionmode = sharedpreferences.getString(Compositionmode,"");
             frequency = sharedpreferences.getString(Frequency,"");
-            Log.i(TAG,"#### thost: " + host);
-            Log.i(TAG,"#### tport: " + port);
-            Log.i(TAG,"#### tcomp: " + compositionmode);
-            Log.i(TAG,"#### tfreq: " + frequency);
         }
 
         try {
             if(flag_on_off) {
-                Intent intent = new Intent(this, MainService.class);
-
+                Intent intent = new Intent(this, DPManagerService.class);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
                 } else {
@@ -215,7 +205,7 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             Log.i(TAG, "#### Connection service MainService");
-            MainService.LocalBinder binder = (MainService.LocalBinder) iBinder;
+            DPManagerService.LocalBinder binder = (DPManagerService.LocalBinder) iBinder;
             myService = binder.getService();
 
             try {
@@ -244,21 +234,18 @@ public class MainActivity2 extends AppCompatActivity {
                             if((host != null) && (port != null) && (compositionmode != null)) {
                                 processValue(true);
                                 new AddItemTaskSet().execute(true);
-                                if (notification == null) {
-                                    notification = new Notification();
-                                }
-                                dpManager.getInstance().foregroundAPP();
                             }
                             else{
                                 Toast.makeText(getBaseContext(), "Required to configure host, port and composition mode!",Toast.LENGTH_SHORT).show();
                             }
                         }
                         else {
+                            vibe.vibrate(50);
                             processValue(false);
                             new AddItemTaskSet().execute(false);
                             new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
                             new AddItemTaskClear().execute();
-                            vibe.vibrate(50);
+                            txtClientID.setText("--");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -292,18 +279,6 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-    }
-
-
-    public void notificationAdapter(){
-        adapter = new RecyclerViewAdapter(this, dpManager.getInstance().getActiveDataProcessorsList());
-        recyclerView.setAdapter(adapter);
-    }
-
-
-    public void notificationDataProcessor(){
-        //Carrega no RecyclerView os DataProcessor ativos
-        //adapter.notifyDataSetChanged();
     }
 
 
@@ -444,42 +419,6 @@ public class MainActivity2 extends AppCompatActivity {
             return null;
         }
     }*/
-
-
-    public class Notification {
-        Subscriber subNotification;
-
-        public Notification(){
-            subNotification = SubscriberFactory.createSubscriber();
-            subNotification.addConnection(CDDL.getInstance().getConnection());
-            subscribeMessageNotification(Topics.NOTIFICATION.toString());
-        }
-
-        public void subscribeMessageNotification(String serviceName) {
-            subNotification.subscribeServiceByName(serviceName);
-            subNotification.setSubscriberListener(subscriberNotificationListener);
-            subNotification.subscribeTopic(Topics.NOTIFICATION.toString());
-        }
-
-        public final ISubscriberListener subscriberNotificationListener = new ISubscriberListener() {
-            @Override
-            public void onMessageArrived(br.ufma.lsdi.cddl.message.Message message) {
-                Log.i(TAG, "#### Read messages (Notification):  " + message);
-
-                Object[] valor = message.getServiceValue();
-                String mensagemRecebida = StringUtils.join(valor, ", ");
-                String[] separated = mensagemRecebida.split(",");
-                String atividade = String.valueOf(separated[0]);
-
-                if (atividade.equals("aliveMainService")) {
-                    //notificationAdapter();
-                }
-                else if (atividade.equals("aliveNewDataProcessor") || atividade.equals("aliveRemoveDataProcessor")) {
-                    notificationDataProcessor();
-                }
-            }
-        };
-    }
 }
 
 // --Backup-------------------------------------

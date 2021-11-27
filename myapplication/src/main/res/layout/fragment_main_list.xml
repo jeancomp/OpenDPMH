@@ -65,7 +65,6 @@
                     android:background="@color/colorWhite"
                     android:foreground="@android:drawable/ic_lock_power_off"
                     app:layout_constraintBottom_toBottomOf="parent"
-
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="MissingConstraints" />

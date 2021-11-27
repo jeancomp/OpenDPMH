@@ -16,14 +16,14 @@
             app:destination="@id/SecondFragment" />
     </fragment>
 
-<!--    <fragment
+    <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.jp.myapplication.SettingsFragment"
+        android:name="com.jp.myapplication.StreamFragmentSociability"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/activity_settings">
+        tools:layout="@layout/activity_stream">
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
-    </fragment>-->
+    </fragment>
 </navigation>

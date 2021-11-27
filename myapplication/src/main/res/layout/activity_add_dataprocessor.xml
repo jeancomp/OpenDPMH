@@ -22,12 +22,14 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnActiveDataProcessor"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:text="Start" />
+        <Button
+            android:id="@+id/btnActiveDataProcessor"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="#2341DC"
+            android:text="Start"
+            android:textColor="#FBF9F9" />
     </LinearLayout>
 </LinearLayout>
