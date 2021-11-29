@@ -116,7 +116,7 @@
 <string name="string_crypto_list_empty_secondary">"Add via the + button below."</string>
 
 <string name="string_column_coin_ranking" translatable="false">"↑↓"</string>
-<string name="string_column_coin_crypto_hold_amount_symbol">"Crypto coin\nAmount &#38; symbol"</string>
+<string name="string_column_coin_crypto_hold_amount_symbol">"Name\nDescription"</string>
 <string name="string_column_coin_fiat_price_amount">"Price %1$s\nAmount %2$s"</string>
 <string name="string_column_coin_change_24h_1h_7d">"± price %% 1 h / 7 d\n± price %% 24 h\n± amount %1$s 24 h"</string>
 <string name="string_column_coin_separator_change" translatable="false">" / "</string>
@@ -132,7 +132,7 @@
 <string name="sample_text_item_icon" translatable="false">"MMM"</string>
 <string name="sample_text_item_name" translatable="false">"Situation of interest"</string>
 <string name="sample_text_item_ranking" translatable="false">"1001"</string>
-<string name="sample_text_item_amount_code" translatable="false">"0.56822348 BITSILVER"</string>
+<string name="sample_text_item_amount_code" translatable="false">"Description"</string>
 <string name="sample_text_item_price_fiat" translatable="false">"94,893,149,774.13 USD"</string>
 <string name="sample_text_item_amount_fiat" translatable="false">"20,758,463.13 USD"</string>
 <string name="sample_text_item_price_percent_change_1h_7d" translatable="false">"-901.94% / -10909.09%"</string>

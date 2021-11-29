@@ -12,6 +12,7 @@
         <entry key="myapplication/src/main/res/drawable-v24/ic_add.xml" value="0.209375" />
         <entry key="myapplication/src/main/res/drawable-v24/ic_close.xml" value="0.1" />
         <entry key="myapplication/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1925925925925926" />
+        <entry key="myapplication/src/main/res/drawable/ic_baseline_info_24.xml" value="0.209375" />
         <entry key="myapplication/src/main/res/drawable/ic_ethereum.xml" value="0.1" />
         <entry key="myapplication/src/main/res/drawable/ic_file_lock.xml" value="0.1" />
         <entry key="myapplication/src/main/res/drawable/ic_launcher_background.xml" value="0.1925925925925926" />
@@ -27,7 +28,7 @@
         <entry key="myapplication/src/main/res/layout/fragment_add_activedataprocessor.xml" value="0.33" />
         <entry key="myapplication/src/main/res/layout/fragment_first.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/fragment_main_list.xml" value="0.25" />
-        <entry key="myapplication/src/main/res/layout/fragment_main_list_item.xml" value="0.33" />
+        <entry key="myapplication/src/main/res/layout/fragment_main_list_item.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/fragment_mobility.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_online_sociability.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_physical_sociability.xml" value="0.19322916666666667" />

@@ -22,18 +22,11 @@
             android:padding="@dimen/main_cardview_list_item_inner_margin">
 
             <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/guideline1_percent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="@dimen/main_guide1_percent" />
-
-            <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline2_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="@dimen/main_guide2_percent" />
+                app:layout_constraintGuide_begin="220dp" />
 
             <ImageView
                 android:src="@drawable/ic_ethereum"
@@ -72,12 +65,12 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/item_name"
-                style="@style/MainListItemPrimeText"
+                style="@style/MainListItemPrimeText2"
+                android:layout_width="163dp"
+                android:layout_height="26dp"
                 android:layout_marginStart="@dimen/main_cardview_list_item_inner_margin"
-                android:layout_marginEnd="@dimen/main_cardview_list_item_text_between_margin"
                 android:textAlignment="viewStart"
                 app:layout_constraintBottom_toTopOf="@+id/item_amount_code"
-                app:layout_constraintEnd_toStartOf="@+id/guideline1_percent"
                 app:layout_constraintStart_toEndOf="@+id/item_image_icon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_chainStyle="spread"
@@ -86,78 +79,32 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/item_amount_code"
                 style="@style/MainListItemText"
+                android:layout_width="154dp"
+                android:layout_height="21dp"
                 android:layout_marginStart="@dimen/main_cardview_list_item_inner_margin"
                 android:layout_marginEnd="@dimen/main_cardview_list_item_text_between_margin"
                 android:textAlignment="viewStart"
                 android:textColor="@color/colorForMainListItemPrimeText"
                 android:textDirection="locale"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/guideline1_percent"
                 app:layout_constraintStart_toEndOf="@+id/item_image_icon"
                 app:layout_constraintTop_toBottomOf="@+id/item_name"
                 tools:text="@string/sample_text_item_amount_code" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/item_price"
-                style="@style/MainListItemText"
-                android:layout_marginStart="@dimen/main_cardview_list_item_text_between_margin"
-                android:layout_marginEnd="@dimen/main_cardview_list_item_text_between_margin"
-                android:textAlignment="center"
-                app:layout_constraintBottom_toTopOf="@+id/item_amount_fiat"
-                app:layout_constraintEnd_toStartOf="@+id/guideline2_percent"
-                app:layout_constraintStart_toStartOf="@+id/guideline1_percent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="spread"
-                tools:text="@string/sample_text_item_price_fiat" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/item_amount_fiat"
-                style="@style/MainListItemText"
-                android:layout_marginStart="@dimen/main_cardview_list_item_text_between_margin"
-                android:layout_marginEnd="@dimen/main_cardview_list_item_text_between_margin"
-                android:textAlignment="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/guideline2_percent"
-                app:layout_constraintStart_toStartOf="@+id/guideline1_percent"
-                app:layout_constraintTop_toBottomOf="@+id/item_price"
-                tools:text="@string/sample_text_item_amount_fiat" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/item_price_percent_change_1h_7d"
-                style="@style/MainListItemText"
-                android:layout_marginStart="@dimen/main_cardview_list_item_text_between_margin"
+            <ImageView
+                android:id="@+id/item_image_info"
+                style="@style/AppTheme"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_baseline_info_24"
                 android:textAlignment="viewEnd"
-                app:layout_constraintBottom_toTopOf="@+id/item_price_percent_change_24h"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline2_percent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/sample_text_item_price_percent_change_1h_7d"
-                tools:textColor="@color/colorForValueChangeNegative" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/item_price_percent_change_24h"
-                style="@style/MainListItemText"
-                android:layout_marginStart="@dimen/main_cardview_list_item_text_between_margin"
-                android:textAlignment="viewEnd"
-                app:layout_constraintBottom_toTopOf="@+id/item_amount_fiat_change_24h"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline2_percent"
-                app:layout_constraintTop_toBottomOf="@+id/item_price_percent_change_1h_7d"
-                tools:text="@string/sample_text_item_price_percent_change_24h"
-                tools:textColor="@color/colorForValueChangePositive" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/item_amount_fiat_change_24h"
-                style="@style/MainListItemText"
-                android:layout_marginStart="@dimen/main_cardview_list_item_text_between_margin"
-                android:textAlignment="viewEnd"
+                android:clickable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="@+id/guideline2_percent"
-                app:layout_constraintTop_toBottomOf="@+id/item_price_percent_change_24h"
-                tools:text="@string/sample_text_item_amount_fiat_change_24h"
-                tools:textColor="@color/colorForValueChangePositive" />
-
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

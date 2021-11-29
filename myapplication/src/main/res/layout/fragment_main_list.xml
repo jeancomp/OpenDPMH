@@ -34,14 +34,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_end="323dp" />
+                    app:layout_constraintGuide_begin="60dp" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline1_percent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="@dimen/main_guide1_percent" />
+                    app:layout_constraintGuide_begin="156dp" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline2_percent"
@@ -72,13 +72,14 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/text_column_coin_name_amount_symbol"
                     style="@style/MainListColumnNamesText"
-                    android:layout_marginStart="@dimen/main_cardview_column_names_outer_margin"
+                    android:layout_width="101dp"
+                    android:layout_height="50dp"
                     android:layout_marginEnd="@dimen/main_cardview_column_names_text_between_margin"
                     android:text="@string/string_column_coin_crypto_hold_amount_symbol"
                     android:textAlignment="viewStart"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/guideline1_percent"
-                    app:layout_constraintStart_toEndOf="@+id/button_init"
+                    app:layout_constraintStart_toStartOf="@+id/guideline1_fixed"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -96,14 +97,13 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/text_column_coin_change_24h_1h_7d"
                     style="@style/MainListColumnNamesText"
-                    android:layout_marginStart="@dimen/main_cardview_column_names_text_between_margin"
                     android:lines="3"
                     android:textAlignment="viewEnd"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/guideline2_percent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/sample_text_column_coin_change_24h_1h_7d" />
+                    android:text="info" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
