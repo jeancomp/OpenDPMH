@@ -22,7 +22,7 @@ public class StreamFragmentMobility extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mobility, viewGroup, false);
-        cardView = viewGroup.findViewById(R.id.cardview_list_item);
+        cardView = view.findViewById(R.id.cardview_list_item);
 
         StreamActivity activity = (StreamActivity) getActivity();
         String myDataFromActivity = activity.getMyData();

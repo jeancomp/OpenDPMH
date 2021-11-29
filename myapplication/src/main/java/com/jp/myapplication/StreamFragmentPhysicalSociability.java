@@ -17,8 +17,8 @@ import java.util.List;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 
-public class StreamFragmentSociability extends Fragment {
-    private static final String TAG = StreamFragmentSociability.class.getName();
+public class StreamFragmentPhysicalSociability extends Fragment {
+    private static final String TAG = StreamFragmentPhysicalSociability.class.getName();
     private DPManager dpManager = DPManager.getInstance();
     private CardView cardView;
     private Button btnFinish;
@@ -32,13 +32,13 @@ public class StreamFragmentSociability extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sociability, viewGroup, false);
+        View view = inflater.inflate(R.layout.fragment_physical_sociability, viewGroup, false);
         btnFinish = (Button) view.findViewById(R.id.btnFinish);
         btnFinish.setOnClickListener(clickListener);
         txtValueRecords = (TextView) view.findViewById(R.id.txtValueRecords);
 
         try {
-            phenotypesList = dpManager.getInstance().getPhenotypesList("Sociability");
+            phenotypesList = dpManager.getInstance().getPhenotypesList("Physical_Sociability");
             setSettings();
         }catch (Exception e){
             e.printStackTrace();
@@ -63,9 +63,9 @@ public class StreamFragmentSociability extends Fragment {
                 case R.id.btnFinish: {
                     try {
                         List<String> dataProcessorsName = new ArrayList();
-                        dataProcessorsName.add("Sociability");
+                        dataProcessorsName.add("Physical_Sociability");
                         dpManager.getInstance().stopDataProcessors(dataProcessorsName);
-                        Toast.makeText(getContext(), "Finish situation of interest: sociability",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Finish situation of interest: Physical_Sociability",Toast.LENGTH_SHORT).show();
                         btnFinish.setEnabled(false);
                     } catch (Exception e) {
                         e.printStackTrace();

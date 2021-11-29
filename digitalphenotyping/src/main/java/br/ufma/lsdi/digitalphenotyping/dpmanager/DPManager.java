@@ -290,7 +290,6 @@ public class DPManager implements DPInterface {
     public List<Phenotypes> getPhenotypesList(String situationInterest){
         DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
         if(dataProcessorManager.checkDatabaseCreation()){
-            Log.i(TAG,"#### dpm");
             try {
                 new AddItemTask().execute(situationInterest);
             } catch (Exception e) {

@@ -44,17 +44,27 @@ public class StreamActivity extends AppCompatActivity {
         Log.i(TAG,"#### g3");
     }
 
+
     public String getMyData() {
         return dataProcessorName;
     }
 
+
     public void setFragment(String dataProcessorName){
-        if(dataProcessorName.equals("Sociability")){
+        if(dataProcessorName.equals("Physical_Sociability")){
             FragmentManager mFragmentManager = getSupportFragmentManager();
             FragmentTransaction mFragmentTransaction = mFragmentManager
                     .beginTransaction();
-            StreamFragmentSociability streamFragmentSociability = new StreamFragmentSociability();
-            mFragmentTransaction.replace(R.id.frag_sociability, streamFragmentSociability);
+            StreamFragmentPhysicalSociability streamFragmentPhysicalSociability = new StreamFragmentPhysicalSociability();
+            mFragmentTransaction.replace(R.id.frag_physical_sociability, streamFragmentPhysicalSociability);
+            mFragmentTransaction.commit();
+        }
+        else if(dataProcessorName.equals("Online_Sociability")){
+            FragmentManager mFragmentManager = getSupportFragmentManager();
+            FragmentTransaction mFragmentTransaction = mFragmentManager
+                    .beginTransaction();
+            StreamFragmentOnlineSociability streamFragmentOnlineSociability = new StreamFragmentOnlineSociability();
+            mFragmentTransaction.replace(R.id.frag_online_sociability, streamFragmentOnlineSociability);
             mFragmentTransaction.commit();
         }
         else if(dataProcessorName.equals("PhysicalActivity")){
