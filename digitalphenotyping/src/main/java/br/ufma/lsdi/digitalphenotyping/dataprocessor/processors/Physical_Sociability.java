@@ -22,8 +22,8 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
-public class Sociability extends DataProcessor{
-    private static final String TAG = Sociability.class.getName();
+public class Physical_Sociability extends DataProcessor{
+    private static final String TAG = Physical_Sociability.class.getName();
     private SaveActivity saveActivity = SaveActivity.getInstance();
     private List<String> listSensors = new ArrayList();
     //private AlarmAudio alarm = new AlarmAudio();
@@ -32,13 +32,9 @@ public class Sociability extends DataProcessor{
     @Override
     public void init() {
         try {
-            Log.i(TAG, "#### Running processor Sociability.");
+            Log.i(TAG, "#### Running processor Physical_Sociability.");
 
-            setDataProcessorName("Sociability");
-
-            listSensors.add("Call");
-            listSensors.add("SMS");
-            startSensor(listSensors);
+            setDataProcessorName("Physical_Sociability");
 
             initPermissions();
             voice.config(getContext());
@@ -59,7 +55,7 @@ public class Sociability extends DataProcessor{
     @Override
     public void inferencePhenotypingEvent(Message message){
         try {
-            Log.i(TAG, "#### MSG ORIGINAL SOCIABILITY: " + message);
+            Log.i(TAG, "#### MSG ORIGINAL PHYSICAL_SOCIABILITY: " + message);
             DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
             digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
             digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
@@ -72,50 +68,16 @@ public class Sociability extends DataProcessor{
             String mensagemRecebida2 = StringUtils.join(valor2, ", ");
             String[] listAttributes = mensagemRecebida2.split(",");
 
-            if (message.getServiceName().equals("Call")) {
-                Situation situation = new Situation();
-                situation.setLabel("Socialization");
-                situation.setDescription("We identify socialization by the user through the phone call.");
-                digitalPhenotypeEvent.setSituation(situation);
+            Situation situation = new Situation();
+            situation.setLabel("Physical_Sociability");
+            situation.setDescription("We identify Physical_Sociability by the user through the audio.");
+            digitalPhenotypeEvent.setSituation(situation);
 
-                if (!listAttributes[2].isEmpty() && !listServiceValue[2].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "String", false);
-                }
-                if (!listAttributes[3].isEmpty() && !listServiceValue[3].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[3], listServiceValue[3], "Date", false);
-                }
-                if (!listAttributes[4].isEmpty() && !listServiceValue[4].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[4], listServiceValue[4], "Integer", false);
-                }
+            if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {
+                digitalPhenotypeEvent.setAttributes(listAttributes[1], listServiceValue[1], "String", false);
             }
-            else if (message.getServiceName().equals("SMS")) {
-                Situation situation = new Situation();
-                situation.setLabel("Socialization");
-                situation.setDescription("We identify socialization by the user through the SMS.");
-                digitalPhenotypeEvent.setSituation(situation);
-
-                if (!listAttributes[2].isEmpty() && !listServiceValue[2].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "String", false);
-                }
-                if (!listAttributes[3].isEmpty() && !listServiceValue[3].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[3], listServiceValue[3], "Date", false);
-                }
-                if (!listAttributes[4].isEmpty() && !listServiceValue[4].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[4], listServiceValue[4], "Integer", false);
-                }
-            }
-            else {
-                Situation situation = new Situation();
-                situation.setLabel("Socialization");
-                situation.setDescription("We identify socialization by the user through the audio.");
-                digitalPhenotypeEvent.setSituation(situation);
-
-                if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[1], listServiceValue[1], "String", false);
-                }
-                if (!listAttributes[2].isEmpty() && !listServiceValue[2].isEmpty()) {
-                    digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "Date", false);
-                }
+            if (!listAttributes[2].isEmpty() && !listServiceValue[2].isEmpty()) {
+                digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "Date", false);
             }
 
             Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
@@ -143,12 +105,12 @@ public class Sociability extends DataProcessor{
     }
 
 
-    public final IBinder mBinder = new Sociability.LocalBinder();
+    public final IBinder mBinder = new Physical_Sociability.LocalBinder();
 
 
     public class LocalBinder extends Binder {
-        public Sociability getService() {
-            return Sociability.this;
+        public Physical_Sociability getService() {
+            return Physical_Sociability.this;
         }
     }
 

@@ -23,6 +23,7 @@ import java.util.List;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidClientIDException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidFrequencyException;
@@ -86,13 +87,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (InvalidPasswordException e) {
             e.printStackTrace();
+        } catch (InvalidClientIDException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException {
+    public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException, InvalidClientIDException {
         digitalPhenotypingManager = new DPManager.Builder(this)
-                .setExternalServer("192.168.0.7","1883")
+                .setExternalServer("192.168.0.7","1883", "jeancomp")
                 //.setExternalServer("broker.hivemq.com","1883")
                 .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
                 //.setFrequency(15)

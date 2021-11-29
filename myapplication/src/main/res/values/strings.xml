@@ -366,15 +366,20 @@
 
 <string name="pref_general_category_title">"General"</string>
 
-    <string name="hostname">Host name</string>
+    <string name="hostname">Server IP</string>
     <string name="defaulthost">192.168.0.7</string>
     <string name="valuehost"></string>
     <string name="message"></string>
 
-    <string name="portnumber">Number port</string>
+    <string name="portnumber">Port number</string>
     <string name="defaultport">1883</string>
     <string name="valueport"></string>
     <string name="messageport"></string>
+
+    <string name="client_id">Client ID</string>
+    <string name="defaultclientid"></string>
+    <string name="valueclientid"></string>
+    <string name="messageclientid"></string>
 
 <string name="pref_language_title">"Composition mode"</string>
 
@@ -393,13 +398,12 @@
     <item>"FREQ"</item>
 </string-array>
 
-<string name="pref_fiat_currency_title">"Set value frequency(minute)"</string>
+<string name="pref_fiat_currency_title">"Set value frequency (minute)"</string>
 
-<string name="pref_default_fiat_currency_entry">"0"</string>
-<string name="pref_default_fiat_currency_value">"0"</string>
+<string name="pref_default_fiat_currency_entry">"15"</string>
+<string name="pref_default_fiat_currency_value">"15"</string>
 
 <string-array name="pref_fiat_currency_list_entries">
-    <item>"0"</item>
     <item>"15"</item>
     <item>"20"</item>
     <item>"25"</item>
@@ -408,7 +412,6 @@
 </string-array>
 
 <string-array name="pref_fiat_currency_list_values" translatable="false">
-    <item>"0"</item>
     <item>"15"</item>
     <item>"20"</item>
     <item>"25"</item>

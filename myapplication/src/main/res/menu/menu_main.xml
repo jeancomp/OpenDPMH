@@ -14,10 +14,10 @@
         android:orderInCategory="100"
         android:title="Teste_audio"
         app:showAsAction="never" />-->
-    <item
+    <!--<item
         android:id="@+id/action_close"
         android:icon="@drawable/ic_baseline_close_24"
         android:orderInCategory="100"
         android:title="@string/action_close"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always|withText" />-->
 </menu>

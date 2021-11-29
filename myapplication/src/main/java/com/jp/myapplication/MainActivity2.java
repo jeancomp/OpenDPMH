@@ -1,6 +1,7 @@
 package com.jp.myapplication;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +36,7 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOff;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOffManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidClientIDException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidFrequencyException;
@@ -73,12 +74,14 @@ public class MainActivity2 extends AppCompatActivity {
     private static final String MyPREFERENCES = "pref_main" ;
     private static final String Host = "hostKey";
     private static final String Port = "portKey";
+    private static final String Clientid = "clientidKey";
     private static final String Compositionmode = "compositioModeKey";
     private static final String Frequency = "frequencyKey";
 
-    private String host = null;
-    private String port = null ;
-    private String compositionmode = null;
+    private String host = "not set";
+    private String port = "not set" ;
+    private String clientid = "not set" ;
+    private String compositionmode = "not set";
     private String frequency = null;
 
     @Override
@@ -127,35 +130,36 @@ public class MainActivity2 extends AppCompatActivity {
             e.printStackTrace();
         } catch (InvalidPasswordException e) {
             e.printStackTrace();
+        } catch (InvalidClientIDException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException {
+    public void startFramework() throws InvalidCompositionModeException, InvalidPortException, InvalidUsernameException, InvalidHostServerException, InvalidActivityException, InvalidFrequencyException, InvalidPasswordException, InvalidClientIDException {
         if(compositionmode.equals("SEND_WHEN_IT_ARRIVES")) {
             dpManager = new DPManager.Builder(this)
-                    .setExternalServer(host, port)
+                    .setExternalServer(host, port, clientid)
                     //.setExternalServer("broker.hivemq.com","1883")
                     .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
                     .build();
         }
         else if(compositionmode.equals("GROUP_ALL")){
             dpManager = new DPManager.Builder(this)
-                    .setExternalServer(host, port)
+                    .setExternalServer(host, port, clientid)
                     .setCompositionMode(CompositionMode.GROUP_ALL)
                     .build();
         }
         else if(compositionmode.equals("FREQUENCY")){
             int freq = Integer.parseInt(frequency);
             dpManager = new DPManager.Builder(this)
-                    .setExternalServer(host, port)
+                    .setExternalServer(host, port, clientid)
                     .setCompositionMode(CompositionMode.FREQUENCY)
                     .setFrequency(freq)
                     .build();
         }
         dpManager.getInstance().start();
         dpManager.getInstance().foregroundAPP();
-        txtClientID.setText(dpManager.getInstance().getClientID());
         try {
             Intent intent = new Intent(this, DPManagerService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -176,8 +180,12 @@ public class MainActivity2 extends AppCompatActivity {
         if(sharedpreferences != null){
             host = sharedpreferences.getString(Host,"");
             port = sharedpreferences.getString(Port,"");
+            clientid = sharedpreferences.getString(Clientid, "");
             compositionmode = sharedpreferences.getString(Compositionmode,"");
             frequency = sharedpreferences.getString(Frequency,"");
+        }
+        if(!clientid.isEmpty()){
+            txtClientID.setText(clientid);
         }
 
         try {
@@ -230,22 +238,19 @@ public class MainActivity2 extends AppCompatActivity {
                     try {
                         if (!flag_on_off) {
                             vibe.vibrate(50);
-                            initAPP();
-                            if((host != null) && (port != null) && (compositionmode != null)) {
-                                processValue(true);
-                                new AddItemTaskSet().execute(true);
+                            if((host.isEmpty()) || (port.isEmpty() || clientid.isEmpty() || compositionmode.isEmpty())) {
+                                Toast.makeText(getBaseContext(), "Required to configure host, port, clientid and composition mode!",Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(getBaseContext(), "Required to configure host, port and composition mode!",Toast.LENGTH_SHORT).show();
+                                initAPP();
+                                processValue(true);
+                                new AddItemTaskSet().execute(true);
                             }
                         }
                         else {
                             vibe.vibrate(50);
-                            processValue(false);
-                            new AddItemTaskSet().execute(false);
-                            new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
-                            new AddItemTaskClear().execute();
-                            txtClientID.setText("--");
+
+                            questionClose();
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -268,6 +273,30 @@ public class MainActivity2 extends AppCompatActivity {
             }
         }
     };
+
+
+    public void questionClose(){
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Closing OpenDPMH")
+                .setMessage("Are you sure you want to close this app? It will stop the data collection.")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        processValue(false);
+                        new AddItemTaskSet().execute(false);
+                        new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
+                        new AddItemTaskClear().execute();
+                        txtClientID.setText("--");
+                        new AddItemTaskClear().execute();
+                        dpManager.getInstance().stop();
+                    }
+
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
 
 
     public void startAddDataProcessorFragment(){
@@ -298,7 +327,7 @@ public class MainActivity2 extends AppCompatActivity {
             startActivity(i);
             return true;
         }
-        else if(id == R.id.action_close){
+        /*else if(id == R.id.action_close){
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Closing OpenDPMH")
@@ -318,7 +347,7 @@ public class MainActivity2 extends AppCompatActivity {
                     })
                     .setNegativeButton("No", null)
                     .show();
-        }
+        }*/
         /*else if(id == R.id.action_audio){
             //Start função recorder
             Intent startRecorder = new Intent(getApplicationContext(), MainActivityRecorder.class);

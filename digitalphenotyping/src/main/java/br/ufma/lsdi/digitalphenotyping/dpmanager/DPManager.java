@@ -21,7 +21,6 @@ import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
@@ -32,6 +31,7 @@ import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.DataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidClientIDException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidContextException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
@@ -122,7 +122,7 @@ public class DPManager implements DPInterface {
                 intent.putExtra("port", builderCopy.port);
                 intent.putExtra("username", builderCopy.username);
                 intent.putExtra("password", builderCopy.password);
-                intent.putExtra("clientid", createClientID());
+                intent.putExtra("clientid", builderCopy.clientid);
                 intent.putExtra("activerawdatacollector", builderCopy.activerawdatacollector);
                 if(builderCopy.compositionMode == FREQUENCY) {
                     intent.putExtra("frequency", builderCopy.frequency);
@@ -167,13 +167,13 @@ public class DPManager implements DPInterface {
     }
 
 
-    public String createClientID(){
+    /*public String createClientID(){
         this.clientID = UUID.randomUUID().toString().replaceAll("-","");
         this.clientID = this.clientID.toString().replaceAll("[0-9]","");
         //this.clientID = "febfcfbccaeabda";
         Log.i(TAG,"#### New clientID: " + this.clientID);
         return clientID;
-    }
+    }*/
 
 
     public String getClientID(){
@@ -441,7 +441,8 @@ public class DPManager implements DPInterface {
                 // Service location
 //                Manifest.permission.ACCESS_FINE_LOCATION,
 //                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.FOREGROUND_SERVICE
+                Manifest.permission.FOREGROUND_SERVICE,
+                Manifest.permission.INTERNET
                 /*Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE*/
@@ -466,6 +467,7 @@ public class DPManager implements DPInterface {
         return "DPManager{" +
                 "hostServer=" + builderCopy.hostServer +
                 ", port='" + builderCopy.port + '\'' +
+                ", clientid='" + builderCopy.clientid + '\'' +
                 ", username=" + builderCopy.username +
                 ", password='" + builderCopy.password + '\'' +
                 '}';
@@ -479,6 +481,7 @@ public class DPManager implements DPInterface {
         private Activity activity;
         private String hostServer = "";
         private String port = "";
+        private String clientid = "";
         private String username = "username";
         private String password = "12345";
         private CompositionMode compositionMode = null;
@@ -489,9 +492,10 @@ public class DPManager implements DPInterface {
             this.activity = activity;
         }
 
-        public Builder setExternalServer(final String host, final String port){
+        public Builder setExternalServer(final String host, final String port, final String clientid){
             this.hostServer = host;
             this.port = port;
+            this.clientid = clientid;
             return this;
         }
 
@@ -525,12 +529,17 @@ public class DPManager implements DPInterface {
             return this;
         }
 
+        public Builder setClientid(@NonNull final String clientid){
+            this.clientid = clientid;
+            return this;
+        }
+
         public Builder setRawDataCollector(@NonNull final boolean activerawdatacollector){
             this.activerawdatacollector = activerawdatacollector;
             return this;
         }
 
-        public DPManager build() throws InvalidHostServerException, InvalidPortException, InvalidActivityException, InvalidCompositionModeException, InvalidFrequencyException, InvalidUsernameException, InvalidPasswordException {
+        public DPManager build() throws InvalidHostServerException, InvalidPortException, InvalidActivityException, InvalidCompositionModeException, InvalidFrequencyException, InvalidUsernameException, InvalidPasswordException, InvalidClientIDException {
             if(this.hostServer.isEmpty()){
                 throw new InvalidHostServerException("#### Error: The hostname is required.");
             }
@@ -542,6 +551,15 @@ public class DPManager implements DPInterface {
             }
             else if((this.port.equals("0")) || (this.port == null)){
                 throw new InvalidPortException("#### Error: port number is required. It cannot be less than or equal to zero, nor null.");
+            }
+            else if(this.clientid.isEmpty()){
+                throw new InvalidClientIDException("#### Error: The clientID is required.");
+            }
+            else if(this.clientid.length() > 100){
+                throw new InvalidClientIDException("#### Error: The clientID is too long.");
+            }
+            else if(this.clientid == null){
+                throw new InvalidClientIDException("#### Error: The clientID cannot be null.");
             }
             else if(this.activity == null){
                 throw new InvalidActivityException("#### Error: Activity is required. An activity cannot be null.");

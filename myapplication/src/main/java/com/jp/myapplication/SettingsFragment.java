@@ -3,7 +3,6 @@ package com.jp.myapplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -19,11 +18,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String MyPREFERENCES = "pref_main" ;
     private static final String Host = "hostKey";
     private static final String Port = "portKey";
+    private static final String Clientid = "clientidKey";
     private static final String Compositionmode = "compositioModeKey";
     private static final String Frequency = "frequencyKey";
 
     private EditTextPreference hostPreference;
     private EditTextPreference portPreference;
+    private EditTextPreference clientidPreference;
     private Preference compositionModePreference;
     private Preference frequencyPreference;
 
@@ -38,8 +39,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         hostPreference = (EditTextPreference) findPreference("host");
         portPreference = (EditTextPreference) findPreference("port");
+        clientidPreference = (EditTextPreference) findPreference("clientid");
         compositionModePreference = (ListPreference) findPreference("compositionmode");
         frequencyPreference = (ListPreference) findPreference("frequency");
+
+        if(compositionModePreference.getSummary().equals("FREQUENCY")){
+            frequencyPreference.setEnabled(true);
+        }
+        else{
+            frequencyPreference.setEnabled(false);
+        }
 
         hostPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -63,12 +72,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             }
         });
 
+        clientidPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                //portPreference.setSummary(portPreference.getText());
+                clientidPreference.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+                editor.putString(Clientid, (String) clientidPreference.getSummary());
+                editor.commit();
+                return true;
+            }
+        });
+
         compositionModePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 compositionModePreference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 editor.putString(Compositionmode, (String) compositionModePreference.getSummary());
                 editor.commit();
+                if(compositionModePreference.getSummary().equals("FREQUENCY")){
+                    frequencyPreference.setEnabled(true);
+                }
                 return true;
             }
         });

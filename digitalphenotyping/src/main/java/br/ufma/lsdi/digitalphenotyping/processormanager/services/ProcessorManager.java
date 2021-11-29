@@ -32,8 +32,9 @@ import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Online_Sociability;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Physical_Sociability;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sociability;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
@@ -110,10 +111,15 @@ public class ProcessorManager extends Service {
 
     public synchronized void startDataProcessor(String dataProcessorName) {
         try {
-            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
-                Intent s = new Intent(context, Sociability.class);
+            if(dataProcessorName.equalsIgnoreCase("Physical_Sociability")) {
+                Intent s = new Intent(context, Physical_Sociability.class);
                 context.startService(s);
-                Log.i(TAG, "#### Starting inference services: Sociability");
+                Log.i(TAG, "#### Starting inference services: Physical_Sociability");
+            }
+            else if(dataProcessorName.equalsIgnoreCase("Online_Sociability")) {
+                Intent s = new Intent(context, Online_Sociability.class);
+                context.startService(s);
+                Log.i(TAG, "#### Starting inference services: Online_Sociability");
             }
             else if(dataProcessorName.equalsIgnoreCase("Mobility")) {
                 Intent s = new Intent(context, Mobility.class);
@@ -137,15 +143,20 @@ public class ProcessorManager extends Service {
 
     public synchronized void stopDataProcessor(String dataProcessorName) {
         try {
-            if(dataProcessorName.equalsIgnoreCase("Sociability")) {
-                Intent s = new Intent(context, Sociability.class);
+            if(dataProcessorName.equalsIgnoreCase("Physical_Sociability")) {
+                Intent s = new Intent(context, Physical_Sociability.class);
                 context.stopService(s);
-                Log.i(TAG, "#### Stopping inference services");
+                Log.i(TAG, "#### Stopping inference services: Physical_Sociability");
+            }
+            else if(dataProcessorName.equalsIgnoreCase("Online_Sociability")) {
+                Intent s = new Intent(context, Online_Sociability.class);
+                context.stopService(s);
+                Log.i(TAG, "#### Stopping inference services: Online_Sociability");
             }
             else if(dataProcessorName.equalsIgnoreCase("Mobility")) {
                 Intent s = new Intent(context, Mobility.class);
                 context.stopService(s);
-                Log.i(TAG, "#### Stopping inference services");
+                Log.i(TAG, "#### Stopping inference services: Mobility");
             }
             else if(dataProcessorName.equalsIgnoreCase("Sleep")) {
                 Intent s = new Intent(context, Sleep.class);
@@ -598,9 +609,10 @@ public class ProcessorManager extends Service {
      * Contains all data processor modules available for use.
      */
     public void startDataProcessorsList() {
-        this.listDataProcessors.add("Sociability");
-        this.listDataProcessors.add("Mobility");
-        this.listDataProcessors.add("Sleep");
+        this.listDataProcessors.add("Physical_Sociability");
+        this.listDataProcessors.add("Online_Sociability");
+        /*this.listDataProcessors.add("Mobility");
+        this.listDataProcessors.add("Sleep");*/
     }
 
 

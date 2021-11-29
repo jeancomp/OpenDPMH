@@ -33,7 +33,7 @@ public class ListDataProcessorManager {
         Log.i(TAG,"#### Total registros: " + total);
         List<ListDataProcessor> list = new ArrayList();
         list = db.listDataProcessorDAO().findByListDataProcessorAll();
-        Log.i(TAG,"#### y: " + list.size() + ", " + list.get(0).getDataProcessorName() + ", " + list.get(1).getDataProcessorName() + ", " + list.get(2).getDataProcessorName() + ", " + list.get(1).getDataProcessorName());
+/*        Log.i(TAG,"#### y: " + list.size() + ", " + list.get(0).getDataProcessorName() + ", " + list.get(1).getDataProcessorName() + ", " + list.get(2).getDataProcessorName() + ", " + list.get(1).getDataProcessorName());*/
         return list;
     }
 

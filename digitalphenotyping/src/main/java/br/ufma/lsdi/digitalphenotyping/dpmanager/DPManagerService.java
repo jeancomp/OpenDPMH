@@ -60,9 +60,9 @@ public class DPManagerService extends Service {
     private CDDL cddl;
     private String hostServer = "";
     private String port = "";
+    private String clientID = "";
     private String username = "username";
     private String password = "";
-    private String clientID;
     private boolean isActiveRawDataCollector;
     private ConnectionImpl con;
     private Context context;

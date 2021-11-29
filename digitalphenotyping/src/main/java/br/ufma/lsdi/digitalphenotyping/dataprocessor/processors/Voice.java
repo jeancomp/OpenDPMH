@@ -222,7 +222,7 @@ public class Voice extends BroadcastReceiver implements VoiceRecorder.Listener {
         public void conectSociability(Message m) {
             try {
                 message = m;
-                Intent intent = new Intent(context, Sociability.class);
+                Intent intent = new Intent(context, Physical_Sociability.class);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -239,8 +239,8 @@ public class Voice extends BroadcastReceiver implements VoiceRecorder.Listener {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 Log.i("AlarmAudio", "#### Connection service MainService");
-                Sociability.LocalBinder binder = (Sociability.LocalBinder) iBinder;
-                Sociability myService = binder.getService();
+                Physical_Sociability.LocalBinder binder = (Physical_Sociability.LocalBinder) iBinder;
+                Physical_Sociability myService = binder.getService();
 
                 myService.onSensorDataArrived(message);
             }

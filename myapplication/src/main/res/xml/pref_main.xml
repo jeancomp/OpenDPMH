@@ -23,6 +23,16 @@
             android:dialogMessage="@string/messageport"
             android:summary="@string/defaultport"
             android:defaultValue="" />
+        <EditTextPreference
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_baseline_perm_identity_24"
+            android:key="clientid"
+            android:title="@string/client_id"
+            android:persistent="true"
+            android:dialogTitle="@string/valueport"
+            android:dialogMessage="@string/messageport"
+            android:summary="@string/defaultport"
+            android:defaultValue=""/>
         <ListPreference
             app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_baseline_settings_input_composite_24"
@@ -34,6 +44,7 @@
             android:title="@string/pref_language_title"
             tools:summary="@string/pref_default_language_entry" />
         <ListPreference
+            android:enabled="false"
             app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_baseline_more_time_24"
             android:defaultValue="@string/pref_default_fiat_currency_value"
@@ -45,7 +56,7 @@
             tools:summary="@string/pref_default_fiat_currency_entry" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_support_category_title">
+    <!--<PreferenceCategory android:title="@string/pref_support_category_title">
         <Preference
             android:icon="@drawable/ic_baseline_share_24"
             android:key="@string/pref_share_app_key"
@@ -77,5 +88,5 @@
             android:key="@string/pref_version_key"
             android:summary="@string/pref_version_summary"
             android:title="@string/versionName" />
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 </PreferenceScreen>
