@@ -48,10 +48,6 @@ public class StreamFragmentPhysicalSociability extends Fragment {
     }
 
     public void setSettings(){
-        if(phenotypesList == null){
-            txtValueRecords.setText(0);
-            return;
-        }
         String value = String.valueOf(phenotypesList.size());
         txtValueRecords.setText(value);
     }

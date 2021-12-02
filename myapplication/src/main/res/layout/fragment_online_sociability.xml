@@ -1,8 +1,393 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <androidx.appcompat.widget.AppCompatTextView
-        android:text="Online_Sociability"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</layout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".StreamActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="?android:attr/actionBarSize">
+
+            <LinearLayout
+                android:id="@+id/layout_1"
+                android:layout_width="327dp"
+                android:layout_height="101dp"
+                android:background="#f0f0f0"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="310dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnCall"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="60dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_contact_phone_24"
+                        app:layout_constraintHorizontal_bias="0.101"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:background="#f0f0f0"
+                        android:text="Phone call"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnCall"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnEntrada"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="90dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_phone_callback_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnCall"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtEntradaCall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="--"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnEntrada"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.188" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnSaida"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="10dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_phone_forwarded_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtEntradaCall"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.015" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSaidaCall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="--"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnSaida"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.211" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnPerdida"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="10dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_phone_missed_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtSaidaCall"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtPerdidaCall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:text="--"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.571"
+                        app:layout_constraintStart_toEndOf="@+id/btnPerdida"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.188" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnCallDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="70dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_watch_later_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtCall" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCallLastRecord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Last record: "
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnCallDate" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCallRecordDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/txtCallLastRecord" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_2"
+                android:layout_width="327dp"
+                android:layout_height="101dp"
+                android:background="#f0f0f0"
+                android:layout_margin="30dp"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_1">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="310dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnSMS"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="60dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_contact_mail_24"
+                        app:layout_constraintHorizontal_bias="0.101"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSMS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:background="#f0f0f0"
+                        android:text="SMS"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnSMSEntrada"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="68dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_sms_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnSMS"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.063" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/Entrada"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_call_received_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnSMSEntrada"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.18" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtEntradaSMS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="--"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/Entrada"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.223" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnSMSSaida"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginStart="36dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_sms_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtEntradaSMS"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.063" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/Saida"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginEnd="40dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_call_made_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/btnSMSSaida"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.186" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnSMSDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="80dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_watch_later_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtSMS" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSaidaSMS"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/Saida"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.223" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSMSLastRecord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Last record: "
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnSMSDate" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSMSRecordDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/txtSMSLastRecord" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_3"
+                android:layout_width="327dp"
+                android:layout_height="113dp"
+                android:background="#f0f0f0"
+                android:layout_margin="30dp"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_2">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff"
+                    android:elevation="2dp"
+                    android:orientation="vertical">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="271dp"
+                        android:layout_height="100dp">
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_4"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="36dp"
+                android:background="#f0f0f0"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintVertical_bias="0.968">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnFinish"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#FF9800"
+                    android:text="finish"
+                    android:textColor="#F6F3F3" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</LinearLayout>

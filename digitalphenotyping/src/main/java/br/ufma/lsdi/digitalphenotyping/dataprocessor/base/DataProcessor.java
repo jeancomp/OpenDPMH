@@ -293,8 +293,14 @@ public abstract class DataProcessor extends Service {
                 public void onMessageArrived(Message message) {
                     //Add processor name
                     Object[] valor1 = message.getServiceValue();
-                    String mensagemRecebida1 = StringUtils.join(valor1, ", ");
-                    Object[] finalValor1 = {getDataProcessorName(),mensagemRecebida1};
+                    Object o = getDataProcessorName();
+                    Object[] finalValor = new Object[valor1.length + 1];
+                    finalValor[0] = o;
+                    for(int i=0; i < valor1.length; i++){
+                        finalValor[i+1] = valor1[i];
+                    }
+                    String mensagemRecebida1 = StringUtils.join(finalValor, ",");
+                    Object[] finalValor1 = {mensagemRecebida1};
 
                     message.setAvailableAttributes(message.getAvailableAttributes() + 1);
                     String[] valor2 = message.getAvailableAttributesList();
