@@ -1,7 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping.dpmanager.database;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -14,8 +13,11 @@ public interface FrameworkOnOffDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void update(FrameworkOnOff... frameworkOnOff);
 
-    @Delete
-    void delete(FrameworkOnOff... frameworkOnOff);
+    /*@Delete
+    void delete(FrameworkOnOff... frameworkOnOff);*/
+
+    @Query("DELETE FROM frameworkstatus")
+    void delete();
 
     @Query("SELECT count(*) FROM frameworkstatus")
     int total();

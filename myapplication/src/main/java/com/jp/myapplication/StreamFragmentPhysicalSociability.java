@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 
 public class StreamFragmentPhysicalSociability extends Fragment {
@@ -23,7 +23,7 @@ public class StreamFragmentPhysicalSociability extends Fragment {
     private CardView cardView;
     private Button btnFinish;
     private TextView txtValueRecords;
-    private List<Phenotypes> phenotypesList = new ArrayList();
+    private List<PhenotypesEvent> phenotypesEventList = new ArrayList();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class StreamFragmentPhysicalSociability extends Fragment {
         txtValueRecords = (TextView) view.findViewById(R.id.txtValueRecords);
 
         try {
-            phenotypesList = dpManager.getInstance().getPhenotypesList("Physical_Sociability");
+            phenotypesEventList = dpManager.getInstance().getPhenotypesList("Physical_Sociability");
             setSettings();
         }catch (Exception e){
             e.printStackTrace();
@@ -48,7 +48,7 @@ public class StreamFragmentPhysicalSociability extends Fragment {
     }
 
     public void setSettings(){
-        String value = String.valueOf(phenotypesList.size());
+        String value = String.valueOf(phenotypesEventList.size());
         txtValueRecords.setText(value);
     }
 

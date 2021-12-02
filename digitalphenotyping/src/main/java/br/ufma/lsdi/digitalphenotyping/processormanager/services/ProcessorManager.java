@@ -35,9 +35,10 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Online_Sociability;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Physical_Sociability;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessor;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidPluginException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
@@ -58,8 +59,9 @@ public class ProcessorManager extends Service {
     private List<String> listActiveDataProcessors = new ArrayList();
     private HashMap<String, Integer> listActiveSensor = new HashMap<>();
     private SaveActivity saveActivity = SaveActivity.getInstance();
-    private ActiveDataProcessorManager activeDataProcessorManager = ActiveDataProcessorManager.getInstance();
-    private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
+    private DatabaseManager databaseManager = DatabaseManager.getInstance();
+    //private ActiveDataProcessorManager activeDataProcessorManager = ActiveDataProcessorManager.getInstance();
+    //private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
     private List<String> sensorList = new ArrayList();
     private List<String> pluginList = new ArrayList();
     private Subscriber subStartDataProcessor;
@@ -214,7 +216,16 @@ public class ProcessorManager extends Service {
 
     public void saveDatabaseActiveDataProcessorList(String name){
         //Save in database
-        new AddItemTaskActive().execute(name);
+        try {
+            new AddItemTaskActive().execute(name);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            /*if (databaseManager.getInstance().getDB() != null && databaseManager.getInstance().getDB().isOpen()){
+                databaseManager.getInstance().getDB().close();
+            }*/
+        }
     }
 
 
@@ -222,7 +233,9 @@ public class ProcessorManager extends Service {
 
         @Override
         protected Void doInBackground(String... item) {
-            activeDataProcessorManager.getInstance().insert(item[0]);
+            ActiveDataProcessor activeDataProcessor = new ActiveDataProcessor();
+            activeDataProcessor.setDataProcessorName(item[0]);
+            databaseManager.getInstance().getDB().activeDataProcessorDAO().insert(activeDataProcessor);
             //Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
             return null;
         }
@@ -231,7 +244,16 @@ public class ProcessorManager extends Service {
 
     public void removeDatabaseActiveDataProcessorList(String name){
         //Save in database
-        new AddItemTaskRemove().execute(name);
+        try {
+            new AddItemTaskRemove().execute(name);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            /*if (databaseManager.getInstance().getDB() != null && databaseManager.getInstance().getDB().isOpen()){
+                databaseManager.getInstance().getDB().close();
+            }*/
+        }
     }
 
 
@@ -239,7 +261,9 @@ public class ProcessorManager extends Service {
 
         @Override
         protected Void doInBackground(String... item) {
-            activeDataProcessorManager.getInstance().delete(item[0]);
+            ActiveDataProcessor activeDataProcessor = new ActiveDataProcessor();
+            activeDataProcessor.setDataProcessorName(item[0]);
+            databaseManager.getInstance().getDB().activeDataProcessorDAO().delete(activeDataProcessor);
             //Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
             return null;
         }
@@ -260,9 +284,19 @@ public class ProcessorManager extends Service {
         };
         thread.start();*/
         //Save in database
-        for(int i=0; i < backupDataProcessorList.size(); i++){
-            //listDataProcessorManager.getInstance().insert(backupDataProcessorList.get(i).toString());
-            new AddItemTask().execute(backupDataProcessorList.get(i).toString());
+        try {
+            for(int i=0; i < backupDataProcessorList.size(); i++){
+                //listDataProcessorManager.getInstance().insert(backupDataProcessorList.get(i).toString());
+                new AddItemTask().execute(backupDataProcessorList.get(i).toString());
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            /*if (listDataProcessorManager.getInstance().getDB() != null && listDataProcessorManager.getInstance().getDB().isOpen()){
+                listDataProcessorManager.getInstance().getDB().close();
+            }*/
         }
     }
 
@@ -271,7 +305,9 @@ public class ProcessorManager extends Service {
 
         @Override
         protected Void doInBackground(String... item) {
-            listDataProcessorManager.getInstance().insert(item[0]);
+            ListDataProcessor listDataProcessor = new ListDataProcessor();
+            listDataProcessor.setDataProcessorName(item[0]);
+            databaseManager.getInstance().getDB().listDataProcessorDAO().insert(listDataProcessor);
             //Log.i(TAG,"#### w: " + listDataProcessorManager.getInstance().totalRecords() + ", name: " + item[0]);
             return null;
         }

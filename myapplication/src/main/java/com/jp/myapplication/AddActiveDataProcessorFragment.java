@@ -17,11 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessor;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 
 public class AddActiveDataProcessorFragment extends AppCompatActivity {
     private RecyclerView mRecyclerView;
+    private DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,8 +38,8 @@ public class AddActiveDataProcessorFragment extends AppCompatActivity {
             public void run() {
                 try {
                     List<ListDataProcessor> listDataProcessors = new ArrayList();
-                    ListDataProcessorManager ldpm = ListDataProcessorManager.getInstance();
-                    listDataProcessors = ldpm.select();
+                    //ListDataProcessorManager ldpm = ListDataProcessorManager.getInstance();
+                    listDataProcessors = databaseManager.getInstance().getDB().listDataProcessorDAO().findByListDataProcessorAll();
 
                     ListDataProcessorAdapter adapter = new ListDataProcessorAdapter(getBaseContext(), listDataProcessors, new List<String>() {
                         @Override

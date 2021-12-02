@@ -33,8 +33,8 @@ import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOff;
-import br.ufma.lsdi.digitalphenotyping.dpmanager.database.FrameworkOnOffManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidClientIDException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
@@ -46,12 +46,12 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPassw
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 
 public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = MainActivity2.class.getName();
-    private ActiveDataProcessorManager activeDataProcessorManager;
-    private FrameworkOnOffManager frameworkStatus;
+    //private ActiveDataProcessorManager activeDataProcessorManager;
+
+    private DatabaseManager databaseManager;
     private List<String> listProcessors = new ArrayList();
     private RecyclerViewAdapter adapter;
     private DPManagerService myService;
@@ -93,8 +93,8 @@ public class MainActivity2 extends AppCompatActivity {
 
         //getSupportActionBar().setSubtitle("LSDi");
         activity = (Activity) this;
-        frameworkStatus = new FrameworkOnOffManager(this);
-        activeDataProcessorManager = new ActiveDataProcessorManager(this);
+        databaseManager = DatabaseManager.getInstance(this);
+        //activeDataProcessorManager = new ActiveDataProcessorManager(this);
         saveActivity = new SaveActivity(this);
         recyclerView = findViewById(R.id.recyclerview_fragment_main_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -107,7 +107,17 @@ public class MainActivity2 extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         fab.setOnClickListener(clickListener);
         vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-        new AddItemTaskGet().execute(); // verifica status do framework on/off
+
+        try {
+            new AddItemTaskGet().execute(); // verifica status do framework on/off
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            /*if (databaseManager.getInstance().getDB() != null && databaseManager.getInstance().getDB().isOpen()){
+                databaseManager.getInstance().getDB().close();
+            }*/
+        }
 
         sharedpreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
     }
@@ -284,13 +294,23 @@ public class MainActivity2 extends AppCompatActivity {
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        processValue(false);
-                        new AddItemTaskSet().execute(false);
-                        new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
-                        new AddItemTaskClear().execute();
-                        txtClientID.setText("--");
-                        new AddItemTaskClear().execute();
-                        dpManager.getInstance().stop();
+                        try {
+                            processValue(false);
+                            new AddItemTaskSet().execute(false);
+                            new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
+                            //new AddItemTaskClear().execute();
+                            txtClientID.setText("--");
+                            new AddItemTaskClear().execute();
+
+                            dpManager.getInstance().stop();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        finally {
+                            /*if (databaseManager.getInstance().getDB() != null && databaseManager.getInstance().getDB().isOpen()){
+                                databaseManager.getInstance().getDB().close();
+                            }*/
+                        }
                     }
 
                 })
@@ -376,8 +396,9 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             FrameworkOnOff frameworkOnOff = new FrameworkOnOff();
-            frameworkOnOff = frameworkStatus.getInstance().select();
-            int tam = frameworkStatus.getInstance().totalRecords();
+            //frameworkOnOff = databaseManager.getInstance().select();
+            frameworkOnOff = databaseManager.getInstance().getDB().frameworkOnOffDAO().findByFrameworkStatus();
+            int tam = databaseManager.getInstance().getDB().frameworkOnOffDAO().total();
             Log.i(TAG,"#### Registro: " + tam);
             Boolean value = true;
             if(tam == 0){
@@ -396,7 +417,13 @@ public class MainActivity2 extends AppCompatActivity {
     private class AddItemTaskClear extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            frameworkStatus.getInstance().delete();
+            FrameworkOnOff frameworkOnOff1 = new FrameworkOnOff();
+            frameworkOnOff1.setStatus(true);
+            databaseManager.getInstance().getDB().frameworkOnOffDAO().delete();
+
+            /*FrameworkOnOff frameworkOnOff2 = new FrameworkOnOff();
+            frameworkOnOff2.setStatus(false);
+            databaseManager.getInstance().getDB().frameworkOnOffDAO().delete(frameworkOnOff2);*/
             return null;
         }
     }
@@ -405,8 +432,9 @@ public class MainActivity2 extends AppCompatActivity {
     private class AddItemTaskSet extends AsyncTask<Boolean, Void, Void> {
         @Override
         protected Void doInBackground(Boolean... params) {
-            Log.i(TAG,"#### valor: " + params[0]);
-            frameworkStatus.getInstance().update(params[0]);
+            FrameworkOnOff frameworkOnOff = new FrameworkOnOff();
+            frameworkOnOff.setStatus(params[0]);
+            databaseManager.getInstance().getDB().frameworkOnOffDAO().update(frameworkOnOff);
             return null;
         }
     }
@@ -430,7 +458,7 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected List<ActiveDataProcessor> doInBackground(Void... params) {
             List<ActiveDataProcessor> l = new ArrayList();
-            l = activeDataProcessorManager.getInstance().select();
+            l = databaseManager.getInstance().getDB().activeDataProcessorDAO().findByActiveDataProcessorAll();
             return l;
         }
 

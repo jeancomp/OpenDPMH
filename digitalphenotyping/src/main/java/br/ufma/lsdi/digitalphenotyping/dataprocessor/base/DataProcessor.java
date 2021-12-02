@@ -22,9 +22,9 @@ import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.Topics;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.DataProcessorManager;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
 
@@ -38,7 +38,8 @@ public abstract class DataProcessor extends Service {
     private Publisher publisher = PublisherFactory.createPublisher();
     private DPUtil dpUtil;
     private DPUtil dpUtilAux;
-    private DataProcessorManager dataProcessorManager;
+    //private DataProcessorManager dataProcessorManager;
+    private DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     @Override
     public void onCreate() {
@@ -48,7 +49,7 @@ public abstract class DataProcessor extends Service {
 
         publisher.addConnection(CDDL.getInstance().getConnection());
 
-        dataProcessorManager = new DataProcessorManager(context);
+        //dataProcessorManager = new DataProcessorManager(context);
 
         init();
     }
@@ -122,14 +123,19 @@ public abstract class DataProcessor extends Service {
 
 
     public void saveDigitalPhenotypeEvent(DigitalPhenotypeEvent digitalPhenotypeEvent){
-        Phenotypes phenotypes = new Phenotypes();
-        phenotypes.setDataProcessorName(digitalPhenotypeEvent.getDataProcessorName());
-        phenotypes.stringFromObject(digitalPhenotypeEvent);
+        PhenotypesEvent phenotypesEvent = new PhenotypesEvent();
+        phenotypesEvent.setDataProcessorName(digitalPhenotypeEvent.getDataProcessorName());
+        phenotypesEvent.stringFromObject(digitalPhenotypeEvent);
 
         try {
-            new AddItemTask().execute(phenotypes);
+            new AddItemTask().execute(phenotypesEvent);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally {
+            /*if (databaseManager.getInstance().getDB() != null && databaseManager.getInstance().getDB().isOpen()) {
+                databaseManager.getInstance().getDB().close();
+            }*/
         }
     }
 
@@ -317,12 +323,12 @@ public abstract class DataProcessor extends Service {
     }
     //public class ProcessedInformation extends Message{ }
 
-    private class AddItemTask extends AsyncTask<Phenotypes, Void, Void> {
+    private class AddItemTask extends AsyncTask<PhenotypesEvent, Void, Void> {
 
 
         @Override
-        protected Void doInBackground(Phenotypes... params) {
-            dataProcessorManager.getInstance().insert(params[0]);
+        protected Void doInBackground(PhenotypesEvent... params) {
+            databaseManager.getInstance().getDB().phenotypesEventDAO().insert(params[0]);
             return null;
         }
     }

@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 
-import androidx.room.Room;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
@@ -41,10 +40,10 @@ import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
-import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabasePC;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
 public class PhenotypeComposer extends Service {
@@ -64,7 +63,8 @@ public class PhenotypeComposer extends Service {
     private int lastFrequency = 6;
     private List<String> nameActiveDataProcessors = new ArrayList();
     private List<Boolean> activeDataProcessors = new ArrayList();
-    private AppDatabasePC db;
+    //private AppDatabasePC db;
+    DatabaseManager databaseManager;
     private WorkManager workManager;
 
     @Override
@@ -95,8 +95,9 @@ public class PhenotypeComposer extends Service {
 
             messageTextView = new TextView(context);
 
-            db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabasePC.class, "database-phenotype").build();
+            databaseManager = DatabaseManager.getInstance(getApplicationContext());
+
+            //db = Room.databaseBuilder(getApplicationContext(), AppDatabasePC.class, "database-phenotype").build();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -303,76 +304,82 @@ public class PhenotypeComposer extends Service {
     public ISubscriberListener subscriberRawDataInferenceResultListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-            Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
-            Object[] valor = message.getServiceValue();
-            String mensagemRecebida = StringUtils.join(valor, ", ");
-            DigitalPhenotypeEvent digitalPhenotypeEvent = objectFromString(mensagemRecebida);
+            try {
+                Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
+                Object[] valor = message.getServiceValue();
+                String mensagemRecebida = StringUtils.join(valor, ", ");
+                DigitalPhenotypeEvent digitalPhenotypeEvent = objectFromString(mensagemRecebida);
 
-            if(lastCompositionMode == SEND_WHEN_IT_ARRIVES){ //Publish DigitalPhenotypeEvent
-                publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
-            }
-            else if(lastCompositionMode == GROUP_ALL){
-                int position = nameActiveDataProcessors.indexOf(digitalPhenotypeEvent.getDataProcessorName());
-                activeDataProcessors.set(position,true);
-                Phenotypes phenotype = new Phenotypes();
+                if (lastCompositionMode == SEND_WHEN_IT_ARRIVES) { //Publish DigitalPhenotypeEvent
+                    publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
+                } else if (lastCompositionMode == GROUP_ALL) {
+                    int position = nameActiveDataProcessors.indexOf(digitalPhenotypeEvent.getDataProcessorName());
+                    activeDataProcessors.set(position, true);
+                    Phenotypes phenotype = new Phenotypes();
 
-                if(activeDataProcessors.size() != 0) {
-                    if (!activeDataProcessors.isEmpty()) {
-                        boolean all = true;
-                        for (int i = 0; i <= activeDataProcessors.size(); i++) {
-                            if (!activeDataProcessors.get(i).booleanValue()) {
-                                if (!activeDataProcessors.contains(false)) {
-                                    all = true;
-                                } else {
-                                    all = false;
+                    if (activeDataProcessors.size() != 0) {
+                        if (!activeDataProcessors.isEmpty()) {
+                            boolean all = true;
+                            for (int i = 0; i <= activeDataProcessors.size(); i++) {
+                                if (!activeDataProcessors.get(i).booleanValue()) {
+                                    if (!activeDataProcessors.contains(false)) {
+                                        all = true;
+                                    } else {
+                                        all = false;
+                                    }
+                                    break;
                                 }
                                 break;
                             }
-                            break;
+                            if (all) {
+                                DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
+                                digitalPhenotype.setDpeList(digitalPhenotypeEvent);
+
+                                // Retrieve information
+                                phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
+                                while (phenotype != null) {
+                                    String stringPhenotype = phenotype.getPhenotype();
+                                    DigitalPhenotypeEvent dpe = phenotype.getObjectFromString(stringPhenotype);
+
+                                    digitalPhenotype.setDpeList(dpe);
+
+                                    // Remove from database
+                                    databaseManager.getInstance().getDB().phenotypeDAO().delete(phenotype);
+
+                                    phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
+                                }
+                                if (digitalPhenotype.getDigitalPhenotypeEventList().size() > 0) {
+                                    // Publish the information
+                                    publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
+                                }
+
+                                for (int j = 0; j < activeDataProcessors.size(); j++) {
+                                    activeDataProcessors.set(j, false);
+                                }
+                            } else {
+                                //Save phenotype
+                                Phenotypes phenotypes = new Phenotypes();
+                                phenotypes.setPhenotype(mensagemRecebida);
+                                databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);
+                            }
                         }
-                        if (all) {
-                            DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
-                            digitalPhenotype.setDpeList(digitalPhenotypeEvent);
-
-                            // Retrieve information
-                            phenotype = db.phenotypeDAO().findByPhenotypeAll();
-                            while (phenotype != null) {
-                                String stringPhenotype = phenotype.getPhenotype();
-                                DigitalPhenotypeEvent dpe = phenotype.getObjectFromString(stringPhenotype);
-
-                                digitalPhenotype.setDpeList(dpe);
-
-                                // Remove from database
-                                db.phenotypeDAO().delete(phenotype);
-
-                                phenotype = db.phenotypeDAO().findByPhenotypeAll();
-                            }
-                            if(digitalPhenotype.getDigitalPhenotypeEventList().size() > 0){
-                                // Publish the information
-                                publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
-                            }
-
-                            for (int j = 0; j < activeDataProcessors.size(); j++) {
-                                activeDataProcessors.set(j, false);
-                            }
-                        } else {
-                            //Save phenotype
-                            Phenotypes phenotypes = new Phenotypes();
-                            phenotypes.setPhenotype(mensagemRecebida);
-                            db.phenotypeDAO().insertAll(phenotypes);
-                        }
+                    } else {
+                        //Publish DigitalPhenotypeEvent
+                        publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                     }
+                } else if (lastCompositionMode == FREQUENCY) {
+                    //Save phenotype
+                    Phenotypes phenotypes = new Phenotypes();
+                    phenotypes.setPhenotype(mensagemRecebida);
+                    databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);
                 }
-                else{
-                    //Publish DigitalPhenotypeEvent
-                    publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
-                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            else if(lastCompositionMode == FREQUENCY){
-                //Save phenotype
-                Phenotypes phenotypes = new Phenotypes();
-                phenotypes.setPhenotype(mensagemRecebida);
-                db.phenotypeDAO().insertAll(phenotypes);
+            finally {
+                /*if (db != null && db.isOpen()){
+                    db.close();
+                }*/
             }
         }
     };

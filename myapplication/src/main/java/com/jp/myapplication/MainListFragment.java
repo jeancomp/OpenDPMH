@@ -19,12 +19,13 @@ import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManagerService;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 
 public class MainListFragment extends Fragment {
     private static final String TAG = MainListFragment.class.getName();
-    private ActiveDataProcessorManager activeDataProcessorManager;// = ActiveDataProcessorManager.getInstance();
+    //private ActiveDataProcessorManager activeDataProcessorManager;// = ActiveDataProcessorManager.getInstance();
+    private DatabaseManager databaseManager;
     private RecyclerViewAdapter adapter;
     private DPManagerService myService;
     private DPManager dpManager;
@@ -39,6 +40,8 @@ public class MainListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        databaseManager = DatabaseManager.getInstance(getContext());
     }
 
     @Override
@@ -70,7 +73,7 @@ public class MainListFragment extends Fragment {
         @Override
         protected List<ActiveDataProcessor> doInBackground(Void... params) {
             List<ActiveDataProcessor> l = new ArrayList();
-            l = activeDataProcessorManager.getInstance().select();
+            l = databaseManager.getInstance().getDB().activeDataProcessorDAO().findByActiveDataProcessorAll();
             return l;
         }
 
@@ -102,7 +105,17 @@ public class MainListFragment extends Fragment {
                     progressBar.setVisibility(View.INVISIBLE);
                     textLoad.setVisibility(View.INVISIBLE);
                     pag.setEnabled(true);
-                    new AddItemTaskFrag().execute();
+
+                    try {
+                        new AddItemTaskFrag().execute();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    finally {
+                        /*if (activeDataProcessorManager.getInstance().getDB() != null && activeDataProcessorManager.getInstance().getDB().isOpen()){
+                            activeDataProcessorManager.getInstance().getDB().close();
+                        }*/
+                    }
                 }
             }).start();
     }

@@ -311,4 +311,8 @@ public class RawDataComposer {
         String jsonString = gson.toJson(msg);
         return jsonString;
     }
+
+    public AppDatabaseRD getDB(){
+        return db;
+    }
 }

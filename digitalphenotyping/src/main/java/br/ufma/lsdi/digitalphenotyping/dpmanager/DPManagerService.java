@@ -45,17 +45,12 @@ import br.ufma.lsdi.digitalphenotyping.R;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.PhenotypeComposer;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.ProcessorManager;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.rawdatacollector.RawDataCollector;
 
-/**
- * System Bus to framework, DPManagerService
- */
 public class DPManagerService extends Service {
     private static final String TAG = DPManagerService.class.getName();
-    private ActiveDataProcessorManager activeDataProcessorManager;
-    private ListDataProcessorManager listDataProcessorManager;
+    //private ActiveDataProcessorManager activeDataProcessorManager;
+    //private ListDataProcessorManager listDataProcessorManager;
     private Publisher publisher = PublisherFactory.createPublisher();
     private CDDL cddl;
     private String hostServer = "";
@@ -154,7 +149,7 @@ public class DPManagerService extends Service {
                 clientID = intent.getStringExtra("clientid");
                 isActiveRawDataCollector = intent.getBooleanExtra("activerawdatacollector", false);
                 //activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
-                listDataProcessorManager = new ListDataProcessorManager(getContext());
+                //listDataProcessorManager = new ListDataProcessorManager(getContext());
 
                 setCommunicationTechnology(this.communicationTechnology);
                 setSecure(this.secure);

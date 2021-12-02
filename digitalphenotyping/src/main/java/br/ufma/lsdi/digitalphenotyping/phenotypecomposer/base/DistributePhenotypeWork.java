@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.room.Room;
 import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -13,21 +12,21 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
-import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.AppDatabasePC;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 
 public class DistributePhenotypeWork extends Worker {
     private static final String TAG = DistributePhenotypeWork.class.getName();
-    Context context;
-    AppDatabasePC db;
-    Phenotypes phenotype;
-    PublishPhenotype publishPhenotype = PublishPhenotype.getInstance();
+    private PublishPhenotype publishPhenotype = PublishPhenotype.getInstance();
+    private DatabaseManager databaseManager = DatabaseManager.getInstance(getApplicationContext());
+    private Context context;
+    //AppDatabasePC db;
+    private Phenotypes phenotype;
 
     public DistributePhenotypeWork(@NonNull Context context, @NonNull WorkerParameters workerParams){
         super(context, workerParams);
 
-        db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabasePC.class, "database-phenotype").build();
+        //db = Room.databaseBuilder(getApplicationContext(), AppDatabasePC.class, "database-phenotype").build();
     }
 
     @NonNull
@@ -41,16 +40,16 @@ public class DistributePhenotypeWork extends Worker {
             DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
 
             // Retrieve information
-            phenotype = db.phenotypeDAO().findByPhenotypeAll();
+            phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
             while (phenotype != null) {
                 String stringPhenotype = phenotype.getPhenotype();
                 DigitalPhenotypeEvent digitalPhenotypeEvent = phenotype.getObjectFromString(stringPhenotype);
                 digitalPhenotype.setDpeList(digitalPhenotypeEvent);
 
                 // Remove from database
-                db.phenotypeDAO().delete(phenotype);
+                databaseManager.getInstance().getDB().phenotypeDAO().delete(phenotype);
 
-                phenotype = db.phenotypeDAO().findByPhenotypeAll();
+                phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
             }
             if(digitalPhenotype.getDigitalPhenotypeEventList().size() > 0){
                 // Publish the information

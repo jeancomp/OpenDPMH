@@ -16,14 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessor;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 
 public class AddActiveDataProcessorActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = AddActiveDataProcessorActivity.class.getName();
-    private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
+    //private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
     private List<String> listDataProcessors = new ArrayList();
+    private DatabaseManager databaseManager = DatabaseManager.getInstance();
     private ListDataProcessorAdapter adapter;
     private DPManager dpManager = DPManager.getInstance();
     private RecyclerView recycler_List;
@@ -62,7 +63,7 @@ public class AddActiveDataProcessorActivity extends AppCompatActivity implements
         @Override
         protected List<ListDataProcessor> doInBackground(Void... params) {
             List<ListDataProcessor> l = new ArrayList();
-            l = listDataProcessorManager.getInstance().select();
+            l = databaseManager.getInstance().getInstance().getDB().listDataProcessorDAO().findByListDataProcessorAll();
             return l;
         }
 

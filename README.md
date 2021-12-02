@@ -37,7 +37,7 @@ Componentes:
 * MainService: bus responsible for ensuring the exchange of messages between the framework components.
 * ProcessorManager: manages activeDataprocessor (e.g., start/stop activeDataprocessor), start/stop sensors, and identifies new plugin that has been installed.
 * DataProcessor: the class where the processors will be implemented (e.g., sociability, mobility, sleep, physical activity).
-* PhenotypeComposer: composes digital phenotypes of users, receiving directly from the data processor of detected events (eg phone calls, sms, GPS, accelerometer).
+* PhenotypeComposer: composes digital phenotypesEvent of users, receiving directly from the data processor of detected events (eg phone calls, sms, GPS, accelerometer).
 
 
 ![](header.png)

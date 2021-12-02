@@ -12,8 +12,8 @@ import java.lang.reflect.Type;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 
-@Entity(tableName = "phenotypes")
-public class Phenotypes{
+@Entity(tableName = "phenotypesevent")
+public class PhenotypesEvent {
     @NonNull
     @PrimaryKey(autoGenerate = true)
     public int id;
@@ -23,8 +23,8 @@ public class Phenotypes{
     String dataProcessorName;
 
     @NonNull
-    @ColumnInfo(name = "phenotype")
-    String phenotype;
+    @ColumnInfo(name = "phenotypeevent")
+    String phenotypeevent;
 
     public String getDataProcessorName(){
         return dataProcessorName;
@@ -34,18 +34,18 @@ public class Phenotypes{
         this.dataProcessorName = dataProcessorName;
     }
 
-    public String getPhenotype(){
-        return phenotype;
+    public String getPhenotypeEvent(){
+        return phenotypeevent;
     }
 
-    public void setPhenotype(String str){
-        this.phenotype = str;
+    public void setPhenotypeEvent(String str){
+        this.phenotypeevent = str;
     }
 
     public void stringFromObject(DigitalPhenotypeEvent dpe){
         Gson gson = new Gson();
         String jsonString = gson.toJson(dpe);
-        phenotype = jsonString;
+        phenotypeevent = jsonString;
     }
 
     public DigitalPhenotypeEvent getObjectFromString(String jsonString){

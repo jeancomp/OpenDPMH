@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Attribute;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
@@ -26,7 +26,7 @@ public class StreamFragmentOnlineSociability extends Fragment {
     private CardView cardView;
     private DPManager dpManager = DPManager.getInstance();
     private Button btnFinish;
-    private List<Phenotypes> phenotypesList = new ArrayList();
+    private List<PhenotypesEvent> phenotypesEventList = new ArrayList();
 
     private TextView txtEntradaCall;
     private TextView txtSaidaCall;
@@ -60,7 +60,7 @@ public class StreamFragmentOnlineSociability extends Fragment {
         txtSMSRecordDate = (TextView) view.findViewById(R.id.txtSMSRecordDate);
 
         try {
-            phenotypesList = dpManager.getInstance().getPhenotypesList("Online_Sociability");
+            phenotypesEventList = dpManager.getInstance().getPhenotypesList("Online_Sociability");
             setSettings();
         }catch (Exception e){
             e.printStackTrace();
@@ -71,10 +71,10 @@ public class StreamFragmentOnlineSociability extends Fragment {
     public void setSettings(){
         List<DigitalPhenotypeEvent> digitalPhenotypeEventList = new ArrayList();
 
-        for(int i=0; i < phenotypesList.size(); i++){
+        for(int i = 0; i < phenotypesEventList.size(); i++){
             DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
-            String str = phenotypesList.get(i).getPhenotype();
-            dpe = phenotypesList.get(i).getObjectFromString(str);
+            String str = phenotypesEventList.get(i).getPhenotypeEvent();
+            dpe = phenotypesEventList.get(i).getObjectFromString(str);
             digitalPhenotypeEventList.add(dpe);
         }
 

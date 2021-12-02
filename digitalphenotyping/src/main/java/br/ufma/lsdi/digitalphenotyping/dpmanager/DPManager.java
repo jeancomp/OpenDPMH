@@ -28,8 +28,8 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.DataProcessorManager;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.Phenotypes;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
+import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidActivityException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidClientIDException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidCompositionModeException;
@@ -42,9 +42,7 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPassw
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidPortException;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidUsernameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessorManager;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessor;
-import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessorManager;
 
 /**
  * DPInterface class is responsible for starting the framework's main service (MainService).
@@ -61,7 +59,8 @@ public class DPManager implements DPInterface {
     private DPManagerService myService;
     private boolean servicesStarted = false;
     private static Builder builderCopy;
-    private List<Phenotypes> phenotypesList = new ArrayList();
+    private List<PhenotypesEvent> phenotypesEventList = new ArrayList();
+    private DatabaseManager databaseManager;
 
 
     /**
@@ -103,6 +102,7 @@ public class DPManager implements DPInterface {
 
             //this.activity = activity;
             this.context = (Context) builderCopy.activity;
+            databaseManager = DatabaseManager.getInstance(context);
 
             this.communicationTechnology = 4;
             this.secure = false;
@@ -266,9 +266,9 @@ public class DPManager implements DPInterface {
      */
     @Override
     public List<ListDataProcessor> getDataProcessorsList(){
-        ListDataProcessorManager ldpManager = ListDataProcessorManager.getInstance();
+        //ListDataProcessorManager ldpManager = ListDataProcessorManager.getInstance();
         List<ListDataProcessor> listDataProcessor = new ArrayList();
-        listDataProcessor = ldpManager.getInstance().select();
+        listDataProcessor = databaseManager.getInstance().getDB().listDataProcessorDAO().findByListDataProcessorAll();
         return listDataProcessor;
     }
 
@@ -279,27 +279,32 @@ public class DPManager implements DPInterface {
      */
     @Override
     public List<ActiveDataProcessor> getActiveDataProcessorsList(){
-        ActiveDataProcessorManager adpManager = ActiveDataProcessorManager.getInstance();
+        //ActiveDataProcessorManager adpManager = ActiveDataProcessorManager.getInstance();
         List<ActiveDataProcessor> activeDataProcessorList = new ArrayList();
-        activeDataProcessorList = adpManager.getInstance().select();
+        activeDataProcessorList = databaseManager.getInstance().getDB().activeDataProcessorDAO().findByActiveDataProcessorAll();
         return activeDataProcessorList;
     }
 
 
     @Override
-    public List<Phenotypes> getPhenotypesList(String situationInterest){
-        DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
-        if(dataProcessorManager.checkDatabaseCreation()){
+    public List<PhenotypesEvent> getPhenotypesList(String situationInterest){
+        //DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
+        if(databaseManager.getInstance().checkDatabaseCreation()){
             try {
                 new AddItemTask().execute(situationInterest);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            finally {
+                /*if (dataProcessorManager.getInstance().getDB() != null && dataProcessorManager.getInstance().getDB().isOpen()) {
+                    dataProcessorManager.getInstance().getDB().close();
+                }*/
+            }
         }
         else{
-            phenotypesList = null;
+            phenotypesEventList = null;
         }
-        return phenotypesList;
+        return phenotypesEventList;
     }
 
 
@@ -605,24 +610,25 @@ public class DPManager implements DPInterface {
     }
 
 
-    private class AddItemTask extends AsyncTask<String, Void, List<Phenotypes>> {
-        DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
+    private class AddItemTask extends AsyncTask<String, Void, List<PhenotypesEvent>> {
+        //DataProcessorManager dataProcessorManager = new DataProcessorManager(getContext());
 
         @Override
-        protected List<Phenotypes> doInBackground(String... params) {
-            List<Phenotypes> l = new ArrayList();
-            l = dataProcessorManager.select(params[0]);
+        protected List<PhenotypesEvent> doInBackground(String... params) {
+            List<PhenotypesEvent> l = new ArrayList();
+
+            l = databaseManager.getInstance().getDB().phenotypesEventDAO().findByPhenotypeAll(params[0]);
             return l;
         }
 
         @Override
-        protected void onPostExecute(List<Phenotypes> result) {
+        protected void onPostExecute(List<PhenotypesEvent> result) {
             processValue(result);
         }
     }
 
 
-    public void processValue(List<Phenotypes> myValue) {
-        phenotypesList = myValue;
+    public void processValue(List<PhenotypesEvent> myValue) {
+        phenotypesEventList = myValue;
     }
 }

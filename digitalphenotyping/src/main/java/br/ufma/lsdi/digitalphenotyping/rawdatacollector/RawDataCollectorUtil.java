@@ -107,7 +107,16 @@ public class RawDataCollectorUtil {
         return subscriberListener[position] = new ISubscriberListener() {
             @Override
             public void onMessageArrived(Message message) {
-                rawDataComposer.getInstance().rawDataPreProcessed(message);
+                try {
+                    rawDataComposer.getInstance().rawDataPreProcessed(message);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                finally {
+                    /*if (rawDataComposer.getInstance().getDB() != null && rawDataComposer.getInstance().getDB().isOpen()){
+                        rawDataComposer.getInstance().getDB().close();
+                    }*/
+                }
             }
         };
     }
