@@ -18,17 +18,18 @@ import java.util.List;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
+import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active.ActiveDataProcessor;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list.ListDataProcessor;
 
 public class AddActiveDataProcessorActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = AddActiveDataProcessorActivity.class.getName();
-    //private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
     private List<String> listDataProcessors = new ArrayList();
     private DatabaseManager databaseManager = DatabaseManager.getInstance();
     private ListDataProcessorAdapter adapter;
     private DPManager dpManager = DPManager.getInstance();
     private RecyclerView recycler_List;
     private Button btnActiveDataProcessor;
+    private List<ActiveDataProcessor> listaDosAtivos = new ArrayList();
     private Context context;
 
     @Override
@@ -53,7 +54,19 @@ public class AddActiveDataProcessorActivity extends AppCompatActivity implements
         List<String> dataProcessorBackup = new ArrayList();
         dataProcessorBackup.add("Empty");
 
-        adapter = new ListDataProcessorAdapter(context, myValue, dataProcessorBackup);
+        if(listaDosAtivos.size() == 0) {
+            adapter = new ListDataProcessorAdapter(context, myValue, dataProcessorBackup);
+        }
+        else {
+            for(int i=0; i < listaDosAtivos.size(); i++){
+                for(int j=0; j < myValue.size(); j++){
+                    if(listaDosAtivos.get(i).getDataProcessorName().equalsIgnoreCase(myValue.get(j).getDataProcessorName())){
+                        myValue.remove(j);
+                    }
+                }
+            }
+            adapter = new ListDataProcessorAdapter(context, myValue, dataProcessorBackup);
+        }
 
         recycler_List.setLayoutManager(new LinearLayoutManager(context));
         recycler_List.setAdapter(adapter);
@@ -62,8 +75,11 @@ public class AddActiveDataProcessorActivity extends AppCompatActivity implements
     private class AddItemTask extends AsyncTask<Void, Void, List<ListDataProcessor>> {
         @Override
         protected List<ListDataProcessor> doInBackground(Void... params) {
+            //Toda a lista de processadores, menos os ativos
             List<ListDataProcessor> l = new ArrayList();
             l = databaseManager.getInstance().getInstance().getDB().listDataProcessorDAO().findByListDataProcessorAll();
+
+            listaDosAtivos = databaseManager.getInstance().getDB().activeDataProcessorDAO().findByActiveDataProcessorAll();
             return l;
         }
 

@@ -2,6 +2,8 @@ package com.jp.myapplication;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -10,7 +12,11 @@ import androidx.fragment.app.FragmentTransaction;
 public class StreamActivity extends AppCompatActivity {
     private static final String TAG = StreamActivity.class.getName();
     private String dataProcessorName;
-    //private ActionBar actionBar = getActionBar();
+    private StreamFragmentOnlineSociability streamFragmentOnlineSociability = null;
+    private StreamFragmentPhysicalSociability streamFragmentPhysicalSociability = null;
+    private StreamFragmentphysicalactivity streamFragmentphysicalactivity = null;
+    private StreamFragmentMobility streamFragmentMobility = null;
+    private StreamFragmentSleep streamFragmentSleep = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -21,6 +27,30 @@ public class StreamActivity extends AppCompatActivity {
         getSupportActionBar().setSubtitle(dataProcessorName);
 
         setFragment(dataProcessorName);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.bar, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_save) {
+            if(streamFragmentOnlineSociability.getIsStarted()){
+                streamFragmentOnlineSociability.requestStoragePermission(getCurrentFocus());
+                streamFragmentOnlineSociability.saveToGallery();
+            }
+            else if(streamFragmentPhysicalSociability.getIsStarted()){
+                streamFragmentPhysicalSociability.requestStoragePermission(getCurrentFocus());
+                streamFragmentPhysicalSociability.saveToGallery();
+            }
+        }
+        return true;
     }
 
 
@@ -55,7 +85,7 @@ public class StreamActivity extends AppCompatActivity {
             FragmentManager mFragmentManager = getSupportFragmentManager();
             FragmentTransaction mFragmentTransaction = mFragmentManager
                     .beginTransaction();
-            StreamFragmentPhysicalSociability streamFragmentPhysicalSociability = new StreamFragmentPhysicalSociability();
+            streamFragmentPhysicalSociability = new StreamFragmentPhysicalSociability();
             mFragmentTransaction.replace(R.id.frag_physical_sociability, streamFragmentPhysicalSociability);
             mFragmentTransaction.commit();
         }
@@ -63,7 +93,7 @@ public class StreamActivity extends AppCompatActivity {
             FragmentManager mFragmentManager = getSupportFragmentManager();
             FragmentTransaction mFragmentTransaction = mFragmentManager
                     .beginTransaction();
-            StreamFragmentOnlineSociability streamFragmentOnlineSociability = new StreamFragmentOnlineSociability();
+            streamFragmentOnlineSociability = new StreamFragmentOnlineSociability();
             mFragmentTransaction.replace(R.id.frag_online_sociability, streamFragmentOnlineSociability);
             mFragmentTransaction.commit();
         }
@@ -71,7 +101,7 @@ public class StreamActivity extends AppCompatActivity {
             FragmentManager mFragmentManager = getSupportFragmentManager();
             FragmentTransaction mFragmentTransaction = mFragmentManager
                     .beginTransaction();
-            StreamFragmentphysicalactivity streamFragmentphysicalactivity = new StreamFragmentphysicalactivity();
+            streamFragmentphysicalactivity = new StreamFragmentphysicalactivity();
             mFragmentTransaction.replace(R.id.frag_physicalactivity, streamFragmentphysicalactivity);
             mFragmentTransaction.commit();
         }
@@ -79,7 +109,7 @@ public class StreamActivity extends AppCompatActivity {
             FragmentManager mFragmentManager = getSupportFragmentManager();
             FragmentTransaction mFragmentTransaction = mFragmentManager
                     .beginTransaction();
-            StreamFragmentMobility streamFragmentMobility = new StreamFragmentMobility();
+            streamFragmentMobility = new StreamFragmentMobility();
             mFragmentTransaction.replace(R.id.frag_mobility, streamFragmentMobility);
             mFragmentTransaction.commit();
         }
@@ -87,7 +117,7 @@ public class StreamActivity extends AppCompatActivity {
             FragmentManager mFragmentManager = getSupportFragmentManager();
             FragmentTransaction mFragmentTransaction = mFragmentManager
                     .beginTransaction();
-            StreamFragmentSleep streamFragmentSleep = new StreamFragmentSleep();
+            streamFragmentSleep = new StreamFragmentSleep();
             mFragmentTransaction.replace(R.id.frag_sleep, streamFragmentSleep);
             mFragmentTransaction.commit();
         }

@@ -61,11 +61,11 @@ public class Physical_Sociability extends DataProcessor{
             digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
             Object[] valor1 = message.getServiceValue();
-            String mensagemRecebida1 = StringUtils.join(valor1, ", ");
+            String mensagemRecebida1 = StringUtils.join(valor1, ",");
             String[] listServiceValue = mensagemRecebida1.split(",");
 
             String[] valor2 = message.getAvailableAttributesList();
-            String mensagemRecebida2 = StringUtils.join(valor2, ", ");
+            String mensagemRecebida2 = StringUtils.join(valor2, ",");
             String[] listAttributes = mensagemRecebida2.split(",");
 
             Situation situation = new Situation();

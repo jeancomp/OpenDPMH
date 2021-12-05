@@ -24,7 +24,6 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active
 
 public class MainListFragment extends Fragment {
     private static final String TAG = MainListFragment.class.getName();
-    //private ActiveDataProcessorManager activeDataProcessorManager;// = ActiveDataProcessorManager.getInstance();
     private DatabaseManager databaseManager;
     private RecyclerViewAdapter adapter;
     private DPManagerService myService;
@@ -66,6 +65,10 @@ public class MainListFragment extends Fragment {
         if(myValue.size() > 0){
             text_primary_empty.setVisibility(View.INVISIBLE);
             text_secondary_empty.setVisibility(View.INVISIBLE);
+        }
+        else {
+            text_primary_empty.setVisibility(View.VISIBLE);
+            text_secondary_empty.setVisibility(View.VISIBLE);
         }
     }
 

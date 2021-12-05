@@ -27,21 +27,24 @@
         <entry key="myapplication/src/main/res/layout/appbar_elevation.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/content_main.xml" value="0.151268115942029" />
         <entry key="myapplication/src/main/res/layout/content_main2.xml" value="0.25" />
+        <entry key="myapplication/src/main/res/layout/custom_marker_view.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_add_activedataprocessor.xml" value="0.33" />
         <entry key="myapplication/src/main/res/layout/fragment_first.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/fragment_main_list.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/fragment_main_list_item.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/fragment_mobility.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_online_sociability.xml" value="0.33" />
-        <entry key="myapplication/src/main/res/layout/fragment_physical_sociability.xml" value="0.25" />
+        <entry key="myapplication/src/main/res/layout/fragment_physical_sociability.xml" value="0.5" />
         <entry key="myapplication/src/main/res/layout/fragment_physicalactivity.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_second.xml" value="0.18" />
         <entry key="myapplication/src/main/res/layout/fragment_sleep.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_sociability.xml" value="0.25" />
         <entry key="myapplication/src/main/res/layout/fragment_stream.xml" value="0.19322916666666667" />
+        <entry key="myapplication/src/main/res/layout/list_item_linechart.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/loading_state.xml" value="0.33" />
         <entry key="myapplication/src/main/res/layout/pref_main.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/recorder.xml" value="0.22" />
+        <entry key="myapplication/src/main/res/menu/bar.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/menu/menu_main.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/xml/pref_main.xml" value="0.25" />
       </map>

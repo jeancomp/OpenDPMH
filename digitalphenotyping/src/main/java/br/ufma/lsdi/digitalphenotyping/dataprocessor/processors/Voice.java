@@ -127,9 +127,9 @@ public class Voice extends BroadcastReceiver implements VoiceRecorder.Listener {
                 //Log.i(TAG,"#### Voz humana detectada!");
                 String dataProcessorName = "Sociability";
                 String alert = "Human voice detected";
-                Timestamp stamp = new Timestamp(System.currentTimeMillis());
+                long stamp = System.currentTimeMillis();
                 Object[] valor = {dataProcessorName, alert, stamp};
-                String[] atributte = {"data processor name", "message", "timestamp "};
+                String[] atributte = {"data processor name", "message", "timestamp"};
 
                 Message message = new Message();
                 message.setServiceValue(valor);

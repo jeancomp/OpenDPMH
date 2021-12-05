@@ -49,8 +49,6 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active
 
 public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = MainActivity2.class.getName();
-    //private ActiveDataProcessorManager activeDataProcessorManager;
-
     private DatabaseManager databaseManager;
     private List<String> listProcessors = new ArrayList();
     private RecyclerViewAdapter adapter;
@@ -91,7 +89,6 @@ public class MainActivity2 extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
 
-        //getSupportActionBar().setSubtitle("LSDi");
         activity = (Activity) this;
         databaseManager = DatabaseManager.getInstance(this);
         //activeDataProcessorManager = new ActiveDataProcessorManager(this);

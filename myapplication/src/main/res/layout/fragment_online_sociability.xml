@@ -179,7 +179,7 @@
                 android:layout_width="327dp"
                 android:layout_height="101dp"
                 android:background="#f0f0f0"
-                android:layout_margin="30dp"
+                android:layout_margin="10dp"
                 android:elevation="16sp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -331,37 +331,24 @@
             <LinearLayout
                 android:id="@+id/layout_3"
                 android:layout_width="327dp"
-                android:layout_height="113dp"
+                android:layout_height="200dp"
                 android:background="#f0f0f0"
-                android:layout_margin="30dp"
+                android:layout_margin="10dp"
                 android:elevation="16sp"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layout_2">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#ffffff"
-                    android:elevation="2dp"
-                    android:orientation="vertical">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="271dp"
-                        android:layout_height="100dp">
-
-                        <com.github.mikephil.charting.charts.LineChart
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </LinearLayout>
+                    <ListView
+                        android:id="@+id/listView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"></ListView>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
