@@ -57,6 +57,7 @@ public class DPManagerService extends Service {
     private String username = "username";
     private String password = "";
     private boolean isActiveRawDataCollector;
+    private boolean securitymodule = false;
     private ConnectionImpl con;
     private Context context;
     private Activity activity;
@@ -140,15 +141,19 @@ public class DPManagerService extends Service {
             if (intent != null) {
                 clientID = intent.getStringExtra("clientid");
                 isActiveRawDataCollector = intent.getBooleanExtra("activerawdatacollector", false);
-                //activeDataProcessorManager = new ActiveDataProcessorManager(getContext());
-                //listDataProcessorManager = new ListDataProcessorManager(getContext());
+                securitymodule = intent.getBooleanExtra("securitymodule", false);
 
                 setCommunicationTechnology(this.communicationTechnology);
                 setSecure(this.secure);
-                //activityParcelable2 = new ActivityParcelable();
-                //activityParcelable2 = (ActivityParcelable) intent.getParcelableExtra("activity");
 
-                startCDDL();
+                if(securitymodule) { // Security module = true
+                    Log.i(TAG,"#### Modulo de securança: Habilitado");
+                    initSecureCDDL();
+                }
+                else{ // Security module = false
+                    Log.i(TAG,"#### Modulo de securança: Desabilitado");
+                    startCDDL();
+                }
                 startServices();
 
                 if (servicesStarted) {

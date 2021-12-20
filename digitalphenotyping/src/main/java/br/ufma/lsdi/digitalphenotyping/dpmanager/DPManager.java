@@ -124,6 +124,7 @@ public class DPManager implements DPInterface {
                 intent.putExtra("password", builderCopy.password);
                 intent.putExtra("clientid", builderCopy.clientid);
                 intent.putExtra("activerawdatacollector", builderCopy.activerawdatacollector);
+                intent.putExtra("securitymodule", builderCopy.securitymodule);
                 if(builderCopy.compositionMode == FREQUENCY) {
                     intent.putExtra("frequency", builderCopy.frequency);
                 }
@@ -486,6 +487,7 @@ public class DPManager implements DPInterface {
         private CompositionMode compositionMode = null;
         private Integer frequency = null;
         private boolean activerawdatacollector = false;
+        private boolean securitymodule = false;
 
         public Builder(Activity activity){
             this.activity = activity;
@@ -535,6 +537,16 @@ public class DPManager implements DPInterface {
 
         public Builder setRawDataCollector(@NonNull final boolean activerawdatacollector){
             this.activerawdatacollector = activerawdatacollector;
+            return this;
+        }
+
+        /**
+         * Method responsible for enabling or disabling the security module.
+         * @param securityModule
+         * @return true or false
+         */
+        public Builder setSecurityModule(@NonNull final boolean securityModule){
+            this.securitymodule = securityModule;
             return this;
         }
 

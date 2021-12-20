@@ -56,6 +56,14 @@
             tools:summary="@string/pref_default_fiat_currency_entry" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/pref_security">
+        <SwitchPreferenceCompat
+            android:title="Security module: OFF"
+            android:switchTextOff="Security module: OFF"
+            android:switchTextOn="Security module: ON"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+
     <!--<PreferenceCategory android:title="@string/pref_support_category_title">
         <Preference
             android:icon="@drawable/ic_baseline_share_24"

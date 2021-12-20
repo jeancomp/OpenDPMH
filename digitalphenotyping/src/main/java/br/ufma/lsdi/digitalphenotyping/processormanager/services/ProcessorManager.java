@@ -723,7 +723,7 @@ public class ProcessorManager extends Service {
     public void startDataProcessorsList() {
         this.listDataProcessors.add("Physical_Sociability");
         this.listDataProcessors.add("Online_Sociability");
-        //this.listDataProcessors.add("PhysicalActivity");
+        this.listDataProcessors.add("PhysicalActivity");
         //this.listDataProcessors.add("Mobility");
         //this.listDataProcessors.add("Sleep");
     }

@@ -364,6 +364,8 @@
 
 <string name="title_activity_settings">"Settings"</string>
 
+    <string name="pref_security">"Security"</string>
+
 <string name="pref_general_category_title">"General"</string>
 
     <string name="hostname">Server IP</string>

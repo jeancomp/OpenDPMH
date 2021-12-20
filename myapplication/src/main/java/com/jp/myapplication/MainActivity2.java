@@ -79,12 +79,14 @@ public class MainActivity2 extends AppCompatActivity {
     private static final String Clientid = "clientidKey";
     private static final String Compositionmode = "compositioModeKey";
     private static final String Frequency = "frequencyKey";
+    private static final String SecurityModule = "securitymoduleKey";
 
     private String host = "not set";
     private String port = "not set" ;
     private String clientid = "not set" ;
     private String compositionmode = "not set";
     private String frequency = null;
+    private boolean securitymodule = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -162,6 +164,7 @@ public class MainActivity2 extends AppCompatActivity {
         if(compositionmode.equals("SEND_WHEN_IT_ARRIVES")) {
             dpManager = new DPManager.Builder(this)
                     .setExternalServer(host, port, clientid)
+                    .setSecurityModule(securitymodule)
                     //.setExternalServer("broker.hivemq.com","1883")
                     .setCompositionMode(CompositionMode.SEND_WHEN_IT_ARRIVES)
                     .build();
@@ -169,6 +172,7 @@ public class MainActivity2 extends AppCompatActivity {
         else if(compositionmode.equals("GROUP_ALL")){
             dpManager = new DPManager.Builder(this)
                     .setExternalServer(host, port, clientid)
+                    .setSecurityModule(securitymodule)
                     .setCompositionMode(CompositionMode.GROUP_ALL)
                     .build();
         }
@@ -176,6 +180,7 @@ public class MainActivity2 extends AppCompatActivity {
             int freq = Integer.parseInt(frequency);
             dpManager = new DPManager.Builder(this)
                     .setExternalServer(host, port, clientid)
+                    .setSecurityModule(securitymodule)
                     .setCompositionMode(CompositionMode.FREQUENCY)
                     .setFrequency(freq)
                     .build();
@@ -211,6 +216,7 @@ public class MainActivity2 extends AppCompatActivity {
             clientid = sharedpreferences.getString(Clientid, "");
             compositionmode = sharedpreferences.getString(Compositionmode,"");
             frequency = sharedpreferences.getString(Frequency,"");
+            securitymodule = sharedpreferences.getBoolean(SecurityModule, false);
         }
         if(!clientid.isEmpty()){
             txtClientID.setText(clientid);
