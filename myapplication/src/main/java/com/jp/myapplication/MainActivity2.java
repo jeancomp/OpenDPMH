@@ -6,13 +6,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,7 +54,6 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active
 public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = MainActivity2.class.getName();
     private DatabaseManager databaseManager;
-    private List<String> listProcessors = new ArrayList();
     private RecyclerViewAdapter adapter;
     private DPManagerService myService;
     private DPManager dpManager;
@@ -59,6 +62,7 @@ public class MainActivity2 extends AppCompatActivity {
 
     private TextView txtClientID;
     private TextView txtStatus;
+    private TextView txtBatteryStatus;
 
     private View button_init;
     private View fab;
@@ -91,13 +95,15 @@ public class MainActivity2 extends AppCompatActivity {
 
         activity = (Activity) this;
         databaseManager = DatabaseManager.getInstance(this);
-        //activeDataProcessorManager = new ActiveDataProcessorManager(this);
         saveActivity = new SaveActivity(this);
         recyclerView = findViewById(R.id.recyclerview_fragment_main_list);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
+
         txtClientID = findViewById(R.id.txtClientID_value);
         txtStatus = findViewById(R.id.txtStatus);
+        txtBatteryStatus = findViewById(R.id.textview_total_value_change_24h);
+
         progressBar = findViewById(R.id.progress_bar);
         button_init = findViewById(R.id.button_init);
         button_init.setOnClickListener(clickListener);
@@ -117,6 +123,15 @@ public class MainActivity2 extends AppCompatActivity {
         }
 
         sharedpreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        if (!Settings.canDrawOverlays(getApplicationContext())) {
+            Intent myIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+
+            myIntent.setData(uri);
+            startActivityForResult(myIntent, 1);
+            return;
+        }
     }
 
 
@@ -166,7 +181,6 @@ public class MainActivity2 extends AppCompatActivity {
                     .build();
         }
         dpManager.getInstance().start();
-        dpManager.getInstance().foregroundAPP();
         try {
             Intent intent = new Intent(this, DPManagerService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -183,6 +197,13 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = getBaseContext().registerReceiver(null, ifilter);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batteryPct = level * 100 / (float)scale;
+        txtBatteryStatus.setText(String.valueOf(batteryPct) + " %");
 
         if(sharedpreferences != null){
             host = sharedpreferences.getString(Host,"");
@@ -213,6 +234,9 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
+        /*if(serviceConnection != null) {
+            getBaseContext().unbindService(serviceConnection);
+        }*/
     }
 
 
@@ -256,7 +280,6 @@ public class MainActivity2 extends AppCompatActivity {
                         }
                         else {
                             vibe.vibrate(50);
-
                             questionClose();
                         }
                     } catch (Exception e) {
@@ -295,9 +318,9 @@ public class MainActivity2 extends AppCompatActivity {
                             processValue(false);
                             new AddItemTaskSet().execute(false);
                             new AddItemTaskOn().execute();  // limpa o banco com os nomes dos DataProcessor ativos, ficando vazio.
-                            //new AddItemTaskClear().execute();
                             txtClientID.setText("--");
-                            new AddItemTaskClear().execute();
+                            new AddItemTaskClearStatusFramework().execute();
+                            new AddItemTaskClearListDataProcessor().execute();
 
                             dpManager.getInstance().stop();
                         }catch (Exception e){
@@ -325,6 +348,9 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        /*if(serviceConnection != null) {
+            getBaseContext().unbindService(serviceConnection);
+        }*/
     }
 
 
@@ -393,7 +419,6 @@ public class MainActivity2 extends AppCompatActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             FrameworkOnOff frameworkOnOff = new FrameworkOnOff();
-            //frameworkOnOff = databaseManager.getInstance().select();
             frameworkOnOff = databaseManager.getInstance().getDB().frameworkOnOffDAO().findByFrameworkStatus();
             int tam = databaseManager.getInstance().getDB().frameworkOnOffDAO().total();
             Log.i(TAG,"#### Registro: " + tam);
@@ -411,16 +436,26 @@ public class MainActivity2 extends AppCompatActivity {
     }
 
 
-    private class AddItemTaskClear extends AsyncTask<Void, Void, Void> {
+    private class AddItemTaskClearStatusFramework extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            // Limpa a tabela com status do framework: on/off
             FrameworkOnOff frameworkOnOff1 = new FrameworkOnOff();
             frameworkOnOff1.setStatus(true);
             databaseManager.getInstance().getDB().frameworkOnOffDAO().delete();
 
-            /*FrameworkOnOff frameworkOnOff2 = new FrameworkOnOff();
-            frameworkOnOff2.setStatus(false);
-            databaseManager.getInstance().getDB().frameworkOnOffDAO().delete(frameworkOnOff2);*/
+            // Limpa tabela com a lista de processadores disponíveis
+            //databaseManager.getInstance().getInstance().getDB().listDataProcessorDAO().delete();
+            return null;
+        }
+    }
+
+
+    private class AddItemTaskClearListDataProcessor extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Limpa tabela com a lista de processadores disponíveis
+            databaseManager.getInstance().getInstance().getDB().listDataProcessorDAO().delete();
             return null;
         }
     }
@@ -456,6 +491,10 @@ public class MainActivity2 extends AppCompatActivity {
         protected List<ActiveDataProcessor> doInBackground(Void... params) {
             List<ActiveDataProcessor> l = new ArrayList();
             l = databaseManager.getInstance().getDB().activeDataProcessorDAO().findByActiveDataProcessorAll();
+
+            for(int i=0; i < l.size(); i++){
+                databaseManager.getInstance().getDB().activeDataProcessorDAO().delete(l.get(i));
+            }
             return l;
         }
 
@@ -464,34 +503,7 @@ public class MainActivity2 extends AppCompatActivity {
             processValue(result);
         }
     }
-
-
-/*    private class AddItemTaskOff extends AsyncTask<List<ActiveDataProcessor>, Void, Void> {
-        @Override
-        protected Void doInBackground(List<ActiveDataProcessor>... params) {
-            activeDataProcessorManager.getInstance().delete(params[0]);
-            return null;
-        }
-    }*/
 }
-
-// --Backup-------------------------------------
-/*//Start DataProcessor
-        try {
-            dpManager.getInstance().startDataProcessors(listProcessors);
-        } catch (InvalidDataProcessorNameException e) {
-            e.printStackTrace();
-        }*/
-
-        /*//Stop DataProcessor
-        try {
-            dpManager.getInstance().stopDataProcessors(listProcessors);
-        } catch (InvalidDataProcessorNameException e) { e.printStackTrace(); }*/
-
-        /*//Close framework
-        dpManager.getInstance().stop();
-        finish();*/
-
 //--Backup-----------------------------------------
             /*final int tempoDeEspera = 1000;
             new Thread(new Runnable() {

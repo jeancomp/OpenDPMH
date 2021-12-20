@@ -38,7 +38,6 @@ public abstract class DataProcessor extends Service {
     private Publisher publisher = PublisherFactory.createPublisher();
     private DPUtil dpUtil;
     private DPUtil dpUtilAux;
-    //private DataProcessorManager dataProcessorManager;
     private DatabaseManager databaseManager = DatabaseManager.getInstance();
 
     @Override
@@ -49,15 +48,12 @@ public abstract class DataProcessor extends Service {
 
         publisher.addConnection(CDDL.getInstance().getConnection());
 
-        //dataProcessorManager = new DataProcessorManager(context);
-
         init();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-
         if(getDataProcessorName() == null) {
             try {
                 throw new InvalidDataProcessorNameException("#### Error: invalid dataProcessorName, cannot be null.");
@@ -71,7 +67,7 @@ public abstract class DataProcessor extends Service {
         if(listUsedSensorsSamplingRate.size()>0) {
             dpUtilAux.configSubscribers();
         }
-
+        dO();
         return START_STICKY;
     }
 
@@ -82,7 +78,7 @@ public abstract class DataProcessor extends Service {
 
     @Override
     public void onDestroy() {
-        end();
+        super.onDestroy();
         try {
             if(!listUsedSensors.isEmpty()) {
                 stopSensor(listUsedSensors);
@@ -93,10 +89,16 @@ public abstract class DataProcessor extends Service {
         } catch (InvalidSensorNameException e) {
             e.printStackTrace();
         }
+        finally {
+            end();
+        }
     }
 
 
     public void init(){ }
+
+
+    public void dO(){ }
 
 
     public void onSensorDataArrived(Message message){}
@@ -324,8 +326,6 @@ public abstract class DataProcessor extends Service {
     //public class ProcessedInformation extends Message{ }
 
     private class AddItemTask extends AsyncTask<PhenotypesEvent, Void, Void> {
-
-
         @Override
         protected Void doInBackground(PhenotypesEvent... params) {
             databaseManager.getInstance().getDB().phenotypesEventDAO().insert(params[0]);

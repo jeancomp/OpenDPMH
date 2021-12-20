@@ -1,14 +1,22 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
+import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
+
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,17 +24,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.ufma.lsdi.cddl.CDDL;
+import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
+import br.ufma.lsdi.cddl.pubsub.Subscriber;
+import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
+import br.ufma.lsdi.digitalphenotyping.R;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
+import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.AlarmAudio;
 
 public class Physical_Sociability extends DataProcessor{
     private static final String TAG = Physical_Sociability.class.getName();
     private SaveActivity saveActivity = SaveActivity.getInstance();
     private List<String> listSensors = new ArrayList();
-    //private AlarmAudio alarm = new AlarmAudio();
+    private AlarmAudio alarm = new AlarmAudio();
+    private long frequency_sensor = 3000;
+    private Subscriber subMessage;
+    private static final int ID_SERVICE = 103;
     private Voice voice = new Voice();
 
     @Override
@@ -34,20 +51,56 @@ public class Physical_Sociability extends DataProcessor{
         try {
             Log.i(TAG, "#### Running processor Physical_Sociability.");
 
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+            Notification notification = notificationBuilder.setOngoing(true)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("Audio")
+                    .setContentText("Audio module")
+                    .setPriority(PRIORITY_MIN)
+                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                    .build();
+
+            startForeground(ID_SERVICE, notification);
+
             setDataProcessorName("Physical_Sociability");
 
             initPermissions();
-            voice.config(getContext());
-            voice.setAlarm(2000);
+            voice.getInstance().config(this);
+            alarm.setAlarm(getContext(), frequency_sensor);
+
+            subMessage = SubscriberFactory.createSubscriber();
+            subMessage.addConnection(CDDL.getInstance().getConnection());
+            subscribeMessage(Topics.AUDIO_TOPIC.toString());
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.toString());
         }
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel(NotificationManager notificationManager){
+        String channelId = "my_service_channelid_audio";
+        String channelName = "Service audio";
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        // omitted the LED color
+        //channel.setImportance(NotificationManager.IMPORTANCE_NONE);
+        //channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        notificationManager.createNotificationChannel(channel);
+        return channelId;
+    }
+
+
+    @Override
+    public void dO(){
+        initPermissions();
+    }
+
+
     @Override
     public void onSensorDataArrived(Message message) {
-        voice.setAlarm(2000);
+        alarm.setAlarm(getContext(), frequency_sensor);
         inferencePhenotypingEvent(message);
     }
 
@@ -95,7 +148,11 @@ public class Physical_Sociability extends DataProcessor{
 
     @Override
     public void end(){
-        voice.desableAlarm();
+        try {
+            alarm.desableAlarm();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -137,4 +194,18 @@ public class Physical_Sociability extends DataProcessor{
             ActivityCompat.requestPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
         }
     }
+
+
+    public void subscribeMessage(String serviceName) {
+        subMessage.subscribeServiceByName(serviceName);
+        subMessage.setSubscriberListener(subscriberMsg);
+    }
+
+    public ISubscriberListener subscriberMsg = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            //Log.i(TAG, "#### Read messages (audio detected):  " + message);
+            onSensorDataArrived(message);
+        }
+    };
 }

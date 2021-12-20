@@ -63,5 +63,8 @@ public class RawDataCollector extends Service {
         } catch (InvalidSensorNameException e) {
             e.printStackTrace();
         }
+        finally {
+            //databaseManager.getInstance().getDB().close();
+        }
     }
 }

@@ -7,6 +7,13 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
 
     <application
         android:allowBackup="true"
@@ -32,7 +39,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".dataprocessor.processors.Voice" android:label="BroadcastReceiverAudio"
+        <receiver android:name=".dataprocessor.util.AlarmAudio" android:label="BroadcastReceiverAudio"
             tools:ignore="Instantiatable">
             <intent-filter>
                 <action android:name="ALARME_DISPARADO_AUDIO"/>
@@ -48,6 +55,11 @@
         <service android:name=".dataprocessor.processors.Online_Sociability" />
         <service android:name=".dataprocessor.processors.Mobility" />
         <service android:name=".dataprocessor.processors.Sleep" />
+
+        <service android:name=".dataprocessor.processors.PhysicalActivity" />
+        <service android:name=".dataprocessor.processors.DetectedActivityIntentService"
+            tools:ignore="Instantiatable" />
+        <service android:name=".dataprocessor.processors.ActivityDetectionService" />
     </application>
 
 </manifest>

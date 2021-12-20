@@ -16,8 +16,12 @@ import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +35,11 @@ import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Online_Sociability;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.PhysicalActivity;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Physical_Sociability;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Sleep;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
@@ -53,15 +60,12 @@ estão compartilhando o mesmo sensor.
 
 public class ProcessorManager extends Service {
     private static final String TAG = ProcessorManager.class.getName();
-    //private ActivityParcelable activityParcelable;
     private Publisher publisher = PublisherFactory.createPublisher();
     private List<String> listDataProcessors = new ArrayList();
     private List<String> listActiveDataProcessors = new ArrayList();
     private HashMap<String, Integer> listActiveSensor = new HashMap<>();
     private SaveActivity saveActivity = SaveActivity.getInstance();
     private DatabaseManager databaseManager = DatabaseManager.getInstance();
-    //private ActiveDataProcessorManager activeDataProcessorManager = ActiveDataProcessorManager.getInstance();
-    //private ListDataProcessorManager listDataProcessorManager = ListDataProcessorManager.getInstance();
     private List<String> sensorList = new ArrayList();
     private List<String> pluginList = new ArrayList();
     private Subscriber subStartDataProcessor;
@@ -69,7 +73,9 @@ public class ProcessorManager extends Service {
     private Subscriber subActiveSensor;
     private Subscriber subDeactiveSensor;
     private Subscriber subListSensors;
+    private Subscriber subPluginList;
     private Subscriber subAddPlugin;
+    private Subscriber subPluginSaveEvent;
     private Activity activity;
     private Context context;
 
@@ -98,13 +104,14 @@ public class ProcessorManager extends Service {
             subListSensors = SubscriberFactory.createSubscriber();
             subListSensors.addConnection(CDDL.getInstance().getConnection());
 
+            subPluginList = SubscriberFactory.createSubscriber();
+            subPluginList.addConnection(CDDL.getInstance().getConnection());
+
             subAddPlugin = SubscriberFactory.createSubscriber();
             subAddPlugin.addConnection(CDDL.getInstance().getConnection());
 
-            //activeDataProcessorManager = new ActiveDataProcessorManager(context);
-            //listDataProcessorManager = new ListDataProcessorManager(context);
-
-            //activityParcelable = new ActivityParcelable();
+            subPluginSaveEvent = SubscriberFactory.createSubscriber();
+            subPluginSaveEvent.addConnection(CDDL.getInstance().getConnection());
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }
@@ -132,6 +139,15 @@ public class ProcessorManager extends Service {
                 Intent s = new Intent(context, Sleep.class);
                 context.startService(s);
                 Log.i(TAG, "#### Starting inference services: Sleep");
+            }
+            else if(dataProcessorName.equalsIgnoreCase("PhysicalActivity")) {
+                Intent s = new Intent(context, PhysicalActivity.class);
+                context.startService(s);
+                Log.i(TAG, "#### Starting inference services: PhysicalActivity");
+            }
+            else { // Se não for nenhum de cima, é um PLUGIN, manda messagem para plugin iniciar.
+                Log.i(TAG, "#### Starting inference services: " + dataProcessorName);
+                publishMessagePluginActive(dataProcessorName);
             }
             saveDatabaseActiveDataProcessorList(dataProcessorName);
             publishMessage("aliveNewDataProcessor");
@@ -165,6 +181,15 @@ public class ProcessorManager extends Service {
                 context.stopService(s);
                 Log.i(TAG, "#### Stopping inference services: Sleep");
             }
+            else if(dataProcessorName.equalsIgnoreCase("PhysicalActivity")) {
+                Intent s = new Intent(context, PhysicalActivity.class);
+                context.startService(s);
+                Log.i(TAG, "#### Starting inference services: PhysicalActivity");
+            }
+            else { // Se não for nenhum de cima, é um PLUGIN, manda messagem para plugin parar.
+                publishMessagePluginStop(dataProcessorName);
+                listDataProcessors.remove(dataProcessorName);
+            }
             removeDatabaseActiveDataProcessorList(dataProcessorName);
             publishMessage("aliveRemoveDataProcessor");
             listActiveDataProcessors.remove(dataProcessorName);
@@ -190,8 +215,6 @@ public class ProcessorManager extends Service {
         Log.i(TAG, "#### CONFIGURATION PROCESSORMANAGER SERVICE");
         super.onStartCommand(intent, flags, startId);
 
-        //activityParcelable = (ActivityParcelable) intent.getParcelableExtra("activity");
-        //activity = activityParcelable.getActivity();
         activity = saveActivity.getActivity();
 
         subscribeMessageStartDataProcessor(Topics.START_DATAPROCESSOR_TOPIC.toString());
@@ -201,7 +224,9 @@ public class ProcessorManager extends Service {
         subscribeMessageDeactiveSensor(Topics.DEACTIVATE_SENSOR_TOPIC.toString());
         subscribeMessageListSensors(Topics.LIST_SENSORS_TOPIC.toString());
 
+        subscribeMessagePluginList(Topics.PLUGIN_LIST_TOPIC.toString());
         subscribeMessageAddPlugin(Topics.ADD_PLUGIN_TOPIC.toString());
+        subscribeMessagePluginSaveEvent(Topics.SAVE_PHENOTYPES_EVENT_TOPIC.toString());
 
         sensorList.addAll(listInternalSensor());
         sensorList.addAll(listVirtualSensor());
@@ -272,17 +297,7 @@ public class ProcessorManager extends Service {
 
     public void saveDatabaseDataProcessorList(){
         List<String> backupDataProcessorList = getDataProcessors();
-        /*Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        thread.start();*/
         //Save in database
         try {
             for(int i=0; i < backupDataProcessorList.size(); i++){
@@ -320,6 +335,9 @@ public class ProcessorManager extends Service {
 
     @Override
     public void onDestroy() {
+        if(databaseManager.getInstance().getDB().isOpen()) {
+            databaseManager.getInstance().getDB().close();
+        }
         super.onDestroy();
     }
 
@@ -354,9 +372,21 @@ public class ProcessorManager extends Service {
     }
 
 
+    public void subscribeMessagePluginList(String serviceName) {
+        subPluginList.subscribeServiceByName(serviceName);
+        subPluginList.setSubscriberListener(subscriberPluginList);
+    }
+
+
     public void subscribeMessageAddPlugin(String serviceName) {
         subAddPlugin.subscribeServiceByName(serviceName);
         subAddPlugin.setSubscriberListener(subscriberAddPlugin);
+    }
+
+
+    public void subscribeMessagePluginSaveEvent(String serviceName) {
+        subPluginSaveEvent.subscribeServiceByName(serviceName);
+        subPluginSaveEvent.setSubscriberListener(subscriberPluginSaveEvent);
     }
 
 
@@ -509,6 +539,34 @@ public class ProcessorManager extends Service {
     };
 
 
+    public ISubscriberListener subscriberPluginList = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Log.i(TAG, "#### Read messages (Plugin List):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ",");
+            String[] separated = mensagemRecebida.split(",");
+            String pluginName = String.valueOf(separated[0]);
+
+            if (!isDataProcessor(pluginName)) {
+                Log.i(TAG,"#### DataProcessor not");
+                //pluginList.add(pluginName);
+                listDataProcessors.add(pluginName);
+
+                new AddItemTask().execute(pluginName);
+            }
+            else {
+                try {
+                    throw new InvalidPluginException("#### Error: Processor already exists.");
+                } catch (InvalidPluginException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+
     public ISubscriberListener subscriberAddPlugin = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
@@ -528,6 +586,24 @@ public class ProcessorManager extends Service {
                 } catch (InvalidPluginException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    };
+
+
+    public ISubscriberListener subscriberPluginSaveEvent = new ISubscriberListener() {
+        @Override
+        public void onMessageArrived(Message message) {
+            Log.i(TAG, "#### Read messages (Plugin Save Event):  " + message);
+
+            Object[] valor = message.getServiceValue();
+            String mensagemRecebida = StringUtils.join(valor, ",");
+            String[] separated = mensagemRecebida.split(",");
+            String json = String.valueOf(separated[0]);
+
+            if(json.isEmpty()) {
+                DigitalPhenotypeEvent digitalPhenotypeEvent = getObjectFromString(json);
+                saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
             }
         }
     };
@@ -647,8 +723,9 @@ public class ProcessorManager extends Service {
     public void startDataProcessorsList() {
         this.listDataProcessors.add("Physical_Sociability");
         this.listDataProcessors.add("Online_Sociability");
-        /*this.listDataProcessors.add("Mobility");
-        this.listDataProcessors.add("Sleep");*/
+        //this.listDataProcessors.add("PhysicalActivity");
+        //this.listDataProcessors.add("Mobility");
+        //this.listDataProcessors.add("Sleep");
     }
 
 
@@ -766,6 +843,29 @@ public class ProcessorManager extends Service {
         Message message = new Message();
         message.setServiceName(Topics.NOTIFICATION.toString());
         message.setTopic(Topics.NOTIFICATION.toString());
+        message.setServiceValue(text);
+        publisher.publish(message);
+    }
+
+
+    public void publishMessagePluginActive(String text) {
+        Log.i(TAG,"#### send messsage");
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        Message message = new Message();
+        message.setServiceName(Topics.SELECT_PLUGIN_TOPIC.toString());
+        //message.setTopic(Topics.SELECT_PLUGIN_TOPIC.toString());
+        message.setServiceValue(text);
+        publisher.publish(message);
+    }
+
+
+    public void publishMessagePluginStop(String text) {
+        publisher.addConnection(CDDL.getInstance().getConnection());
+
+        Message message = new Message();
+        message.setServiceName(Topics.DELETE_PLUGIN_TOPIC.toString());
+        //message.setTopic(Topics.DELETE_PLUGIN_TOPIC.toString());
         message.setServiceValue(text);
         publisher.publish(message);
     }
@@ -925,7 +1025,41 @@ public class ProcessorManager extends Service {
     }
 
 
-    //Implementar
+    public DigitalPhenotypeEvent getObjectFromString(String jsonString){
+        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
+        DigitalPhenotypeEvent dpe = new Gson().fromJson(jsonString, listType);
+        return dpe;
+    }
+
+
+    public void saveDigitalPhenotypeEvent(DigitalPhenotypeEvent digitalPhenotypeEvent){
+        PhenotypesEvent phenotypesEvent = new PhenotypesEvent();
+        phenotypesEvent.setDataProcessorName(digitalPhenotypeEvent.getDataProcessorName());
+        phenotypesEvent.stringFromObject(digitalPhenotypeEvent);
+
+        try {
+            new AddItemTaskSave().execute(phenotypesEvent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            /*if (databaseManager.getInstance().getDB() != null && databaseManager.getInstance().getDB().isOpen()) {
+                databaseManager.getInstance().getDB().close();
+            }*/
+        }
+    }
+
+
+    private class AddItemTaskSave extends AsyncTask<PhenotypesEvent, Void, Void> {
+        @Override
+        protected Void doInBackground(PhenotypesEvent... params) {
+            databaseManager.getInstance().getDB().phenotypesEventDAO().insert(params[0]);
+            return null;
+        }
+    }
+
+
+    // Implementar
     public void startAllDataProcessors() {
     }
 

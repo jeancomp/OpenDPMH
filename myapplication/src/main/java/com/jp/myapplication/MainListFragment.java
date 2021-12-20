@@ -39,8 +39,6 @@ public class MainListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        databaseManager = DatabaseManager.getInstance(getContext());
     }
 
     @Override
@@ -53,6 +51,8 @@ public class MainListFragment extends Fragment {
         text_primary_empty = (TextView) view.findViewById(R.id.text_primary_empty);
         text_secondary_empty = (TextView) view.findViewById(R.id.text_secondary_empty);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+
+        databaseManager  = DatabaseManager.getInstance(getContext());
 
         return view;
     }

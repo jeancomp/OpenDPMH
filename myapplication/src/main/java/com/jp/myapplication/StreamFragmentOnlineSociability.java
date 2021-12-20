@@ -141,6 +141,13 @@ public class StreamFragmentOnlineSociability extends DemoBase {
     }
 
 
+    @Override
+    public void onDestroy(){
+        isStarted = false;
+        super.onDestroy();
+    }
+
+
     public boolean getIsStarted(){
         return this.isStarted;
     }

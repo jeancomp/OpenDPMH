@@ -49,8 +49,6 @@ import br.ufma.lsdi.digitalphenotyping.rawdatacollector.RawDataCollector;
 
 public class DPManagerService extends Service {
     private static final String TAG = DPManagerService.class.getName();
-    //private ActiveDataProcessorManager activeDataProcessorManager;
-    //private ListDataProcessorManager listDataProcessorManager;
     private Publisher publisher = PublisherFactory.createPublisher();
     private CDDL cddl;
     private String hostServer = "";
@@ -62,7 +60,6 @@ public class DPManagerService extends Service {
     private ConnectionImpl con;
     private Context context;
     private Activity activity;
-    //private ActivityParcelable activityParcelable2;
     private Boolean secure = false;
     private TextView messageTextView;
     private String statusConnection = "";
@@ -89,14 +86,7 @@ public class DPManagerService extends Service {
             context = this;
             messageTextView = new TextView(context);
             this.processors = new ArrayList();
-        }catch (Exception e){
-            Log.e(TAG,"#### Error: " + e.toString());
-        }
-    }
 
-
-    public void foregroundAPP(){
-        // Create the Foreground Service
             Log.i(TAG, "#### Notification create");
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
@@ -110,6 +100,9 @@ public class DPManagerService extends Service {
                     .build();
 
             startForeground(ID_SERVICE, notification);
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " + e.toString());
+        }
     }
 
 
@@ -122,7 +115,6 @@ public class DPManagerService extends Service {
         //channel.setImportance(NotificationManager.IMPORTANCE_NONE);
         //channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationManager.createNotificationChannel(channel);
-        Log.i(TAG,"#### channelId: " + channelId);
         return channelId;
     }
 

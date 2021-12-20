@@ -4,8 +4,11 @@ public enum Topics {
     NOTIFICATION("notification"),
     ADD_PLUGIN_TOPIC("addplugin"),
     REMOVE_PLUGIN_TOPIC("removeplugin"),
+    PLUGIN_LIST_TOPIC("pluginlist"),
+    SELECT_PLUGIN_TOPIC("selectplugintoactivate"),
+    DELETE_PLUGIN_TOPIC("selectplugintodelete"),
     START_DATAPROCESSOR_TOPIC("startdataprocessor"),
-    STOP_DATAPROCESSOR_TOPIC("stodataprocessor"),
+    STOP_DATAPROCESSOR_TOPIC("stopdataprocessor"),
     ACTIVE_DATAPROCESSOR_TOPIC("activedataprocessors"),
     DEACTIVATE_DATAPROCESSOR_TOPIC("deactivatedataprocessor"),
     ACTIVE_SENSOR_TOPIC("activesensor"),
@@ -14,6 +17,8 @@ public enum Topics {
     COMPOSITION_MODE_TOPIC("compositionmode"),
     MAINSERVICE_CONFIGURATION_INFORMATION_TOPIC("configurationinformation"),
     CONFIGURATION_INFORMATION_TOPIC("configurationinformations"),
+    SAVE_PHENOTYPES_EVENT_TOPIC("phenotypesevent"),
+    AUDIO_TOPIC("audiodetected"),
     INFERENCE_TOPIC("inference"),
     OPENDPMH_TOPIC("opendpmh");
 

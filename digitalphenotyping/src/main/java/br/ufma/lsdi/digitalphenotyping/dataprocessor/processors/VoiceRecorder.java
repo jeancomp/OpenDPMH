@@ -6,6 +6,7 @@ import static android.media.AudioFormat.CHANNEL_IN_STEREO;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Process;
 import android.util.Log;
 
 import com.konovalov.vad.Vad;
@@ -27,7 +28,7 @@ public class VoiceRecorder {
     private Thread thread;
     private boolean isListening = false;
 
-    //@RequiresPermission(Manifest.permission.RECORD_AUDIO)
+    /*@RequiresPermission(Manifest.permission.RECORD_AUDIO)*/
     public VoiceRecorder(Listener callback, VadConfig config) {
         this.callback = callback;
         this.config = config;
@@ -45,42 +46,52 @@ public class VoiceRecorder {
         vad.setConfig(config);
     }
 
-    //@NeedsPermission({Manifest.permission.RECORD_AUDIO})
     public void start() {
-        stop();
-        audioRecord = createAudioRecord();
-        if (audioRecord != null) {
-            isListening = true;
-            audioRecord.startRecording();
-
-            thread = new Thread(new ProcessVoice());
-            thread.start();
-            vad.start();
-        } else {
-            Log.e(TAG, "Failed start Voice Recorder!");
+        try {
+            stop();
+            Log.i(TAG,"#### 00 - Iniciando a gravação!");
+            audioRecord = createAudioRecord();
+            if (audioRecord != null) {
+                isListening = true;
+                audioRecord.startRecording();
+                thread = new Thread(new ProcessVoice());
+                thread.start();
+                vad.start();
+            } else {
+                Log.e(TAG, "Failed start Voice Recorder!");
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
 
     public void stop() {
-        isListening = false;
-        if (thread != null) {
-            thread.interrupt();
-            thread = null;
-        }
-        if (audioRecord != null) {
-            try {
-                audioRecord.release();
-            } catch (Exception e) {
-                Log.e(TAG, "Error stop AudioRecord ", e);
+        try {
+            Log.i(TAG, "#### 00 - Parando a gravação!");
+            isListening = false;
+            if (thread != null) {
+                thread.interrupt();
+                thread = null;
             }
-            audioRecord = null;
+            if (audioRecord != null) {
+                try {
+                    audioRecord.stop();
+                    audioRecord.release();
+                } catch (Exception e) {
+                    Log.e(TAG, "### Error stop AudioRecord ", e);
+                }
+                audioRecord = null;
+            }
+            if (vad != null) {
+                vad.stop();
+            }
         }
-        if (vad != null) {
-            vad.stop();
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
-
 
     private AudioRecord createAudioRecord() {
         try {
@@ -98,7 +109,7 @@ public class VoiceRecorder {
                 audioRecord.release();
             }
         } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Error can't create AudioRecord ", e);
+            Log.e(TAG, "#### Error can't create AudioRecord ", e);
         }
 
         return null;
@@ -118,13 +129,18 @@ public class VoiceRecorder {
 
         @Override
         public void run() {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_AUDIO);
+            try {
+                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
 
-            while (!Thread.interrupted() && isListening && audioRecord != null) {
-                short[] buffer = new short[vad.getConfig().getFrameSize().getValue() * getNumberOfChannels() * 2];
-                audioRecord.read(buffer, 0, buffer.length);
+                while (!Thread.interrupted() && isListening && audioRecord != null) {
+                    short[] buffer = new short[vad.getConfig().getFrameSize().getValue() * getNumberOfChannels() * 2];
+                    audioRecord.read(buffer, 0, buffer.length);
 
-                detectSpeech(buffer);
+                    detectSpeech(buffer);
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
             }
         }
 

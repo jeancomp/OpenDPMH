@@ -14,7 +14,8 @@ public class DatabaseManager {
     public DatabaseManager(Context context){
         this.context = context;
         db = Room.databaseBuilder(context,
-                AppDatabase.class, DATABASE_NAME).build();
+                AppDatabase.class, DATABASE_NAME)
+                .build();
     }
 
     public static DatabaseManager getInstance() {

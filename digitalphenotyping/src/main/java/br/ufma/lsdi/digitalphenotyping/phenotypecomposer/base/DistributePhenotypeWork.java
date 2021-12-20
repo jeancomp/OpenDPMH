@@ -20,13 +20,10 @@ public class DistributePhenotypeWork extends Worker {
     private PublishPhenotype publishPhenotype = PublishPhenotype.getInstance();
     private DatabaseManager databaseManager = DatabaseManager.getInstance(getApplicationContext());
     private Context context;
-    //AppDatabasePC db;
     private Phenotypes phenotype;
 
     public DistributePhenotypeWork(@NonNull Context context, @NonNull WorkerParameters workerParams){
         super(context, workerParams);
-
-        //db = Room.databaseBuilder(getApplicationContext(), AppDatabasePC.class, "database-phenotype").build();
     }
 
     @NonNull
@@ -56,7 +53,7 @@ public class DistributePhenotypeWork extends Worker {
                 publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
             }
         }catch (Exception e){
-            Log.e(TAG,"#### Error: " + e.toString());
+            Log.d(TAG,"#### Error: " + e.toString());
             return ListenableWorker.Result.retry();
         }
         return ListenableWorker.Result.success();

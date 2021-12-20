@@ -1,7 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping.processormanager.services.database.list;
 
 import androidx.room.Dao;
-import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -16,8 +15,12 @@ public interface ListDataProcessorDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(ListDataProcessor... listdataprocessor);
 
-    @Delete
-    void delete(ListDataProcessor listdataprocessor);
+    /*@Delete
+    void delete(ListDataProcessor listdataprocessor);*/
+
+    @Query("DELETE FROM listdataprocessor")
+    void delete();
+
 
     @Query("SELECT count(*) FROM listdataprocessor")
     int totalDataProcessorAll();

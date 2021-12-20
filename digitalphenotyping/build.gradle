@@ -66,6 +66,4 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.4.0'
     implementation 'org.permissionsdispatcher:permissionsdispatcher:4.8.0'
     annotationProcessor 'org.permissionsdispatcher:permissionsdispatcher-processor:4.8.0'
-
-    //implementation 'com.github.denzilferreira:com.aware.plugin.studentlife.audio_final:e0e08edaa6'
 }

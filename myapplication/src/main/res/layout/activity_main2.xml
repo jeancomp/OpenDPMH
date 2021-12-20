@@ -35,11 +35,11 @@
                 app:layout_collapseMode="parallax"
                 app:layout_collapseParallaxMultiplier="0.5">
 
-                <!--<androidx.appcompat.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/textview_total_value_on_date_time"
                     style="@style/AutoSizeText"
                     android:gravity="center"
-                    android:text="@string/total_dataprocessor"
+                    android:text="Battery status"
                     android:textAlignment="center"
                     app:layout_constraintBottom_toTopOf="@+id/textview_total_value_change_24h"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -62,14 +62,14 @@
                     style="@style/AutoSizeText"
                     android:layout_width="wrap_content"
                     android:gravity="center"
-                    android:text="@string/string_total_value_change_24h"
+                    android:text="--"
                     android:textAlignment="center"
                     android:textColor="@color/colorWhite"
                     android:textDirection="firstStrongLtr"
                     app:layout_constraintBottom_toTopOf="@+id/textview_separator_value"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textview_total_value_change_24h_label"
-                    tools:background="@color/colorForValueChangePositive" />-->
+                    tools:background="@color/colorForValueChangePositive" />
 
                 <TextView
                     android:id="@+id/textview_separator_value"

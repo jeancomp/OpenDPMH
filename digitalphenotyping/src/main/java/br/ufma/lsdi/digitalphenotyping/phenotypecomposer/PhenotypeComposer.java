@@ -7,10 +7,12 @@ import static br.ufma.lsdi.digitalphenotyping.CompositionMode.SEND_WHEN_IT_ARRIV
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
@@ -45,6 +47,7 @@ import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.handlingexceptions.InvalidConnectionBroker;
 
 public class PhenotypeComposer extends Service {
     private static final String TAG = PhenotypeComposer.class.getName();
@@ -63,7 +66,6 @@ public class PhenotypeComposer extends Service {
     private int lastFrequency = 6;
     private List<String> nameActiveDataProcessors = new ArrayList();
     private List<Boolean> activeDataProcessors = new ArrayList();
-    //private AppDatabasePC db;
     DatabaseManager databaseManager;
     private WorkManager workManager;
 
@@ -126,15 +128,28 @@ public class PhenotypeComposer extends Service {
 
     @Override
     public void onDestroy() {
+        if(databaseManager.getInstance().getDB().isOpen()) {
+            databaseManager.getInstance().getDB().close();
+        }
         super.onDestroy();
     }
 
 
+    public final IBinder mBinder = new LocalBinder();
+
+
+    public class LocalBinder extends Binder {
+        public PhenotypeComposer getService() {
+            return PhenotypeComposer.this;
+        }
+    }
+
+
     @Override
-    public IBinder onBind(Intent intent) { return null; }
+    public IBinder onBind(Intent intent) { return mBinder; }
 
 
-    public void connectionBroker(String hostServer, String port, String username, String password, String clientID){
+    public boolean connectionBroker(@NonNull String hostServer,@NonNull String port,@NonNull String username,@NonNull String password,@NonNull String clientID){
         try {
             Log.i(TAG,"#### Configuration Broker Server");
             Log.i(TAG,"#### HostServer:" + hostServer);
@@ -170,14 +185,27 @@ public class PhenotypeComposer extends Service {
 
             Log.i(TAG,"#### CONECTADO: " + connectionBroker.isConnected());
             if(!connectionBroker.isConnected()){
-                Log.i(TAG,"#### RECONNECT BROKER...");
-                connectionBroker.reconnect();
+                Log.d(TAG,"#### Failed to connect to broker.");
+                return false;
+                //connectionBroker.reconnect();
             }
-
-            publishPhenotype = new PublishPhenotype(context, connectionBroker);
+            else if(connectionBroker.isConnected()) {
+                // Conectado com o broker, configura o publicador (PublishPhenotype).
+                publishPhenotype = new PublishPhenotype(context, connectionBroker);
+            }
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.getMessage());
+            return false;
         }
+        return true;
+    }
+
+
+    public boolean isConnectedBroker(){
+        if(!connectionBroker.isConnected()){
+            return false;
+        }
+        return true;
     }
 
 
@@ -311,6 +339,9 @@ public class PhenotypeComposer extends Service {
                 DigitalPhenotypeEvent digitalPhenotypeEvent = objectFromString(mensagemRecebida);
 
                 if (lastCompositionMode == SEND_WHEN_IT_ARRIVES) { //Publish DigitalPhenotypeEvent
+                    if(!isConnectedBroker()){
+                        throw new InvalidConnectionBroker("#### Error: Failed to connect to broker.");
+                    }
                     publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                 } else if (lastCompositionMode == GROUP_ALL) {
                     int position = nameActiveDataProcessors.indexOf(digitalPhenotypeEvent.getDataProcessorName());
@@ -364,6 +395,10 @@ public class PhenotypeComposer extends Service {
                             }
                         }
                     } else {
+                        if(!isConnectedBroker()){
+                            throw new InvalidConnectionBroker("#### Error: Failed to connect to broker.");
+                        }
+
                         //Publish DigitalPhenotypeEvent
                         publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                     }

@@ -1,53 +1,66 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.util;
 
+import static android.content.Context.ALARM_SERVICE;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
+import android.os.Handler;
 import android.util.Log;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Voice;
 
 public class AlarmAudio extends BroadcastReceiver {
-    private long frequency = 1000;
+    private final String TAG = AlarmAudio.class.getName();
     private Context context;
-    private Voice voice;
-
+    private Voice voice = Voice.getInstance();
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("ALARM", "#### 1");
-        this.context = context;
-        voice.startVoice();
+        try{
+            this.context = context;
 
-        //stopVoice();
-    }
+            Timestamp stamp = new Timestamp(System.currentTimeMillis());
+            Date date = new Date(stamp.getTime());
+            Log.i("ALARM", "#### 11: " + date);
 
+            voice.getInstance().start();
 
-    public void stopVoice(){
-        final long tempoDeEspera = this.frequency * 60 * 1;
-            new Thread(new Runnable() {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    SystemClock.sleep(tempoDeEspera);
-                    voice.stopVoice();
+                    voice.getInstance().stop();
+                    Timestamp stamp = new Timestamp(System.currentTimeMillis());
+                    Date date = new Date(stamp.getTime());
+                    Log.i("ALARM", "#### 12: " + date);
                 }
-            }).start();
+            }, 60000);
+        }catch (Exception e){
+            Log.e(TAG,"#### Error: " +e.getMessage());
+        }
     }
 
-
     public void setAlarm(Context context, long frequency) {
-        Log.i("ALARM", "#### 2");
+        Log.i("ALARM", "#### Alarme ativado");
         this.context = context;
-        this.frequency = frequency;
-        if(voice == null) {
-            //voice = new Voice(this.context);
-        }
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(context, Voice.class);
+        Intent i = new Intent(context, AlarmAudio.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), this.frequency * 60 * 1, pi); // Millisec * Second * Minute
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), frequency * 60 * 1, pi); // Millisec * Second * Minute
+    }
+
+    public void desableAlarm(){
+        voice.getInstance().stop();
+
+        AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmAudio.class);
+        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        am.cancel(pi);
     }
 }

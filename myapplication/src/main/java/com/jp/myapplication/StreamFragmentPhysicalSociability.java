@@ -75,6 +75,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
 
     ArrayList<ChartItem> list = new ArrayList<>();
     ArrayList<Entry> values1 = new ArrayList<>();
+    ArrayList<Entry> values2 = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,8 +88,10 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_physical_sociability, viewGroup, false);
+
         btnFinish = (Button) view.findViewById(R.id.btnFinish);
         btnFinish.setOnClickListener(clickListener);
+
         txtValueRecords = (TextView) view.findViewById(R.id.txtValueRecords);
         txtRecordDate = (TextView) view.findViewById(R.id.txtRecordDate);
 
@@ -120,6 +123,13 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
     public void onStop() {
         isStarted = false;
         super.onStop();
+    }
+
+
+    @Override
+    public void onDestroy(){
+        isStarted = false;
+        super.onDestroy();
     }
 
 
@@ -254,6 +264,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
      */
     private LineData generateDataLine(int cnt) {
         LineDataSet d1 = null;
+        LineDataSet d2 = null;
         //ArrayList<Entry> values1 = new ArrayList<>();
 
     /*for (int i = 0; i < 12; i++) {
@@ -270,8 +281,17 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
         d1.setHighLightColor(Color.rgb(244, 117, 117));
         d1.setDrawValues(false);
 
+        d2 = new LineDataSet(values2, "SMS");
+        d2.setLineWidth(2.5f);
+        d2.setCircleRadius(4.5f);
+        d2.setHighLightColor(Color.rgb(244, 117, 117));
+        d2.setColor(ColorTemplate.VORDIPLOM_COLORS[0]);
+        d2.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[0]);
+        d2.setDrawValues(false);
+
         ArrayList<ILineDataSet> sets = new ArrayList<>();
         sets.add(d1);
+        sets.add(d2);
         LineData ld = new LineData(sets);
         return ld;
     }

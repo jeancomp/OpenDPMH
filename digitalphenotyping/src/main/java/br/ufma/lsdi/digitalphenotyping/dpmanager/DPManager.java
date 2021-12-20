@@ -129,8 +129,7 @@ public class DPManager implements DPInterface {
                 }
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    getContext().startService(intent);
-                    //getContext().startForegroundService(intent);
+                    getContext().startForegroundService(intent);
                 } else {
                     getContext().startService(intent);
                 }
@@ -148,13 +147,12 @@ public class DPManager implements DPInterface {
      */
     @Override
     public void stop(){
-        Log.i(TAG,"#### Stopped framework MainService.");
-        // Stop the foreground service
-        if(myService != null) {
-            myService.stopForeground(true);
-        }
-
         try {
+            Log.i(TAG,"#### Stopped framework MainService.");
+            // Stop the foreground service
+            if(myService != null) {
+                myService.stopForeground(true);
+            }
             if(servicesStarted) {
                 Intent intent = new Intent(getContext(), DPManagerService.class);
                 getContext().stopService(intent);
@@ -163,6 +161,14 @@ public class DPManager implements DPInterface {
             }
         }catch (Exception e){
             Log.e(TAG,e.toString());
+        }
+        finally {
+            /*if(databaseManager.getInstance().getDB().isOpen()) {
+                databaseManager.getInstance().getDB().close();
+            }*/
+            if(serviceConnection != null) {
+                context.unbindService(serviceConnection);
+            }
         }
     }
 
@@ -181,14 +187,14 @@ public class DPManager implements DPInterface {
     }
 
 
-    public void foregroundAPP(){
-        Log.i(TAG,"#### Ativa foreground app");
+    public DPManagerService getMainService(){
         Intent intent = new Intent(getContext(), DPManagerService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
         } else {
             getContext().startService(intent);
         }
+        return myService;
     }
 
     ServiceConnection serviceConnection = new ServiceConnection() {
@@ -197,8 +203,6 @@ public class DPManager implements DPInterface {
             Log.i(TAG, "#### Connection service MainService");
             DPManagerService.LocalBinder binder = (DPManagerService.LocalBinder) iBinder;
             myService = binder.getService();
-
-            myService.foregroundAPP();
         }
 
         @Override
@@ -389,15 +393,6 @@ public class DPManager implements DPInterface {
             throw new InvalidMainServiceException("#### Error: mainService cannot be null.");
         }
         this.myService = DPManagerService;
-    }
-
-
-    /**
-     *
-     * @return
-     */
-    public DPManagerService getMainService(){
-        return myService;
     }
 
 

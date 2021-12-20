@@ -1,8 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <androidx.appcompat.widget.AppCompatTextView
-        android:text="physicalactivity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-</layout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".StreamActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="?android:attr/actionBarSize">
+
+            <LinearLayout
+                android:id="@+id/layout_1"
+                android:layout_width="327dp"
+                android:layout_height="101dp"
+                android:background="#f0f0f0"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="310dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnA"
+                        android:layout_width="34dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="60dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_settings_voice_24"
+                        app:layout_constraintEnd_toStartOf="@+id/appCompatImageButton"
+                        app:layout_constraintHorizontal_bias="0.101"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtAudio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="17dp"
+                        android:background="#f0f0f0"
+                        android:text="Audio"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.034"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnA"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/appCompatImageButton"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_record_voice_over_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.358"
+                        app:layout_constraintStart_toEndOf="@+id/txtAudio"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.231" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtRecords"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:background="#f0f0f0"
+                        android:text="Records:"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/appCompatImageButton"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.262" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecords"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/txtRecords"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.262" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="83dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_watch_later_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/txtAudio"
+                        app:layout_constraintTop_toBottomOf="@+id/appCompatImageButton" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtLastRecord"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Last record: "
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/btnDate" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtRecordDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="12dp"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/txtLastRecord"
+                        app:layout_constraintTop_toBottomOf="@+id/txtValueRecords"
+                        app:layout_constraintVertical_bias="0.607" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_2"
+                android:layout_width="327dp"
+                android:layout_height="200dp"
+                android:background="#f0f0f0"
+                android:layout_margin="10dp"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_1">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ListView
+                        android:id="@+id/listView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"></ListView>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_3"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="36dp"
+                android:background="#f0f0f0"
+                android:elevation="16sp"
+                android:orientation="vertical"
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_2"
+                app:layout_constraintVertical_bias="0.968">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btnFinish"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#FF9800"
+                    android:text="finish"
+                    android:textColor="#F6F3F3" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</LinearLayout>
