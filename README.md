@@ -32,12 +32,16 @@ The general objective of this work is to provide a framework focused on Digital 
   <img alt="Arquitetura-framework" title="#Arquitetura" src="/framework.png" />
 </h1>
 
-Componentes:
+Core Components:
 * DPManager: responsible for managing the framework (e.g., start/stop, start/stop the processors, configuring the composition mode of PhenotypeComposer).
-* MainService: bus responsible for ensuring the exchange of messages between the framework components.
 * ProcessorManager: manages activeDataprocessor (e.g., start/stop activeDataprocessor), start/stop sensors, and identifies new plugin that has been installed.
 * DataProcessor: the class where the processors will be implemented (e.g., sociability, mobility, sleep, physical activity).
+* RawDataCollector: The class responsible for collecting the raw data and distributing it to the broker, provides EPL resources for the developer to create their CEP rule.
 * PhenotypeComposer: composes digital phenotypesEvent of users, receiving directly from the data processor of detected events (eg phone calls, sms, GPS, accelerometer).
+
+Plugin Components:
+* PluginManager: class responsible for managing the plugin and its data processing modules that it belongs to. When starting, it sends the list of data processing modules to the Core, when the Core receives this list, it returns only the modules that it is interested in starting, receives data from the Core's sensors, processes them, and returns to the Core.
+* DataProcessor: features the same functionality in Core.
 
 
 ![](header.png)
@@ -140,8 +144,11 @@ Distributed under the XYZ license. See ``LICENSE`` for more information.
 Contribution
 =================
 
-1. Desenvolvedor principal (<https://github.com/jeancomp>)
-2. 
+Main developer:
+1.  Jean Pablo (<https://github.com/jeancomp>)
+Contributors:
+1. Ariel Teles (https://github.com/arielsteles)
+2. André
 
 <!-- Markdown link & img dfn's -->
 [npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
