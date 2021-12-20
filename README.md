@@ -67,7 +67,7 @@ Release-history
     * Adaptation of virtual sensors to the M-HUB.
 
 How-to-use
-=================
+==================
 
 Prerequisites
 -----
