@@ -57,10 +57,10 @@ Project-status
 ### Features
 
 - [x] DPManager
-- [x] MainService
-- [ ] ProcessorManager
-- [ ] DataProcessor
-- [ ] PhenotypeComposer
+- [x] ProcessorManager
+- [x] DataProcessor
+- [ ] RawDataCollector
+- [x] PhenotypeComposer
 
 
 Release-history
@@ -146,6 +146,8 @@ Contribution
 
 Main developer:
 1.  Jean Pablo (<https://github.com/jeancomp>)
+
+
 Contributors:
 1. Ariel Teles (https://github.com/arielsteles)
 2. André
