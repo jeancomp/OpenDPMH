@@ -85,8 +85,8 @@ public class Voice implements VoiceRecorder.Listener {
                 @Override
                 public void run() {
                     //Log.i(TAG,"#### Voz humana detectada!");
-                    String dataProcessorName = "Sociability";
-                    String alert = "Human voice detected";
+                    String dataProcessorName = "Physical_Sociability";
+                    String alert = "Human_voice_detected";
                     long stamp = System.currentTimeMillis();
                     Object[] valor = {dataProcessorName, alert, stamp};
                     String[] atributte = {"data processor name", "message", "timestamp"};
@@ -112,6 +112,7 @@ public class Voice implements VoiceRecorder.Listener {
     }
 
     public void publishMessage(Message m) {
+        Log.i("message", "#### M: " + m);
         publisher.addConnection(CDDL.getInstance().getConnection());
         publisher.publish(m);
     }

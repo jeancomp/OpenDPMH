@@ -1,5 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -116,7 +117,7 @@ public class PhysicalActivity extends DataProcessor {
     private void initPermissions() {
         // Checa as permissões
         int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {android.Manifest.permission.ACTIVITY_RECOGNITION};
+        String[] PERMISSIONS = {android.Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
         if (!hasPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS)) {
             ActivityCompat.requestPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);

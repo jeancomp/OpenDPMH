@@ -58,9 +58,9 @@
 
     <PreferenceCategory android:title="@string/pref_security">
         <SwitchPreferenceCompat
-            android:title="Security module: OFF"
-            android:switchTextOff="Security module: OFF"
-            android:switchTextOn="Security module: ON"
+            android:key="securitymodule"
+            android:icon="@drawable/ic_baseline_security_24"
+            android:title="Security module: off"
             android:defaultValue="false"/>
     </PreferenceCategory>
 

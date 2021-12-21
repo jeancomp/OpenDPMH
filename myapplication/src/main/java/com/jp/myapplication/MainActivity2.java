@@ -274,7 +274,7 @@ public class MainActivity2 extends AppCompatActivity {
                 case R.id.button_init: {
                     try {
                         if (!flag_on_off) {
-                            vibe.vibrate(50);
+                            vibe.vibrate(80);
                             if((host.isEmpty()) || (port.isEmpty() || clientid.isEmpty() || compositionmode.isEmpty())) {
                                 Toast.makeText(getBaseContext(), "Required to configure host, port, clientid and composition mode!",Toast.LENGTH_SHORT).show();
                             }
@@ -285,7 +285,7 @@ public class MainActivity2 extends AppCompatActivity {
                             }
                         }
                         else {
-                            vibe.vibrate(50);
+                            vibe.vibrate(80);
                             questionClose();
                         }
                     } catch (Exception e) {

@@ -8,6 +8,7 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreferenceCompat;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String TAG = SettingsFragment.class.getName();
@@ -21,12 +22,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String Clientid = "clientidKey";
     private static final String Compositionmode = "compositioModeKey";
     private static final String Frequency = "frequencyKey";
+    private static final String SecurityModule = "securitymoduleKey";
 
     private EditTextPreference hostPreference;
     private EditTextPreference portPreference;
     private EditTextPreference clientidPreference;
     private Preference compositionModePreference;
     private Preference frequencyPreference;
+    private SwitchPreferenceCompat securityModule;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -42,6 +45,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         clientidPreference = (EditTextPreference) findPreference("clientid");
         compositionModePreference = (ListPreference) findPreference("compositionmode");
         frequencyPreference = (ListPreference) findPreference("frequency");
+        securityModule = (SwitchPreferenceCompat) findPreference("securitymodule");
 
         if(compositionModePreference.getSummary().equals("FREQUENCY")){
             frequencyPreference.setEnabled(true);
@@ -101,6 +105,22 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 frequencyPreference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
                 editor.putString(Frequency, (String) frequencyPreference.getSummary());
+                editor.commit();
+                return true;
+            }
+        });
+
+        securityModule.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                boolean turned = (Boolean) newValue;
+                if (turned) {
+                    securityModule.setTitle("Security module: on");
+                    editor.putBoolean(SecurityModule, turned);
+                } else {
+                    securityModule.setTitle("Security module: off");
+                    editor.putBoolean(SecurityModule, turned);
+                }
                 editor.commit();
                 return true;
             }

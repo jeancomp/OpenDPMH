@@ -55,7 +55,7 @@ public class ActivityDetectionService extends Service {
     // help method for onStartCommand to request activity updates and set task listeners.
     public void requestActivityUpdatesHandler() {
         if(mActivityRecognitionClient != null) {
-            Task<Void> task = mActivityRecognitionClient.requestActivityUpdates(1000, mPendingIntent);
+            Task<Void> task = mActivityRecognitionClient.requestActivityUpdates(1, mPendingIntent);
             // Adds a listener that is called if the Task completes successfully.
             task.addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override

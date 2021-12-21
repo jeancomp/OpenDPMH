@@ -56,7 +56,7 @@ public class AlarmAudio extends BroadcastReceiver {
     }
 
     public void desableAlarm(){
-        voice.getInstance().stop();
+        //voice.getInstance().stop();
 
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmAudio.class);

@@ -72,7 +72,6 @@ public class Physical_Sociability extends DataProcessor{
 
             subMessage = SubscriberFactory.createSubscriber();
             subMessage.addConnection(CDDL.getInstance().getConnection());
-            subscribeMessage(Topics.AUDIO_TOPIC.toString());
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.toString());
         }
@@ -94,6 +93,7 @@ public class Physical_Sociability extends DataProcessor{
 
     @Override
     public void dO(){
+        subscribeMessage(Topics.AUDIO_TOPIC.toString());
         initPermissions();
     }
 
@@ -115,7 +115,9 @@ public class Physical_Sociability extends DataProcessor{
 
             Object[] valor1 = message.getServiceValue();
             String mensagemRecebida1 = StringUtils.join(valor1, ",");
+            Log.i(TAG,"#### Li: " + mensagemRecebida1);
             String[] listServiceValue = mensagemRecebida1.split(",");
+            Log.i(TAG,"#### Lii: " + listServiceValue);
 
             String[] valor2 = message.getAvailableAttributesList();
             String mensagemRecebida2 = StringUtils.join(valor2, ",");
@@ -129,6 +131,7 @@ public class Physical_Sociability extends DataProcessor{
             if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {
                 digitalPhenotypeEvent.setAttributes(listAttributes[1], listServiceValue[1], "String", false);
             }
+            Log.i(TAG,"#### Liii: " + listServiceValue[2]);
             if (!listAttributes[2].isEmpty() && !listServiceValue[2].isEmpty()) {
                 digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "Date", false);
             }
@@ -204,7 +207,7 @@ public class Physical_Sociability extends DataProcessor{
     public ISubscriberListener subscriberMsg = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-            //Log.i(TAG, "#### Read messages (audio detected):  " + message);
+            Log.i(TAG, "#### Read-audio detected:  " + message);
             onSensorDataArrived(message);
         }
     };

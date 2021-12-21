@@ -130,7 +130,7 @@ public class VoiceRecorder {
         @Override
         public void run() {
             try {
-                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
 
                 while (!Thread.interrupted() && isListening && audioRecord != null) {
                     short[] buffer = new short[vad.getConfig().getFrameSize().getValue() * getNumberOfChannels() * 2];
