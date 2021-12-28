@@ -62,10 +62,22 @@ public class StreamFragmentphysicalactivity extends DemoBase {
     private LineChart holderBackup = null;
     private boolean isStarted = false;
 
-    private TextView txtValueRecords;
+    private TextView txtValueRecordsVeic;
+    private TextView txtValueRecordsBike;
+    private TextView txtValueRecordsRunning;
+    private TextView txtValueRecordsWalking;
+    private TextView txtValueRecordsTilting;
+    private TextView txtValueRecordsStill;
+    private TextView txtValueRecordsFoot;
     private TextView txtRecordDate;
 
-    private HashMap<Long, Integer> audioValue = new HashMap<>();
+    private HashMap<Long, Integer> veicValue = new HashMap<>();
+    private HashMap<Long, Integer> bikeValue = new HashMap<>();
+    private HashMap<Long, Integer> runningValue = new HashMap<>();
+    private HashMap<Long, Integer> walkingValue = new HashMap<>();
+    private HashMap<Long, Integer> tiltingValue = new HashMap<>();
+    private HashMap<Long, Integer> stillValue = new HashMap<>();
+    private HashMap<Long, Integer> footValue = new HashMap<>();
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
     private SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd");
@@ -76,6 +88,11 @@ public class StreamFragmentphysicalactivity extends DemoBase {
     ArrayList<ChartItem> list = new ArrayList<>();
     ArrayList<Entry> values1 = new ArrayList<>();
     ArrayList<Entry> values2 = new ArrayList<>();
+    ArrayList<Entry> values3 = new ArrayList<>();
+    ArrayList<Entry> values4 = new ArrayList<>();
+    ArrayList<Entry> values5 = new ArrayList<>();
+    ArrayList<Entry> values6 = new ArrayList<>();
+    ArrayList<Entry> values7 = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,7 +109,13 @@ public class StreamFragmentphysicalactivity extends DemoBase {
         btnFinish = (Button) view.findViewById(R.id.btnFinish);
         btnFinish.setOnClickListener(clickListener);
 
-        txtValueRecords = (TextView) view.findViewById(R.id.txtValueRecords);
+        txtValueRecordsVeic = (TextView) view.findViewById(R.id.txtValueRecordsVeic);
+        txtValueRecordsBike = (TextView) view.findViewById(R.id.txtValueRecordsBike);
+        txtValueRecordsRunning = (TextView) view.findViewById(R.id.txtValueRecordsRunning);
+        txtValueRecordsWalking = (TextView) view.findViewById(R.id.txtValueRecordsWalking);
+        txtValueRecordsTilting = (TextView) view.findViewById(R.id.txtValueRecordsTilting);
+        txtValueRecordsStill = (TextView) view.findViewById(R.id.txtValueRecordsStill);
+        txtValueRecordsFoot = (TextView) view.findViewById(R.id.txtValueRecordsFoot);
         txtRecordDate = (TextView) view.findViewById(R.id.txtRecordDate);
 
         lv = view.findViewById(R.id.listView1);
@@ -100,14 +123,14 @@ public class StreamFragmentphysicalactivity extends DemoBase {
         isStarted = true;
 
         try {
-            //phenotypesEventList = dpManager.getInstance().getPhenotypesList("Physical_Sociability");
-            //setCardviewSettings();
+            phenotypesEventList = dpManager.getInstance().getPhenotypesList("PhysicalActivity");
+            setCardviewSettings();
         }
         catch (Exception e){
             e.printStackTrace();
         }
         finally {
-            //setListviewSettings();
+            setListviewSettings();
         }
         return view;
     }
@@ -160,9 +183,6 @@ public class StreamFragmentphysicalactivity extends DemoBase {
 
 
     public void setCardviewSettings() throws ParseException {
-        String value = String.valueOf(phenotypesEventList.size());
-        txtValueRecords.setText(value);
-
         List<DigitalPhenotypeEvent> digitalPhenotypeEventList = new ArrayList();
 
         for(int i = 0; i < phenotypesEventList.size(); i++){
@@ -172,42 +192,318 @@ public class StreamFragmentphysicalactivity extends DemoBase {
             digitalPhenotypeEventList.add(dpe);
         }
 
-        long audioLastRecord = 0;
+        int totalRecordsVeic = 0;
+        int totalRecordsBike = 0;
+        int totalRecordsRunning = 0;
+        int totalRecordsWalking = 0;
+        int totalRecordsTilting = 0;
+        int totalRecordsStill = 0;
+        int totalRecordsFoot = 0;
+
+        long lastRecordVeic = 0;
+        long lastRecordBike = 0;
+        long lastRecordRunning = 0;
+        long lastRecordWalking = 0;
+        long lastRecordTilting = 0;
+        long lastRecordStill = 0;
+        long lastRecordFoot = 0;
+        long lastRecord = 0;
         for(int i=0; i < digitalPhenotypeEventList.size(); i++){
-            if(digitalPhenotypeEventList.get(i).getSituation().getLabel().equals("Physical_Sociability")){
+            String value = digitalPhenotypeEventList.get(i).getSituation().getLabel();
+            if(value.equals("In_Vehicle")) {
+                totalRecordsVeic = totalRecordsVeic + 1;
+
                 List<Attribute> attributeList = new ArrayList();
                 attributeList = digitalPhenotypeEventList.get(i).getAttributes();
                 for(int j=0; j < attributeList.size(); j++) {
                     if(attributeList.get(j).getType().contains("Date")){
                         String str = attributeList.get(j).getValue();
                         long val = Long.valueOf(str);
-                        if(val > audioLastRecord){
-                            audioLastRecord = val;
+                        if(val > lastRecordVeic){
+                            lastRecordVeic = val;
                         }
                         //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
-                        addAudio(val);
+                        addVeic(val);
+                    }
+                }
+            }
+            else if(value.equals("On_Bicycle")) {
+                totalRecordsBike = totalRecordsBike + 1;
+
+                List<Attribute> attributeList = new ArrayList();
+                attributeList = digitalPhenotypeEventList.get(i).getAttributes();
+                for(int j=0; j < attributeList.size(); j++) {
+                    if(attributeList.get(j).getType().contains("Date")){
+                        String str = attributeList.get(j).getValue();
+                        long val = Long.valueOf(str);
+                        if(val > lastRecordBike){
+                            lastRecordBike = val;
+                        }
+                        //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
+                        addBike(val);
+                    }
+                }
+            }
+            else if(value.equals("Running")) {
+                totalRecordsRunning = totalRecordsRunning + 1;
+
+                List<Attribute> attributeList = new ArrayList();
+                attributeList = digitalPhenotypeEventList.get(i).getAttributes();
+                for(int j=0; j < attributeList.size(); j++) {
+                    if(attributeList.get(j).getType().contains("Date")){
+                        String str = attributeList.get(j).getValue();
+                        long val = Long.valueOf(str);
+                        if(val > lastRecordRunning){
+                            lastRecordRunning = val;
+                        }
+                        //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
+                        addRunning(val);
+                    }
+                }
+            }
+            else if(value.equals("On_Foot")) {
+                totalRecordsFoot = totalRecordsFoot + 1;
+
+                List<Attribute> attributeList = new ArrayList();
+                attributeList = digitalPhenotypeEventList.get(i).getAttributes();
+                for(int j=0; j < attributeList.size(); j++) {
+                    if(attributeList.get(j).getType().contains("Date")){
+                        String str = attributeList.get(j).getValue();
+                        long val = Long.valueOf(str);
+                        if(val > lastRecordFoot){
+                            lastRecordFoot = val;
+                        }
+                        //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
+                        addFoot(val);
+                    }
+                }
+            }
+            else if(value.equals("Still")) {
+                totalRecordsStill = totalRecordsStill + 1;
+
+                List<Attribute> attributeList = new ArrayList();
+                attributeList = digitalPhenotypeEventList.get(i).getAttributes();
+                for(int j=0; j < attributeList.size(); j++) {
+                    if(attributeList.get(j).getType().contains("Date")){
+                        String str = attributeList.get(j).getValue();
+                        long val = Long.valueOf(str);
+                        if(val > lastRecordStill){
+                            lastRecordStill = val;
+                        }
+                        //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
+                        addStill(val);
+                    }
+                }
+            }
+            else if(value.equals("Tilting")) {
+                totalRecordsTilting = totalRecordsTilting + 1;
+
+                List<Attribute> attributeList = new ArrayList();
+                attributeList = digitalPhenotypeEventList.get(i).getAttributes();
+                for(int j=0; j < attributeList.size(); j++) {
+                    if(attributeList.get(j).getType().contains("Date")){
+                        String str = attributeList.get(j).getValue();
+                        long val = Long.valueOf(str);
+                        if(val > lastRecordTilting){
+                            lastRecordTilting = val;
+                        }
+                        //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
+                        addTilting(val);
+                    }
+                }
+            }
+            else if(value.equals("Walking")) {
+                totalRecordsWalking = totalRecordsWalking + 1;
+
+                List<Attribute> attributeList = new ArrayList();
+                attributeList = digitalPhenotypeEventList.get(i).getAttributes();
+                for(int j=0; j < attributeList.size(); j++) {
+                    if(attributeList.get(j).getType().contains("Date")){
+                        String str = attributeList.get(j).getValue();
+                        long val = Long.valueOf(str);
+                        if(val > lastRecordWalking){
+                            lastRecordWalking = val;
+                        }
+                        //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
+                        addWalking(val);
                     }
                 }
             }
         }
-        if(audioLastRecord != 0){
-            txtRecordDate.setText(String.valueOf(dateFormat.format(audioLastRecord)));
+        if(totalRecordsVeic != 0){
+            txtValueRecordsVeic.setText(String.valueOf(totalRecordsVeic));
+            if(lastRecordVeic > lastRecord){
+                lastRecord = lastRecordVeic;
+            }
+        }
+        if(totalRecordsBike != 0){
+            txtValueRecordsBike.setText(String.valueOf(totalRecordsBike));
+            if(lastRecordBike > lastRecord){
+                lastRecord = lastRecordBike;
+            }
+        }
+        if(totalRecordsRunning != 0){
+            txtValueRecordsRunning.setText(String.valueOf(totalRecordsRunning));
+            if(lastRecordRunning > lastRecord){
+                lastRecord = lastRecordRunning;
+            }
+        }
+        if(totalRecordsWalking != 0){
+            txtValueRecordsWalking.setText(String.valueOf(totalRecordsWalking));
+            if(lastRecordWalking > lastRecord){
+                lastRecord = lastRecordWalking;
+            }
+        }
+        if(totalRecordsTilting != 0){
+            txtValueRecordsTilting.setText(String.valueOf(totalRecordsTilting));
+            if(lastRecordTilting > lastRecord){
+                lastRecord = lastRecordTilting;
+            }
+        }
+        if(totalRecordsStill != 0){
+            txtValueRecordsStill.setText(String.valueOf(totalRecordsStill));
+            if(lastRecordStill > lastRecord){
+                lastRecord = lastRecordStill;
+            }
+        }
+        if(totalRecordsFoot != 0){
+            txtValueRecordsFoot.setText(String.valueOf(totalRecordsFoot));
+            if(lastRecordFoot > lastRecord){
+                lastRecord = lastRecordFoot;
+            }
+        }
+        if(lastRecord != 0){
+            txtRecordDate.setText(String.valueOf(dateFormat.format(lastRecord)));
         }
     }
 
 
-    public void addAudio(Long timeStamp) throws ParseException {
+    public void addVeic(Long timeStamp) throws ParseException {
         try {
             String aux1 = String.valueOf(dateFormat3.format(timeStamp));
             Date dat = (Date) dateFormat3.parse(aux1);
             long aux2 = dat.getTime();
-            if (!audioValue.containsKey(aux2)) {
-                audioValue.put(aux2, 1);
+            if (!veicValue.containsKey(aux2)) {
+                veicValue.put(aux2, 1);
                 //return true;
             } else { //
-                Integer value = audioValue.get(aux2);
+                Integer value = veicValue.get(aux2);
                 value = value + 1;
-                audioValue.put(aux2, value);
+                veicValue.put(aux2, value);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addBike(Long timeStamp) throws ParseException {
+        try {
+            String aux1 = String.valueOf(dateFormat3.format(timeStamp));
+            Date dat = (Date) dateFormat3.parse(aux1);
+            long aux2 = dat.getTime();
+            if (!bikeValue.containsKey(aux2)) {
+                bikeValue.put(aux2, 1);
+                //return true;
+            } else { //
+                Integer value = bikeValue.get(aux2);
+                value = value + 1;
+                bikeValue.put(aux2, value);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addRunning(Long timeStamp) throws ParseException {
+        try {
+            String aux1 = String.valueOf(dateFormat3.format(timeStamp));
+            Date dat = (Date) dateFormat3.parse(aux1);
+            long aux2 = dat.getTime();
+            if (!runningValue.containsKey(aux2)) {
+                runningValue.put(aux2, 1);
+                //return true;
+            } else { //
+                Integer value = runningValue.get(aux2);
+                value = value + 1;
+                runningValue.put(aux2, value);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addWalking(Long timeStamp) throws ParseException {
+        try {
+            String aux1 = String.valueOf(dateFormat3.format(timeStamp));
+            Date dat = (Date) dateFormat3.parse(aux1);
+            long aux2 = dat.getTime();
+            if (!walkingValue.containsKey(aux2)) {
+                walkingValue.put(aux2, 1);
+                //return true;
+            } else { //
+                Integer value = walkingValue.get(aux2);
+                value = value + 1;
+                walkingValue.put(aux2, value);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addTilting(Long timeStamp) throws ParseException {
+        try {
+            String aux1 = String.valueOf(dateFormat3.format(timeStamp));
+            Date dat = (Date) dateFormat3.parse(aux1);
+            long aux2 = dat.getTime();
+            if (!tiltingValue.containsKey(aux2)) {
+                tiltingValue.put(aux2, 1);
+                //return true;
+            } else { //
+                Integer value = tiltingValue.get(aux2);
+                value = value + 1;
+                tiltingValue.put(aux2, value);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addStill(Long timeStamp) throws ParseException {
+        try {
+            String aux1 = String.valueOf(dateFormat3.format(timeStamp));
+            Date dat = (Date) dateFormat3.parse(aux1);
+            long aux2 = dat.getTime();
+            if (!stillValue.containsKey(aux2)) {
+                stillValue.put(aux2, 1);
+                //return true;
+            } else { //
+                Integer value = stillValue.get(aux2);
+                value = value + 1;
+                stillValue.put(aux2, value);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void addFoot(Long timeStamp) throws ParseException {
+        try {
+            String aux1 = String.valueOf(dateFormat3.format(timeStamp));
+            Date dat = (Date) dateFormat3.parse(aux1);
+            long aux2 = dat.getTime();
+            if (!footValue.containsKey(aux2)) {
+                footValue.put(aux2, 1);
+                //return true;
+            } else { //
+                Integer value = footValue.get(aux2);
+                value = value + 1;
+                footValue.put(aux2, value);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -216,7 +512,7 @@ public class StreamFragmentphysicalactivity extends DemoBase {
 
 
     public void setListviewSettings(){
-        list.add(new LineChartItem(generateDataLine(3 + 1), getContext()));
+        list.add(new LineChartItem(generateDataLine(7), getContext()));
 
         ChartDataAdapter cda = new ChartDataAdapter(getContext(), list);
         lv.setAdapter(cda);
@@ -265,33 +561,103 @@ public class StreamFragmentphysicalactivity extends DemoBase {
     private LineData generateDataLine(int cnt) {
         LineDataSet d1 = null;
         LineDataSet d2 = null;
-        //ArrayList<Entry> values1 = new ArrayList<>();
+        LineDataSet d3 = null;
+        LineDataSet d4 = null;
+        LineDataSet d5 = null;
+        LineDataSet d6 = null;
+        LineDataSet d7 = null;
 
-    /*for (int i = 0; i < 12; i++) {
-        values1.add(new Entry(i, (int) (Math.random() * 65) + 40));
-    }*/
-        for (HashMap.Entry<Long, Integer> entry : audioValue.entrySet()) {
-            System.out.printf("#### Audio: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+        for (HashMap.Entry<Long, Integer> entry : veicValue.entrySet()) {
+            System.out.printf("#### veicValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
             values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
         }
+        for (HashMap.Entry<Long, Integer> entry : bikeValue.entrySet()) {
+            System.out.printf("#### bikeValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            values2.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
+        }
+        for (HashMap.Entry<Long, Integer> entry : runningValue.entrySet()) {
+            System.out.printf("#### runningValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            values3.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
+        }
+        for (HashMap.Entry<Long, Integer> entry : walkingValue.entrySet()) {
+            System.out.printf("#### walkingValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            values4.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
+        }
+        for (HashMap.Entry<Long, Integer> entry : tiltingValue.entrySet()) {
+            System.out.printf("#### tiltingValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            values5.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
+        }
+        for (HashMap.Entry<Long, Integer> entry : stillValue.entrySet()) {
+            System.out.printf("#### stillValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            values6.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
+        }
+        for (HashMap.Entry<Long, Integer> entry : footValue.entrySet()) {
+            System.out.printf("#### footValue: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            values7.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
+        }
 
-        d1 = new LineDataSet(values1, "Audio");
+        d1 = new LineDataSet(values1, "Vehicle");
         d1.setLineWidth(2.5f);
         d1.setCircleRadius(4.5f);
         d1.setHighLightColor(Color.rgb(244, 117, 117));
         d1.setDrawValues(false);
 
-        d2 = new LineDataSet(values2, "SMS");
+        d2 = new LineDataSet(values2, "Bike");
         d2.setLineWidth(2.5f);
         d2.setCircleRadius(4.5f);
-        d2.setHighLightColor(Color.rgb(244, 117, 117));
+        d2.setHighLightColor(Color.rgb(244, 244, 0));
         d2.setColor(ColorTemplate.VORDIPLOM_COLORS[0]);
         d2.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[0]);
         d2.setDrawValues(false);
 
+        d3 = new LineDataSet(values3, "Running");
+        d3.setLineWidth(2.5f);
+        d3.setCircleRadius(4.5f);
+        d3.setHighLightColor(Color.rgb(0, 244, 207));
+        d3.setColor(ColorTemplate.VORDIPLOM_COLORS[1]);
+        d3.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[1]);
+        d3.setDrawValues(false);
+
+        d4 = new LineDataSet(values4, "Walking");
+        d4.setLineWidth(2.5f);
+        d4.setCircleRadius(4.5f);
+        d4.setHighLightColor(Color.rgb(0, 57, 244));
+        d4.setColor(ColorTemplate.VORDIPLOM_COLORS[2]);
+        d4.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[2]);
+        d4.setDrawValues(false);
+
+        d5 = new LineDataSet(values5, "Tilting");
+        d5.setLineWidth(2.5f);
+        d5.setCircleRadius(4.5f);
+        d5.setHighLightColor(Color.rgb(244, 117, 117));
+        d5.setColor(ColorTemplate.VORDIPLOM_COLORS[3]);
+        d5.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[3]);
+        d5.setDrawValues(false);
+
+        d6 = new LineDataSet(values6, "Still");
+        d6.setLineWidth(2.5f);
+        d6.setCircleRadius(4.5f);
+        d6.setHighLightColor(Color.rgb(199, 0, 244));
+        d6.setColor(ColorTemplate.VORDIPLOM_COLORS[4]);
+        d6.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[4]);
+        d6.setDrawValues(false);
+
+        d7 = new LineDataSet(values7, "Foot");
+        d7.setLineWidth(2.5f);
+        d7.setCircleRadius(4.5f);
+        d7.setHighLightColor(Color.rgb(244, 134, 0));
+        /*d7.setColor(ColorTemplate.VORDIPLOM_COLORS[0]);
+        d7.setCircleColor(ColorTemplate.VORDIPLOM_COLORS[0]);*/
+        d7.setDrawValues(false);
+
         ArrayList<ILineDataSet> sets = new ArrayList<>();
         sets.add(d1);
         sets.add(d2);
+        sets.add(d3);
+        sets.add(d4);
+        sets.add(d5);
+        sets.add(d6);
+        sets.add(d7);
         LineData ld = new LineData(sets);
         return ld;
     }

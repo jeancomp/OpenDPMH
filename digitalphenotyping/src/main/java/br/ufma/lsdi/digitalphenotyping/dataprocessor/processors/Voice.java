@@ -1,6 +1,7 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.konovalov.vad.VadConfig;
@@ -81,34 +82,33 @@ public class Voice implements VoiceRecorder.Listener {
 
     @Override
     public void onSpeechDetected() {
-            saveActivity.getInstance().getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //Log.i(TAG,"#### Voz humana detectada!");
-                    String dataProcessorName = "Physical_Sociability";
-                    String alert = "Human_voice_detected";
-                    long stamp = System.currentTimeMillis();
-                    Object[] valor = {dataProcessorName, alert, stamp};
-                    String[] atributte = {"data processor name", "message", "timestamp"};
-
-                    Message message = new Message();
-                    message.setServiceValue(valor);
-                    message.setAvailableAttributesList(atributte);
-                    message.setAvailableAttributes(3);
-                    message.setServiceName("audiodetected");
-
-                    publishMessage(message);
-                }
-            });
+        new AddItemTask().execute();
     }
 
     @Override
-    public void onNoiseDetected() {
-            saveActivity.getInstance().getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                }
-            });
+    public void onNoiseDetected() { }
+
+    private class AddItemTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            String dataProcessorName = "Physical_Sociability";
+            String alert = "Human_voice_detected";
+            long stamp = System.currentTimeMillis();
+            String str = String.valueOf(stamp);
+            Log.i("TEE","#### STR: " + str);
+            Object[] valor = {dataProcessorName, alert, str};
+            String[] atributte = {"data processor name", "message", "timestamp"};
+
+            Message message = new Message();
+            message.setServiceValue(valor);
+            message.setAvailableAttributesList(atributte);
+            message.setAvailableAttributes(3);
+            message.setServiceName("audiodetected");
+
+            publisher.addConnection(CDDL.getInstance().getConnection());
+            publisher.publish(message);
+            return null;
+        }
     }
 
     public void publishMessage(Message m) {

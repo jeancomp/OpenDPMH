@@ -98,8 +98,6 @@ public class PhenotypeComposer extends Service {
             messageTextView = new TextView(context);
 
             databaseManager = DatabaseManager.getInstance(getApplicationContext());
-
-            //db = Room.databaseBuilder(getApplicationContext(), AppDatabasePC.class, "database-phenotype").build();
         }catch (Exception e){
             Log.e(TAG,"Error: " + e.toString());
         }

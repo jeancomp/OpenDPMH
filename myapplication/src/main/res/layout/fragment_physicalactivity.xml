@@ -21,7 +21,7 @@
             <LinearLayout
                 android:id="@+id/layout_1"
                 android:layout_width="327dp"
-                android:layout_height="101dp"
+                android:layout_height="201dp"
                 android:background="#f0f0f0"
                 android:elevation="16sp"
                 android:orientation="vertical"
@@ -39,89 +39,261 @@
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/btnA"
-                        android:layout_width="34dp"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="60dp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
                         android:background="#F8F0F0"
-                        android:src="@drawable/ic_baseline_settings_voice_24"
-                        app:layout_constraintEnd_toStartOf="@+id/appCompatImageButton"
+                        android:src="@drawable/ic_baseline_sports_martial_arts_24"
                         app:layout_constraintHorizontal_bias="0.101"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtAudio"
+                        android:id="@+id/txtPhysicalActivity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="17dp"
                         android:background="#f0f0f0"
-                        android:text="Audio"
+                        android:text="Physical activity"
                         android:textSize="12sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.034"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/btnA"
-                        app:layout_constraintVertical_bias="1.0" />
+                        app:layout_constraintVertical_bias="0.0" />
 
                     <androidx.appcompat.widget.AppCompatImageButton
-                        android:id="@+id/appCompatImageButton"
+                        android:id="@+id/btnIn_Vehicle"
                         android:layout_width="28dp"
                         android:layout_height="32dp"
+                        android:layout_marginStart="2dp"
                         android:background="#F8F0F0"
-                        android:src="@drawable/ic_baseline_record_voice_over_24"
+                        android:src="@drawable/ic_baseline_directions_car_24"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.358"
-                        app:layout_constraintStart_toEndOf="@+id/txtAudio"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintStart_toEndOf="@+id/btnA"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.231" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtRecords"
+                        android:id="@+id/txtValueRecordsVeic"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:background="#f0f0f0"
-                        android:text="Records:"
-                        android:textSize="10sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/appCompatImageButton"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.262" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtValueRecords"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
                         android:background="#f0f0f0"
                         android:text="--"
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toEndOf="@+id/txtRecords"
+                        app:layout_constraintStart_toEndOf="@+id/btnIn_Vehicle"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.262" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnOn_Bicycle"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:background="#F8F0F0"
+                        android:layout_marginStart="2dp"
+                        android:src="@drawable/ic_baseline_directions_bike_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintStart_toEndOf="@+id/txtValueRecordsVeic"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.231" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecordsBike"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/btnOn_Bicycle"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.262" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnRunning"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_directions_run_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.358"
+                        app:layout_constraintStart_toEndOf="@+id/txtValueRecordsBike"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.231" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecordsRunning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toEndOf="@+id/btnRunning"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.262" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnWalking"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_directions_walk_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.35"
+                        app:layout_constraintVertical_bias="0.6"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecordsWalking"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.04"
+                        app:layout_constraintStart_toEndOf="@+id/btnWalking"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.593" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnTilting"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="5dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_sports_handball_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintVertical_bias="0.6"
+                        app:layout_constraintStart_toEndOf="@+id/txtValueRecordsWalking"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecordsTilting"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="1dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.04"
+                        app:layout_constraintStart_toEndOf="@+id/btnTilting"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.593" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnStill"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="5dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_table_restaurant_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintVertical_bias="0.6"
+                        app:layout_constraintStart_toEndOf="@+id/txtValueRecordsTilting"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnPhone"
+                        android:layout_width="28dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="53dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_app_blocking_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintHorizontal_bias="0.4"
+                        app:layout_constraintVertical_bias="0.45" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecordsStill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.2"
+                        app:layout_constraintStart_toEndOf="@+id/btnStill"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.593" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/btnOn_Foot"
+                        android:layout_width="28dp"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="180dp"
+                        android:background="#F8F0F0"
+                        android:src="@drawable/ic_baseline_do_not_step_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintHorizontal_bias="2"
+                        app:layout_constraintVertical_bias="0.85" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtValueRecordsFoot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:background="#f0f0f0"
+                        android:text="--"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.04"
+                        app:layout_constraintStart_toEndOf="@+id/btnOn_Foot"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.8" />
 
                     <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/btnDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="83dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="1dp"
                         android:background="#F8F0F0"
                         android:src="@drawable/ic_baseline_watch_later_24"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/txtAudio"
-                        app:layout_constraintTop_toBottomOf="@+id/appCompatImageButton" />
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtLastRecord"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginBottom="8dp"
+                        android:layout_marginStart="7dp"
+                        android:layout_marginBottom="5dp"
                         android:text="Last record: "
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -131,16 +303,13 @@
                         android:id="@+id/txtRecordDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="5dp"
                         android:text="--"
                         android:textSize="10sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toEndOf="@+id/txtLastRecord"
-                        app:layout_constraintTop_toBottomOf="@+id/txtValueRecords"
-                        app:layout_constraintVertical_bias="0.607" />
+                        app:layout_constraintHorizontal_bias="0.113"
+                        app:layout_constraintStart_toEndOf="@+id/txtLastRecord" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 

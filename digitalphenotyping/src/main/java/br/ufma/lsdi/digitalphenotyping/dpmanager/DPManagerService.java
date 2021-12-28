@@ -258,7 +258,6 @@ public class DPManagerService extends Service {
             if(!servicesStarted) {
                 Log.i(TAG, "#### Starts all framework services.");
                 Intent pm = new Intent(getContext(), ProcessorManager.class);
-                //pm.putExtra("activity", (Parcelable) activityParcelable2);
                 getContext().startService(pm);
 
                 Intent pc = new Intent(getContext(), PhenotypeComposer.class);
@@ -334,8 +333,8 @@ public class DPManagerService extends Service {
             securityService.setCaCertificate(nameCaCertificate);
             securityService.setCertificate(nameClientCertificate);
 
-            securityService.grantReadPermissionByCDDLTopic("lcmuniz@gmail.com", SecurityService.ALL_TOPICS);
-            securityService.grantWritePermissionByCDDLTopic("lcmuniz@gmail.com", SecurityService.ALL_TOPICS);
+            securityService.grantReadPermissionByCDDLTopic(clientID, SecurityService.ALL_TOPICS);
+            securityService.grantWritePermissionByCDDLTopic(clientID, SecurityService.ALL_TOPICS);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

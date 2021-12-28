@@ -35,7 +35,7 @@
         <entry key="myapplication/src/main/res/layout/fragment_mobility.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_online_sociability.xml" value="0.33" />
         <entry key="myapplication/src/main/res/layout/fragment_physical_sociability.xml" value="0.33" />
-        <entry key="myapplication/src/main/res/layout/fragment_physicalactivity.xml" value="0.19322916666666667" />
+        <entry key="myapplication/src/main/res/layout/fragment_physicalactivity.xml" value="0.33" />
         <entry key="myapplication/src/main/res/layout/fragment_second.xml" value="0.18" />
         <entry key="myapplication/src/main/res/layout/fragment_sleep.xml" value="0.19322916666666667" />
         <entry key="myapplication/src/main/res/layout/fragment_sociability.xml" value="0.25" />
