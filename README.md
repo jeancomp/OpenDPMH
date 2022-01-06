@@ -132,6 +132,12 @@ List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
 digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
 ```
 
+Plugin
+=================
+Instructions for use.
+-----
+[https://github.com/jeancomp/Plugin](https://github.com/jeancomp/Plugin)
+
 License
 =================
 
