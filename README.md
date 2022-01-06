@@ -127,7 +127,7 @@ Start-activeDataprocessor:
 List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
 digitalPhenotypingManager.getInstance().startDataProcessors(listProcessors);
 ```
-Stop-sensor:
+Stop-DisableDataprocessor:
 ```sh
 List<String> listProcessors = {nameProcessor1,nameProcessor2,...};
 digitalPhenotypingManager.getInstance().stopDataProcessors(listProcessors);
