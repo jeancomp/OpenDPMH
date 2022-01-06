@@ -18,6 +18,7 @@ Sumário
       * [Prerequisites](#Prerequisites)
       * [Installation](#Installation)
       * [Example of use](#Example-of-use)
+   * [Plugin](#Plugin)
    * [License](#License)
    * [Contribution](#Contribution)
    * [Author](#Author)
