@@ -134,7 +134,6 @@ public class DPManager implements DPInterface {
                 } else {
                     getContext().startService(intent);
                 }
-
                 servicesStarted = true;
             }
         }catch (Exception e){
