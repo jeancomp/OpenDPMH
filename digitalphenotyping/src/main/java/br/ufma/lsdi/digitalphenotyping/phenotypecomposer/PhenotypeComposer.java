@@ -46,6 +46,7 @@ import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.PublishPhenotype;
+import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.SaveConnection;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.database.Phenotypes;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.handlingexceptions.InvalidConnectionBroker;
 
@@ -63,11 +64,12 @@ public class PhenotypeComposer extends Service {
     private ConnectionImpl connectionBroker;
     private String statusConnection = "";
     private CompositionMode lastCompositionMode = SEND_WHEN_IT_ARRIVES;
-    private int lastFrequency = 6;
+    private int lastFrequency = 15;
     private List<String> nameActiveDataProcessors = new ArrayList();
     private List<Boolean> activeDataProcessors = new ArrayList();
     DatabaseManager databaseManager;
     private WorkManager workManager;
+    private SaveConnection saveConnection = new SaveConnection();
 
     @Override
     public void onCreate() {
@@ -190,6 +192,7 @@ public class PhenotypeComposer extends Service {
             else if(connectionBroker.isConnected()) {
                 // Conectado com o broker, configura o publicador (PublishPhenotype).
                 publishPhenotype = new PublishPhenotype(context, connectionBroker);
+                saveConnection.getInstance().setActivity(connectionBroker);
             }
         }catch (Exception e){
             Log.e(TAG,"#### Error: " + e.getMessage());

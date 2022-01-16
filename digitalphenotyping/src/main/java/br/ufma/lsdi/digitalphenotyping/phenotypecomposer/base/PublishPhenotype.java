@@ -18,7 +18,7 @@ public class PublishPhenotype {
     private static PublishPhenotype instance = null;
     private static ConnectionImpl connection;
     private static Context context;
-    private static String topic = "";
+    private SaveConnection saveConnection = SaveConnection.getInstance();
 
     //public PublishPhenotype(){ }
 
@@ -47,15 +47,37 @@ public class PublishPhenotype {
         publisher.publish(message);
     }
 
+    //Lista de DigitalPhenotypeEvent dentro do DigitalPhenotype
     public void publishPhenotypeComposer(DigitalPhenotype digitalPhenotypeList) {
-        Log.i(TAG, "#### Data Publish to Server");
-        String valor = stringFromObject(digitalPhenotypeList);
+        try{
+            //Log.i(TAG,"#### TOTAL: " + digitalPhenotypeList.getDigitalPhenotypeEventList().size());
 
-        Message msg = new Message();
-        msg.setServiceName("opendpmh");
-        msg.setTopic(Topics.OPENDPMH_TOPIC.toString());
-        msg.setServiceValue(valor);
-        publisher.publish(msg);
+            DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+            DigitalPhenotype dp = new DigitalPhenotype();
+            Message msg = new Message();
+            Publisher pub = PublisherFactory.createPublisher();
+            pub.addConnection(saveConnection.getInstance().getConnection());
+
+            for (int i = 0; i < digitalPhenotypeList.getDigitalPhenotypeEventList().size(); i++) {
+                Log.i(TAG, "#### Data Publish to Server");
+
+                //Log.i(TAG,"#### >>>>>>> " + digitalPhenotypeList.getDigitalPhenotypeEventList().get(i).toString());
+
+                dpe = digitalPhenotypeList.getDigitalPhenotypeEventList().get(i);
+
+                dp = new DigitalPhenotype();
+                dp.setDpeList(dpe);
+                String valor = stringFromObject(dp);
+
+                msg.setServiceName("opendpmh");
+                msg.setTopic(Topics.OPENDPMH_TOPIC.toString());
+                msg.setServiceValue(valor);
+
+                pub.publish(msg);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public String stringFromObject(DigitalPhenotype dp){

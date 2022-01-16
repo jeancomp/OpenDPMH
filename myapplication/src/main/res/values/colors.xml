@@ -58,8 +58,13 @@
     <color name="colorTintForSearchToolbar">@color/colorWhite</color>
     <color name="colorForPreferenceIcon">@color/colorPrimaryDark</color>
 
-    <color name="colorPrimary">#009688</color>
-    <color name="colorPrimaryDark">#00796b</color>
+    <!-- COR ORIGINAL -->
+    <!--<color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#00796b</color>-->
+
+    <color name="colorPrimary">#03A9F4</color>
+    <color name="colorPrimaryDark">#2196F3</color>
+
     <color name="colorAccent">#B7695C</color>
 
     <color name="colorWhite">#ffffffff</color>
@@ -67,9 +72,12 @@
     <color name="colorLightGrey">#f5f5f5</color>
     <color name="colorGrey">#e0e0e0</color>
     <color name="colorDarkGrey">#ff888888</color>
-    <color name="colorNavy">#01385e</color>
+
+    <!-- COR ORIGINAL -->
+    <!--    <color name="colorNavy">#01385e</color>-->
+    <color name="colorNavy">#0D7ED8</color>
 
     <color name="colorRed">#C62828</color>
-    <color name="colorGreen">#2E7D32</color>
+    <color name="colorGreen">#99F69E</color>
 
 </resources>

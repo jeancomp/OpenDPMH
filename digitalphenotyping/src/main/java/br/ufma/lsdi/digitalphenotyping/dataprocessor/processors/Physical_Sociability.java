@@ -1,22 +1,14 @@
 package br.ufma.lsdi.digitalphenotyping.dataprocessor.processors;
 
-import static androidx.core.app.NotificationCompat.PRIORITY_MIN;
-
 import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +20,6 @@ import br.ufma.lsdi.cddl.listeners.ISubscriberListener;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
-import br.ufma.lsdi.digitalphenotyping.R;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
@@ -51,7 +42,7 @@ public class Physical_Sociability extends DataProcessor{
         try {
             Log.i(TAG, "#### Running processor Physical_Sociability.");
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            /*NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
             Notification notification = notificationBuilder.setOngoing(true)
@@ -62,7 +53,7 @@ public class Physical_Sociability extends DataProcessor{
                     .setCategory(NotificationCompat.CATEGORY_SERVICE)
                     .build();
 
-            startForeground(ID_SERVICE, notification);
+            startForeground(ID_SERVICE, notification);*/
 
             setDataProcessorName("Physical_Sociability");
 
@@ -79,7 +70,7 @@ public class Physical_Sociability extends DataProcessor{
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    /*@RequiresApi(Build.VERSION_CODES.O)
     private String createNotificationChannel(NotificationManager notificationManager){
         String channelId = "my_service_channelid_audio";
         String channelName = "Service audio";
@@ -89,7 +80,7 @@ public class Physical_Sociability extends DataProcessor{
         //channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationManager.createNotificationChannel(channel);
         return channelId;
-    }
+    }*/
 
 
     @Override
