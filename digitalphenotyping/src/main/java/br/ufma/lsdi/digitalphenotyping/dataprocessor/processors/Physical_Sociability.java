@@ -100,7 +100,7 @@ public class Physical_Sociability extends DataProcessor{
     @Override
     public void inferencePhenotypingEvent(Message message){
         try {
-            Log.i(TAG, "#### MSG ORIGINAL PHYSICAL_SOCIABILITY: " + message);
+            //Log.i(TAG, "#### MSG ORIGINAL PHYSICAL_SOCIABILITY: " + message);
             DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
             digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
             digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
@@ -125,7 +125,7 @@ public class Physical_Sociability extends DataProcessor{
                 digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "Date", false);
             }
 
-            Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
+            //Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
 
             String json = toJson(digitalPhenotypeEvent);
             Message msg = new Message();

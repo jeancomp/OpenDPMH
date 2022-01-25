@@ -54,7 +54,7 @@ import br.ufma.lsdi.digitalphenotyping.processormanager.services.database.active
 public class MainActivity2 extends AppCompatActivity {
     private static final String TAG = MainActivity2.class.getName();
     private DatabaseManager databaseManager;
-    private RecyclerViewAdapter adapter;;
+    private RecyclerViewAdapter adapter;
     private DPManagerService myService;
     private DPManager dpManager;
     private RecyclerView recyclerView;

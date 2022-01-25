@@ -330,14 +330,21 @@ public class PhenotypeComposer extends Service {
     }
 
 
+    DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+    Phenotypes phenotype = new Phenotypes();
+    DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
+    String stringPhenotype = "";
+    DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+    Phenotypes phenotypes = new Phenotypes();
+    Phenotypes phenotypesFreq = new Phenotypes();
     public ISubscriberListener subscriberRawDataInferenceResultListener = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
             try {
-                Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
+                //Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
                 Object[] valor = message.getServiceValue();
                 String mensagemRecebida = StringUtils.join(valor, ", ");
-                DigitalPhenotypeEvent digitalPhenotypeEvent = objectFromString(mensagemRecebida);
+                digitalPhenotypeEvent = objectFromString(mensagemRecebida);
 
                 if (lastCompositionMode == SEND_WHEN_IT_ARRIVES) { //Publish DigitalPhenotypeEvent
                     if(!isConnectedBroker()){
@@ -347,7 +354,6 @@ public class PhenotypeComposer extends Service {
                 } else if (lastCompositionMode == GROUP_ALL) {
                     int position = nameActiveDataProcessors.indexOf(digitalPhenotypeEvent.getDataProcessorName());
                     activeDataProcessors.set(position, true);
-                    Phenotypes phenotype = new Phenotypes();
 
                     if (activeDataProcessors.size() != 0) {
                         if (!activeDataProcessors.isEmpty()) {
@@ -364,14 +370,13 @@ public class PhenotypeComposer extends Service {
                                 break;
                             }
                             if (all) {
-                                DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
                                 digitalPhenotype.setDpeList(digitalPhenotypeEvent);
 
                                 // Retrieve information
                                 phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
                                 while (phenotype != null) {
-                                    String stringPhenotype = phenotype.getPhenotype();
-                                    DigitalPhenotypeEvent dpe = phenotype.getObjectFromString(stringPhenotype);
+                                    stringPhenotype = phenotype.getPhenotype();
+                                    dpe = phenotype.getObjectFromString(stringPhenotype);
 
                                     digitalPhenotype.setDpeList(dpe);
 
@@ -390,7 +395,6 @@ public class PhenotypeComposer extends Service {
                                 }
                             } else {
                                 //Save phenotype
-                                Phenotypes phenotypes = new Phenotypes();
                                 phenotypes.setPhenotype(mensagemRecebida);
                                 databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);
                             }
@@ -405,17 +409,11 @@ public class PhenotypeComposer extends Service {
                     }
                 } else if (lastCompositionMode == FREQUENCY) {
                     //Save phenotype
-                    Phenotypes phenotypes = new Phenotypes();
-                    phenotypes.setPhenotype(mensagemRecebida);
-                    databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);
+                    phenotypesFreq.setPhenotype(mensagemRecebida);
+                    databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypesFreq);
                 }
             }catch (Exception e){
                 e.printStackTrace();
-            }
-            finally {
-                /*if (db != null && db.isOpen()){
-                    db.close();
-                }*/
             }
         }
     };
