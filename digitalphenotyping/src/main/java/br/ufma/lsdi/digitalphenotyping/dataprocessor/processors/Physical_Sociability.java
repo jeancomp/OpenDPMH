@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -36,6 +37,7 @@ public class Physical_Sociability extends DataProcessor{
     private Subscriber subMessage;
     private static final int ID_SERVICE = 103;
     private Voice voice = new Voice();
+    private TriggerAlarm triggerAlarm;
 
     @Override
     public void init() {
@@ -64,6 +66,9 @@ public class Physical_Sociability extends DataProcessor{
             subMessage = SubscriberFactory.createSubscriber();
             subMessage.addConnection(CDDL.getInstance().getConnection());
             subscribeMessage(Topics.AUDIO_TOPIC.toString());
+
+            triggerAlarm = new TriggerAlarm();
+            triggerAlarm.getInstance().set(false);
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.toString());
         }
@@ -87,11 +92,37 @@ public class Physical_Sociability extends DataProcessor{
     public void dO(){
         subscribeMessage(Topics.AUDIO_TOPIC.toString());
         initPermissions();
+
+        final int tempoDeEspera = 60000;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SystemClock.sleep(tempoDeEspera);
+                if(!triggerAlarm.getInstance().get()){
+                    triggerAlarm.getInstance().set(false);
+
+                    //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
+                    long timestamp = System.currentTimeMillis();
+                    String label = "$$$$$$$$$$$$$$$$$$$$$ Nenhum dado gerado no intervalo de 1 minuto $$$$$$$$$$$$$$$$$$$$$";
+                    int confidence = 0;
+
+                    Object[] valor = {label, confidence, timestamp};
+                    String[] str = {"Type of activity", "Confidence", "timestamp"};
+                    Message message = new Message();
+                    message.setServiceValue(valor);
+                    message.setAvailableAttributesList(str);
+                    message.setAvailableAttributes(3);
+
+                    onSensorDataArrived(message);
+                }
+            }
+        }).start();
     }
 
 
     @Override
     public void onSensorDataArrived(Message message) {
+        triggerAlarm.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
         alarm.setAlarm(getContext(), frequency_sensor);
         inferencePhenotypingEvent(message);
     }
@@ -200,4 +231,28 @@ public class Physical_Sociability extends DataProcessor{
             onSensorDataArrived(message);
         }
     };
+
+
+    public static class TriggerAlarm {
+        private boolean dataGenerationFrequency;
+        private static PhysicalActivity.TriggerAlarm instance = null;
+
+        public TriggerAlarm() {
+        }
+
+        public static PhysicalActivity.TriggerAlarm getInstance() {
+            if (instance == null) {
+                instance = new PhysicalActivity.TriggerAlarm();
+            }
+            return instance;
+        }
+
+        public void set(boolean value) {
+            dataGenerationFrequency = value;
+        }
+
+        public boolean get(){
+            return dataGenerationFrequency;
+        }
+    }
 }
