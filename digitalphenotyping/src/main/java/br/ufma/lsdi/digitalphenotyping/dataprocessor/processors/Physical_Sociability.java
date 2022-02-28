@@ -102,16 +102,18 @@ public class Physical_Sociability extends DataProcessor{
                     triggerAlarm.getInstance().set(false);
 
                     //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
-                    long timestamp = System.currentTimeMillis();
-                    String label = "$$$$$$$$$$$$$$$$$$$$$ Nenhum dado gerado no intervalo de 1 minuto $$$$$$$$$$$$$$$$$$$$$";
-                    int confidence = 0;
+                    String dataProcessorName = "Physical_Sociability";
+                    String alert = "Nenhuma_dado";
+                    long stamp = System.currentTimeMillis();
+                    String str = String.valueOf(stamp);
+                    Object[] valor = {dataProcessorName, alert, str};
+                    String[] atributte = {"data processor name", "message", "timestamp"};
 
-                    Object[] valor = {label, confidence, timestamp};
-                    String[] str = {"Type of activity", "Confidence", "timestamp"};
                     Message message = new Message();
                     message.setServiceValue(valor);
-                    message.setAvailableAttributesList(str);
+                    message.setAvailableAttributesList(atributte);
                     message.setAvailableAttributes(3);
+                    message.setServiceName("audiodetected");
 
                     onSensorDataArrived(message);
                 }
@@ -235,14 +237,14 @@ public class Physical_Sociability extends DataProcessor{
 
     public static class TriggerAlarm {
         private boolean dataGenerationFrequency;
-        private static PhysicalActivity.TriggerAlarm instance = null;
+        private static TriggerAlarm instance = null;
 
         public TriggerAlarm() {
         }
 
-        public static PhysicalActivity.TriggerAlarm getInstance() {
+        public static TriggerAlarm getInstance() {
             if (instance == null) {
-                instance = new PhysicalActivity.TriggerAlarm();
+                instance = new TriggerAlarm();
             }
             return instance;
         }

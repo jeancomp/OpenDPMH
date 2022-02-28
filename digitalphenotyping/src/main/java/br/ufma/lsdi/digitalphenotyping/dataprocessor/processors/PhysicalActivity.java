@@ -115,7 +115,7 @@ public class PhysicalActivity extends DataProcessor {
 
                         //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
                         long timestamp = System.currentTimeMillis();
-                        String label = "############## Nenhum dado gerado no intervalo de 1 minuto ##############";
+                        String label = "Nenhum_dado";
                         int confidence = 0;
 
                         Object[] valor = {label, confidence, timestamp};
