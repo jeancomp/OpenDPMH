@@ -24,6 +24,7 @@ import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.TriggerAlarm1;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 
 /**
@@ -36,7 +37,7 @@ public class PhysicalActivity extends DataProcessor {
     List<Integer> samplingRateList = new ArrayList();
     ActivityRecognitionClient mActivityRecognitionClient;
     SaveActivity saveActivity = SaveActivity.getInstance();
-    private TriggerAlarm triggerAlarm;
+    private TriggerAlarm1 triggerAlarm1;
 
     @Override
     public void init(){
@@ -47,8 +48,8 @@ public class PhysicalActivity extends DataProcessor {
             Intent i = new Intent(this, ActivityDetectionService.class);
             startService(i);
 
-            triggerAlarm = new TriggerAlarm();
-            triggerAlarm.getInstance().set(false);
+            triggerAlarm1 = new TriggerAlarm1();
+            triggerAlarm1.getInstance().set(false);
         } catch (InvalidDataProcessorNameException e) {
             e.printStackTrace();
         }
@@ -62,7 +63,7 @@ public class PhysicalActivity extends DataProcessor {
 
     @Override
     public void onSensorDataArrived(Message message){
-        triggerAlarm.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
+        triggerAlarm1.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
         inferencePhenotypingEvent(message);
     }
 
@@ -110,8 +111,8 @@ public class PhysicalActivity extends DataProcessor {
                 @Override
                 public void run() {
                     SystemClock.sleep(tempoDeEspera);
-                    if(!triggerAlarm.getInstance().get()){
-                        triggerAlarm.getInstance().set(false);
+                    if(!triggerAlarm1.getInstance().get()){
+                        triggerAlarm1.getInstance().set(false);
 
                         //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
                         long timestamp = System.currentTimeMillis();
@@ -168,29 +169,5 @@ public class PhysicalActivity extends DataProcessor {
             }
         }
         return true;
-    }
-
-
-    public static class TriggerAlarm {
-        private boolean dataGenerationFrequency;
-        private static TriggerAlarm instance = null;
-
-        public TriggerAlarm() {
-        }
-
-        public static TriggerAlarm getInstance() {
-            if (instance == null) {
-                instance = new TriggerAlarm();
-            }
-            return instance;
-        }
-
-        public void set(boolean value) {
-            dataGenerationFrequency = value;
-        }
-
-        public boolean get(){
-            return dataGenerationFrequency;
-        }
     }
 }

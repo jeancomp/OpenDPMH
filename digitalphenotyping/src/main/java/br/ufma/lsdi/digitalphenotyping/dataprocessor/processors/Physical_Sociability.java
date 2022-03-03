@@ -27,6 +27,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.AlarmAudio;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.TriggerAlarm2;
 
 public class Physical_Sociability extends DataProcessor{
     private static final String TAG = Physical_Sociability.class.getName();
@@ -37,7 +38,9 @@ public class Physical_Sociability extends DataProcessor{
     private Subscriber subMessage;
     private static final int ID_SERVICE = 103;
     private Voice voice = new Voice();
-    private TriggerAlarm triggerAlarm;
+    private TriggerAlarm2 triggerAlarm2;
+    private boolean flag;
+    private int contador;
 
     @Override
     public void init() {
@@ -67,8 +70,11 @@ public class Physical_Sociability extends DataProcessor{
             subMessage.addConnection(CDDL.getInstance().getConnection());
             subscribeMessage(Topics.AUDIO_TOPIC.toString());
 
-            triggerAlarm = new TriggerAlarm();
-            triggerAlarm.getInstance().set(false);
+            triggerAlarm2 = new TriggerAlarm2();
+            triggerAlarm2.getInstance().set(false);
+
+            flag = true;
+            contador = 0;
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.toString());
         }
@@ -98,12 +104,12 @@ public class Physical_Sociability extends DataProcessor{
             @Override
             public void run() {
                 SystemClock.sleep(tempoDeEspera);
-                if(!triggerAlarm.getInstance().get()){
-                    triggerAlarm.getInstance().set(false);
+                if(!triggerAlarm2.getInstance().get()){
+                    triggerAlarm2.getInstance().set(false);
 
                     //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
                     String dataProcessorName = "Physical_Sociability";
-                    String alert = "Nenhuma_dado";
+                    String alert = "Nenhum_dado";
                     long stamp = System.currentTimeMillis();
                     String str = String.valueOf(stamp);
                     Object[] valor = {dataProcessorName, alert, str};
@@ -124,9 +130,20 @@ public class Physical_Sociability extends DataProcessor{
 
     @Override
     public void onSensorDataArrived(Message message) {
-        triggerAlarm.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
+        triggerAlarm2.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
         alarm.setAlarm(getContext(), frequency_sensor);
-        inferencePhenotypingEvent(message);
+
+        // Regra para enviar 1 Message a cada 100
+        contador = contador + 1;
+        Log.i(TAG,"#### Contador: " + contador);
+        if(flag){
+            inferencePhenotypingEvent(message);
+            flag = false;
+        }
+        if(contador >= 100){
+            flag = true;
+            contador = 0;
+        }
     }
 
 
@@ -233,28 +250,4 @@ public class Physical_Sociability extends DataProcessor{
             onSensorDataArrived(message);
         }
     };
-
-
-    public static class TriggerAlarm {
-        private boolean dataGenerationFrequency;
-        private static TriggerAlarm instance = null;
-
-        public TriggerAlarm() {
-        }
-
-        public static TriggerAlarm getInstance() {
-            if (instance == null) {
-                instance = new TriggerAlarm();
-            }
-            return instance;
-        }
-
-        public void set(boolean value) {
-            dataGenerationFrequency = value;
-        }
-
-        public boolean get(){
-            return dataGenerationFrequency;
-        }
-    }
 }
