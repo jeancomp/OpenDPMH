@@ -15,12 +15,14 @@ import com.google.android.gms.location.DetectedActivity;
 import java.util.List;
 
 import br.ufma.lsdi.cddl.message.Message;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.TriggerAlarm1;
 
 public class DetectedActivityIntentService extends IntentService {
     private static final String TAG = DetectedActivityIntentService.class.getName();
     private PhysicalActivity physicalActivity;
     private Context context;
     private Send send;
+    private TriggerAlarm1 triggerAlarm1 = TriggerAlarm1.getInstance();
 
     public DetectedActivityIntentService(){
         super("DetectedActivityIntentService");
@@ -158,7 +160,9 @@ public class DetectedActivityIntentService extends IntentService {
             //mTextARLabel.setText(label);
             //mTextConfidence.setText(confidence+"");
         }
-        //Log.i(TAG, "#### Broadcast:onReceive(): Activity is " + label + " and confidence level is: " + confidence);
+
+        triggerAlarm1.getInstance().set(true);
+
         long timestamp = System.currentTimeMillis();
         Object[] valor = {label, confidence, timestamp};
         String[] str = {"Type of activity", "Confidence", "timestamp"};

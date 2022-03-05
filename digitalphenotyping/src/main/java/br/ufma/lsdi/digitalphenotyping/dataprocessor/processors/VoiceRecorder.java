@@ -126,7 +126,6 @@ public class VoiceRecorder {
     }
 
     private class ProcessVoice implements Runnable {
-
         @Override
         public void run() {
             try {
@@ -149,6 +148,8 @@ public class VoiceRecorder {
                 @Override
                 public void onSpeechDetected() {
                     callback.onSpeechDetected();
+                    //stop(); // Para a execução quando encontrar voz humana
+                    isListening = false;
                 }
 
                 @Override

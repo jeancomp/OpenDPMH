@@ -21,6 +21,7 @@ import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
+import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
@@ -50,6 +51,7 @@ public class PhysicalActivity extends DataProcessor {
 
             triggerAlarm1 = new TriggerAlarm1();
             triggerAlarm1.getInstance().set(false);
+            trigger();
         } catch (InvalidDataProcessorNameException e) {
             e.printStackTrace();
         }
@@ -61,9 +63,40 @@ public class PhysicalActivity extends DataProcessor {
     }
 
 
+    public void trigger(){
+        final int tempoDeEspera = 60000;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(!Thread.interrupted()) {
+                    SystemClock.sleep(tempoDeEspera);
+                    if (!triggerAlarm1.getInstance().get()) {
+                        //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
+                        long timestamp = System.currentTimeMillis();
+                        String label = "Nenhum_dado";
+                        int confidence = 0;
+
+                        Object[] valor = {label, confidence, timestamp};
+                        String[] str = {"Type of activity", "Confidence", "timestamp"};
+                        Message message = new Message();
+                        message.setServiceValue(valor);
+                        message.setAvailableAttributesList(str);
+                        message.setAvailableAttributes(3);
+                        message.setServiceName(Topics.INFERENCE_TOPIC.toString());
+                        message.setTopic(Topics.INFERENCE_TOPIC.toString());
+
+                        onSensorDataArrived(message);
+                    }
+                    triggerAlarm1.getInstance().set(false);
+                }
+            }
+        }).start();
+    }
+
+
     @Override
     public void onSensorDataArrived(Message message){
-        triggerAlarm1.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
         inferencePhenotypingEvent(message);
     }
 
@@ -106,30 +139,6 @@ public class PhysicalActivity extends DataProcessor {
 
     @Override
     public void dO(){
-        final int tempoDeEspera = 60000;
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    SystemClock.sleep(tempoDeEspera);
-                    if(!triggerAlarm1.getInstance().get()){
-                        triggerAlarm1.getInstance().set(false);
-
-                        //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
-                        long timestamp = System.currentTimeMillis();
-                        String label = "Nenhum_dado";
-                        int confidence = 0;
-
-                        Object[] valor = {label, confidence, timestamp};
-                        String[] str = {"Type of activity", "Confidence", "timestamp"};
-                        Message message = new Message();
-                        message.setServiceValue(valor);
-                        message.setAvailableAttributesList(str);
-                        message.setAvailableAttributes(3);
-
-                        onSensorDataArrived(message);
-                    }
-                }
-            }).start();
     }
 
 

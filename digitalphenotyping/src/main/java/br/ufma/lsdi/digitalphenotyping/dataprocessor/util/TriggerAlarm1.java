@@ -5,6 +5,7 @@ public class TriggerAlarm1 {
     private static TriggerAlarm1 instance = null;
 
     public TriggerAlarm1() {
+        dataGenerationFrequency = false;
     }
 
     public static TriggerAlarm1 getInstance() {

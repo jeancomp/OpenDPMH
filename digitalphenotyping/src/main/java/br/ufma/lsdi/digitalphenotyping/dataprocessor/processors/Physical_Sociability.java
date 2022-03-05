@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -27,7 +26,6 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.AlarmAudio;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.TriggerAlarm2;
 
 public class Physical_Sociability extends DataProcessor{
     private static final String TAG = Physical_Sociability.class.getName();
@@ -38,9 +36,9 @@ public class Physical_Sociability extends DataProcessor{
     private Subscriber subMessage;
     private static final int ID_SERVICE = 103;
     private Voice voice = new Voice();
-    private TriggerAlarm2 triggerAlarm2;
+    /*private TriggerAlarm2 triggerAlarm2;
     private boolean flag;
-    private int contador;
+    private int contador;*/
 
     @Override
     public void init() {
@@ -70,11 +68,10 @@ public class Physical_Sociability extends DataProcessor{
             subMessage.addConnection(CDDL.getInstance().getConnection());
             subscribeMessage(Topics.AUDIO_TOPIC.toString());
 
-            triggerAlarm2 = new TriggerAlarm2();
+            /*triggerAlarm2 = new TriggerAlarm2();
             triggerAlarm2.getInstance().set(false);
-
             flag = true;
-            contador = 0;
+            contador = 0;*/
         }catch (Exception e){
             Log.e(TAG, "#### Error: " + e.toString());
         }
@@ -99,14 +96,12 @@ public class Physical_Sociability extends DataProcessor{
         subscribeMessage(Topics.AUDIO_TOPIC.toString());
         initPermissions();
 
-        final int tempoDeEspera = 60000;
+        /*final int tempoDeEspera = 60000;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 SystemClock.sleep(tempoDeEspera);
                 if(!triggerAlarm2.getInstance().get()){
-                    triggerAlarm2.getInstance().set(false);
-
                     //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
                     String dataProcessorName = "Physical_Sociability";
                     String alert = "Nenhum_dado";
@@ -119,21 +114,24 @@ public class Physical_Sociability extends DataProcessor{
                     message.setServiceValue(valor);
                     message.setAvailableAttributesList(atributte);
                     message.setAvailableAttributes(3);
-                    message.setServiceName("audiodetected");
+                    message.setServiceName(Topics.INFERENCE_TOPIC.toString());
+                    message.setTopic(Topics.INFERENCE_TOPIC.toString());
+                    //message.setServiceName("audiodetected");
 
                     onSensorDataArrived(message);
                 }
             }
         }).start();
+        triggerAlarm2.getInstance().set(false);*/
     }
 
 
     @Override
     public void onSensorDataArrived(Message message) {
-        triggerAlarm2.getInstance().set(true); // Dado de contexto recebido dentro do intervalor de 1 min.
         alarm.setAlarm(getContext(), frequency_sensor);
-
-        // Regra para enviar 1 Message a cada 100
+        voice.getInstance().stop();
+        inferencePhenotypingEvent(message);
+        /*// Regra para enviar 1 Message a cada 100
         contador = contador + 1;
         Log.i(TAG,"#### Contador: " + contador);
         if(flag){
@@ -143,14 +141,13 @@ public class Physical_Sociability extends DataProcessor{
         if(contador >= 100){
             flag = true;
             contador = 0;
-        }
+        }*/
     }
 
 
     @Override
     public void inferencePhenotypingEvent(Message message){
         try {
-            //Log.i(TAG, "#### MSG ORIGINAL PHYSICAL_SOCIABILITY: " + message);
             DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
             digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
             digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
@@ -243,10 +240,11 @@ public class Physical_Sociability extends DataProcessor{
         subMessage.setSubscriberListener(subscriberMsg);
     }
 
+
     public ISubscriberListener subscriberMsg = new ISubscriberListener() {
         @Override
         public void onMessageArrived(Message message) {
-            //Log.i(TAG, "#### Read-audio detected:  " + message);
+            /*triggerAlarm2.getInstance().set(true);*/
             onSensorDataArrived(message);
         }
     };

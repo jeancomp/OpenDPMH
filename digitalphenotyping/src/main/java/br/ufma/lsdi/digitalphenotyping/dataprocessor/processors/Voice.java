@@ -91,11 +91,13 @@ public class Voice implements VoiceRecorder.Listener {
     private class AddItemTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            stop();
+
             String dataProcessorName = "Physical_Sociability";
             String alert = "Human_voice_detected";
             long stamp = System.currentTimeMillis();
             String str = String.valueOf(stamp);
-            Log.i("TEE","#### STR: " + str);
+            //Log.i("TEE","#### STR: " + str);
             Object[] valor = {dataProcessorName, alert, str};
             String[] atributte = {"data processor name", "message", "timestamp"};
 

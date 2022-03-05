@@ -10,9 +10,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Voice;
 
 public class AlarmAudio extends BroadcastReceiver {
@@ -25,10 +22,6 @@ public class AlarmAudio extends BroadcastReceiver {
         try{
             this.context = context;
 
-            Timestamp stamp = new Timestamp(System.currentTimeMillis());
-            Date date = new Date(stamp.getTime());
-            Log.i("ALARM", "#### 11: " + date);
-
             voice.getInstance().start();
 
             final Handler handler = new Handler();
@@ -36,9 +29,6 @@ public class AlarmAudio extends BroadcastReceiver {
                 @Override
                 public void run() {
                     voice.getInstance().stop();
-                    Timestamp stamp = new Timestamp(System.currentTimeMillis());
-                    Date date = new Date(stamp.getTime());
-                    Log.i("ALARM", "#### 12: " + date);
                 }
             }, 60000);
         }catch (Exception e){
@@ -46,8 +36,12 @@ public class AlarmAudio extends BroadcastReceiver {
         }
     }
 
+    /**
+     *  Method responsible for configuring the alarm, it receives the context and frequency in milliseconds.
+     * @param context application context.
+     * @param frequency how often the alarm will be triggered, in milliseconds.
+     */
     public void setAlarm(Context context, long frequency) {
-        Log.i("ALARM", "#### Alarme ativado");
         this.context = context;
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(context, AlarmAudio.class);
@@ -56,11 +50,17 @@ public class AlarmAudio extends BroadcastReceiver {
     }
 
     public void desableAlarm(){
-        //voice.getInstance().stop();
-
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmAudio.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         am.cancel(pi);
     }
 }
+
+//Backup
+/*
+*  Timestamp stamp = new Timestamp(System.currentTimeMillis());
+   Date date = new Date(stamp.getTime());
+   Log.i("ALARM", "#### 12: " + date);
+*
+* */
