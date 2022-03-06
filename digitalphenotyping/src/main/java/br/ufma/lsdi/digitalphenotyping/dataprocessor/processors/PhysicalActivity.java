@@ -39,6 +39,8 @@ public class PhysicalActivity extends DataProcessor {
     ActivityRecognitionClient mActivityRecognitionClient;
     SaveActivity saveActivity = SaveActivity.getInstance();
     private TriggerAlarm1 triggerAlarm1;
+    private Thread thread;
+    private Intent i;
 
     @Override
     public void init(){
@@ -46,12 +48,13 @@ public class PhysicalActivity extends DataProcessor {
             setDataProcessorName("PhysicalActivity");
 
             initPermissions();
-            Intent i = new Intent(this, ActivityDetectionService.class);
+            i = new Intent(this, ActivityDetectionService.class);
             startService(i);
 
             triggerAlarm1 = new TriggerAlarm1();
             triggerAlarm1.getInstance().set(false);
-            trigger();
+            thread = new Thread(new ProcessTrigger());
+            thread.start();
         } catch (InvalidDataProcessorNameException e) {
             e.printStackTrace();
         }
@@ -63,35 +66,33 @@ public class PhysicalActivity extends DataProcessor {
     }
 
 
-    public void trigger(){
+    private class ProcessTrigger implements Runnable {
         final int tempoDeEspera = 60000;
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(!Thread.interrupted()) {
-                    SystemClock.sleep(tempoDeEspera);
-                    if (!triggerAlarm1.getInstance().get()) {
-                        //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
-                        long timestamp = System.currentTimeMillis();
-                        String label = "Nenhum_dado";
-                        int confidence = 0;
+        @Override
+        public void run() {
+            while(!Thread.interrupted()) {
+                SystemClock.sleep(tempoDeEspera);
+                if (!triggerAlarm1.getInstance().get()) {
+                    //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
+                    long timestamp = System.currentTimeMillis();
+                    String label = "Nenhum_dado";
+                    int confidence = 0;
 
-                        Object[] valor = {label, confidence, timestamp};
-                        String[] str = {"Type of activity", "Confidence", "timestamp"};
-                        Message message = new Message();
-                        message.setServiceValue(valor);
-                        message.setAvailableAttributesList(str);
-                        message.setAvailableAttributes(3);
-                        message.setServiceName(Topics.INFERENCE_TOPIC.toString());
-                        message.setTopic(Topics.INFERENCE_TOPIC.toString());
+                    Object[] valor = {label, confidence, timestamp};
+                    String[] str = {"Type of activity", "Confidence", "timestamp"};
+                    Message message = new Message();
+                    message.setServiceValue(valor);
+                    message.setAvailableAttributesList(str);
+                    message.setAvailableAttributes(3);
+                    message.setServiceName(Topics.INFERENCE_TOPIC.toString());
+                    message.setTopic(Topics.INFERENCE_TOPIC.toString());
 
-                        onSensorDataArrived(message);
-                    }
-                    triggerAlarm1.getInstance().set(false);
+                    onSensorDataArrived(message);
                 }
+                triggerAlarm1.getInstance().set(false);
             }
-        }).start();
+        }
     }
 
 
@@ -142,7 +143,13 @@ public class PhysicalActivity extends DataProcessor {
     }
 
 
-    public void end(){ }
+    public void end(){
+        if (thread != null) {
+            thread.interrupt();
+            thread = null;
+        }
+        stopService(i);
+    }
 
 
     public final IBinder mBinder = new LocalBinder();

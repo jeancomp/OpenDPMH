@@ -45,6 +45,7 @@ public class ActivityDetectionService extends Service {
         super.onDestroy();
         // need to remove the request to Google play services. Brings down the connection
         removeActivityUpdatesHandler();
+        mPendingIntent.cancel();
     }
 
     @Override
