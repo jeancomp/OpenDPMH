@@ -1,7 +1,6 @@
 package br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -59,7 +58,7 @@ public class PublishPhenotype {
             pub.addConnection(saveConnection.getInstance().getConnection());
 
             for (int i = 0; i < digitalPhenotypeList.getDigitalPhenotypeEventList().size(); i++) {
-                Log.i(TAG, "#### Data Publish to Server");
+                //Log.i(TAG, "#### Data Publish to Server");
 
                 //Log.i(TAG,"#### >>>>>>> " + digitalPhenotypeList.getDigitalPhenotypeEventList().get(i).toString());
 

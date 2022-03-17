@@ -42,11 +42,15 @@ public abstract class DataProcessor extends Service {
 
     @Override
     public void onCreate() {
-        context = this;
+        try {
+            context = this;
 
-        this.clientID = CDDL.getInstance().getConnection().getClientId();
+            this.clientID = CDDL.getInstance().getConnection().getClientId();
 
-        publisher.addConnection(CDDL.getInstance().getConnection());
+            publisher.addConnection(CDDL.getInstance().getConnection());
+        }catch (Exception e){
+            this.clientID = "not set";
+        }
 
         init();
     }

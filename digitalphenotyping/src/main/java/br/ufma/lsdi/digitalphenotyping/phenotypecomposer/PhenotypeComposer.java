@@ -341,7 +341,6 @@ public class PhenotypeComposer extends Service {
         @Override
         public void onMessageArrived(Message message) {
             try {
-                //Log.i(TAG, "#### Read messages (subscriber RawDataInferenceResult Listener):  " + message);
                 Object[] valor = message.getServiceValue();
                 String mensagemRecebida = StringUtils.join(valor, ", ");
                 digitalPhenotypeEvent = objectFromString(mensagemRecebida);
@@ -352,24 +351,44 @@ public class PhenotypeComposer extends Service {
                     }
                     publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                 } else if (lastCompositionMode == GROUP_ALL) {
+
+                    int t = databaseManager.getInstance().getDB().phenotypeDAO().total();
+                    Log.i(TAG,"#### tt total_antes: " + t);
+
+                    //Save phenotype
+                    phenotypes.setPhenotype(mensagemRecebida);
+                    databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);
+                    Log.i(TAG,"#### tt SALVA");
+                    Log.i(TAG,"#### tt mensagemRecebida: " + mensagemRecebida);
+                    int total = databaseManager.getInstance().getDB().phenotypeDAO().total();
+                    Log.i(TAG,"#### tt total_depois: " + total);
+
                     int position = nameActiveDataProcessors.indexOf(digitalPhenotypeEvent.getDataProcessorName());
                     activeDataProcessors.set(position, true);
 
                     if (activeDataProcessors.size() != 0) {
                         if (!activeDataProcessors.isEmpty()) {
                             boolean all = true;
-                            for (int i = 0; i <= activeDataProcessors.size(); i++) {
+                            if (!activeDataProcessors.contains(false)) {
+                                all = true;
+                                Log.i(TAG,"#### tt TRUE");
+                            } else {
+                                all = false;
+                            }
+                            /*for (int i = 0; i <= activeDataProcessors.size(); i++) {
                                 if (!activeDataProcessors.get(i).booleanValue()) {
                                     if (!activeDataProcessors.contains(false)) {
                                         all = true;
+                                        Log.i(TAG,"#### tt TRUE");
                                     } else {
                                         all = false;
                                     }
                                     break;
                                 }
                                 break;
-                            }
+                            }*/
                             if (all) {
+                                Log.i(TAG,"#### tt VAI IMPRIMIR");
                                 digitalPhenotype.setDpeList(digitalPhenotypeEvent);
 
                                 // Retrieve information
@@ -393,17 +412,20 @@ public class PhenotypeComposer extends Service {
                                 for (int j = 0; j < activeDataProcessors.size(); j++) {
                                     activeDataProcessors.set(j, false);
                                 }
-                            } else {
+                            } /*else {
+                                *//*Log.i(TAG,"#### tt SALVA");
                                 //Save phenotype
                                 phenotypes.setPhenotype(mensagemRecebida);
-                                databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);
-                            }
+                                Log.i(TAG,"#### mensagemRecebida: " + mensagemRecebida);
+                                databaseManager.getInstance().getDB().phenotypeDAO().insertAll(phenotypes);*//*
+                            }*/
                         }
                     } else {
                         if(!isConnectedBroker()){
                             throw new InvalidConnectionBroker("#### Error: Failed to connect to broker.");
                         }
 
+                        Log.i(TAG,"#### tt DIRETO");
                         //Publish DigitalPhenotypeEvent
                         publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                     }
@@ -460,9 +482,10 @@ public class PhenotypeComposer extends Service {
             String atividade = String.valueOf(separated[0]);
 
             if(!atividade.equals("RawDataCollector")) {
-                Log.i(TAG, "#### Read messages (active Processor):  " + message);
+                Log.i(TAG, "#### Pheno active Processor:  " + atividade);
                 nameActiveDataProcessors.add(atividade);
                 activeDataProcessors.add(false);
+                Log.i(TAG, "#### Pheno active Processor Total:  " + nameActiveDataProcessors);
             }
         }
     };

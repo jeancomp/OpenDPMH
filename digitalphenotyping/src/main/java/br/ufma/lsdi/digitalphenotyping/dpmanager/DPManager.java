@@ -312,6 +312,11 @@ public class DPManager implements DPInterface {
     }
 
 
+    public void processValue(List<PhenotypesEvent> myValue) {
+        phenotypesEventList = myValue;
+    }
+
+
     /**
      * Search the application context.
      * @return the context.
@@ -631,10 +636,5 @@ public class DPManager implements DPInterface {
         protected void onPostExecute(List<PhenotypesEvent> result) {
             processValue(result);
         }
-    }
-
-
-    public void processValue(List<PhenotypesEvent> myValue) {
-        phenotypesEventList = myValue;
     }
 }

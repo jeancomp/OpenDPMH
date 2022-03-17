@@ -94,7 +94,7 @@ public class Online_Sociability extends DataProcessor{
             else if (message.getServiceName().equals("SMS")) {
                 Situation situation = new Situation();
                 situation.setLabel("SMS_Online_Sociability");
-                situation.setDescription("We identify Online_Sociability by the user through the SMS.");
+                    situation.setDescription("We identify Online_Sociability by the user through the SMS.");
                 digitalPhenotypeEvent.setSituation(situation);
 
                 if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {

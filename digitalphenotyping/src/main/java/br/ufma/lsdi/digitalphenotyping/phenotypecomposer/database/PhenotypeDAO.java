@@ -15,4 +15,7 @@ public interface PhenotypeDAO {
 
     @Delete
     void delete(Phenotypes phenotypes);
+
+    @Query("SELECT count(*) FROM phenotypes")
+    int total();
 }
