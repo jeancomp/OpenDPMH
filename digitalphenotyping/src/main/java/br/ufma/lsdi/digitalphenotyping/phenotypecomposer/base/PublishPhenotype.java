@@ -40,8 +40,8 @@ public class PublishPhenotype {
         String valor = stringFromObject(dp);
 
         Message message = new Message();
-        message.setServiceName("opendpmh");
-        message.setTopic(Topics.OPENDPMH_TOPIC.toString());
+        message.setServiceName(Topics.OPENDPMH_TOPIC.toString());
+        //message.setTopic(Topics.OPENDPMH_TOPIC.toString());
         message.setServiceValue(valor);
         publisher.publish(message);
     }
