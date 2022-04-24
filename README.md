@@ -52,7 +52,7 @@ Project-status
 =================
 
 <h4 align="center"> 
-	🚧  Framework - Under development...  🚧
+	🚧  Framework - finished...  🚧
 </h4>
 
 ### Features
@@ -60,8 +60,8 @@ Project-status
 - [x] DPManager
 - [x] ProcessorManager
 - [x] DataProcessor
-- [ ] RawDataCollector
 - [x] PhenotypeComposer
+- [x] RawDataCollector
 
 
 Release-history
