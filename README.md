@@ -19,6 +19,7 @@ Summary
       * [Installation](#Installation)
       * [Example of use](#Example-of-use)
    * [Plugin](#Plugin)
+   * [Certification Authority with Mosquito](#Certification-Authority-With-Mosquito)
    * [License](#License)
    * [Contribution](#Contribution)
    * [Author](#Author)
@@ -138,6 +139,13 @@ Plugin
 Instructions for use.
 -----
 [https://github.com/jeancomp/Plugin](https://github.com/jeancomp/Plugin)
+
+
+Certification-Authority-With-Mosquito
+=================
+Instructions for use.
+-----
+[https://github.com/jeancomp/Certification-Authority-With-Mosquito](https://github.com/jeancomp/Certification-Authority-With-Mosquito)
 
 License
 =================
