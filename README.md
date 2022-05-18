@@ -1,4 +1,4 @@
-# OpenDPMH - Framework to Facilitate the Development of Digital Phenotyping Applications
+# OpenDP - Framework to Facilitate the Development of Digital Phenotyping Applications
 > A framework aimed at identifying behavior patterns, habits, customs of monitored individuals through the collection of data from physical and virtual sensors.
 
 
