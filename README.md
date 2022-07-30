@@ -68,7 +68,7 @@ Project-status
 Release-history
 =================
 
-* 0.0.1
+* 1.0
     * Security adaptation (digital certificates) in progress.
     * Adaptation of virtual sensors to the M-HUB.
 
