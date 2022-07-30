@@ -30,9 +30,19 @@ Goals
 =================
 The general objective of this work is to provide a framework focused on Digital Mental Health Phenotyping (DPMH). The solution will facilitate the development of mobile applications that can passively collect context data, process it, and generate high-level information. Therefore, this framework aims to create a software base to support the implementation of solutions that aim to recognize patterns of behavior and habits of users, which can support mental health professionals in their analyses, diagnoses, and treatments.
 
+The framework:
+
+The framework \textit{OpenDPMH} (abbreviation for \textbf{Open} \textbf{D}igital \textbf{P}henotyping of \textbf{M}ental \textbf{H}ealth) was developed to facilitate the development of mobile sensing applications of digital phenotyping. Next, we present its main components and modeling.
+
+\subsection{Architecture}
+
+The framework \textit{OpenDPMH} is implemented in the Java language for the Android operating system. The project is open source, available on GitHub~\cite{githubjean} under the LGPL-3.0 license. It is divided into two main parts: \textit{Core} and \textit{Plugin}, as illustrated in the framework architecture in Figure~\ref{fig:framework}. \textit{Core} part is consumed by a main application and provides features for the management of sensors, raw data processing modules, one or more plugins, and data composition and distribution. The \textit{OpenDPMH} architecture is enabled to add plugins (\textit{Plugin} part in Figure~\ref{fig:framework}), which extend the framework's capabilities by allowing the addition of new data processing modules.
+
 <h1 align="center">
   <img alt="Arquitetura-framework" title="#Arquitetura" src="/framework.png" />
 </h1>
+
+The \textit{Core} runs two CDDL instances. The first starts from the \textit{DPManager} component and connects to a MQTT micro broker that serves for communication between all framework components. This also enables the communication between components of the \textit{Core} and \textit{Plugin}. The second CDDL instance is in the \textit{PhenotypeComposer} and is used to establish a communication channel with an external broker to distribute a data structure that we call \textit{Digital Phenotype}. This is a Java class with attributes to represent raw context data and high-level information (i.e., digital phenotyping events, described in Section~\ref{digitalPhenotypeEvent}). High-level information may correspond to human behaviors and habits (e.g., sociability, physical activity, mobility, sleep), and other information of interest for mental health professionals (e.g., environmental context, mood). Other systems (i.e., dashboards for data visualization by professionals) connected to the MQTT external broker can subscribe to receive patient information.
 
 Core Components:
 * DPManager: responsible for managing the framework (e.g., start/stop, start/stop the processors, configuring the composition mode of PhenotypeComposer).
@@ -45,6 +55,177 @@ Plugin Components:
 * PluginManager: class responsible for managing the plugin and its data processing modules that it belongs to. When starting, it sends the list of data processing modules to the Core, when the Core receives this list, it returns only the modules that it is interested in starting, receives data from the Core's sensors, processes them, and returns to the Core.
 * DataProcessor: features the same functionality in Core.
 
+
+The following components are part of the \textit{Core}:
+
+\noindent $\bullet$ \textit{DPManager}: provides an API for managing the framework, with methods to start/stop services, activate/deactivate data processing modules (i.e., \textit{DataProcessor} components), the security service, and define the composition mode of digital phenotypes, which is described below. In addition, this component uses the Builder Design Pattern to allow a step-by-step definition of necessary settings for the framework to work, such as informing the user ID, address and port of the MQTT external broker;
+
+\noindent $\bullet$ \textit{DataProcessor}: infers high-level information from data collected using physical and virtual sensors. When creating a \textit{DataProcessor}, the developer should inform its name and a list of sensors to receive context data. Also, the developer should implement the business rule to infer high-level information, which can use specification- (e.g., complex event processing, fuzzy logic) or learning-based techniques (e.g., machine/deep learning models)~\cite{ye:2012}. Inferred high-level information are represented in the framework as digital phenotyping events and sent to the \textit{PhenotypeComposer} component, where digital phenotypes are composed and distributed;
+
+\noindent $\bullet$ \textit{ProcessorManager}: this is a service responsible for managing \textit{DataProcessor} components. It receives the list of \textit{DataProcessor} components from the \textit{DPManager} to be started. Also, the \textit{ProcessorManager} manages the lifecycle of all sensors in the framework, so controlling their activation and deactivation, and managing Android runtime permissions. It avoids keeping sensors active that are not in use, or deactivating sensors in use by \textit{DataProcessor} components. For this purpose, each \textit{DataProcessor} should inform the required physical or virtual sensors;
+
+\noindent $\bullet$ \textit{PhenotypeComposer}: service responsible for creating digital phenotype objects to be distributed via CDDL. To enable data buffer, this component works in three different modes:
+
+\begin{enumerate}
+    \item \textit{send\_when\_it\_arrives}: this is the simplest composition mode. When digital phenotyping events and raw context data arrive at the \textit{PhenotypeComposer}, it immediately distributes them via the MQTT broker external. Therefore, in this mode, data is not buffered. Such mode is important for applications that mental health professionals require (near) real-time information;
+    \item \textit{group\_all}: this mode distributes digital phenotypes only when digital phenotyping events from all active \textit{DataProcessor} components and ???
+    arrives. While such condition is not satisfied, raw context data and 
+    digital phenotyping events and 
+    information is stored in a database (using model \ref{digitalPhenotypeEvent});
+    \item \textit{frequency}: it has a schedule that controls the distribution of high-level information to the broker external, based on the frequency (e.g., seconds, minutes, hours) previously defined when starting the framework. When firing the schedule, all high-level information stored in the database (using model \ref{digitalPhenotypeEvent}) is retrieved and distributed to the broker external.
+\end{enumerate}
+
+\noindent $\bullet$ \textit{RawDataCollector}: service responsible for collecting raw context data to also compose digital phenotypes. The \textit{RawDataCollector} needs the names of the sensors to start collecting the data and choosing the way of composing the digital phenotypes, which are similar to the \textit{PhenotypeComposer}. The compositing mode \textit{send\_when\_it\_arrives} send raw data to broker (i.e., as the data is being received by the \textit{RawDataCollector}, is distributed) and the composition mode \textit{frequency} works through a schedule, when triggered, retrieves all raw context data from the database and distributes to the broker. The \textit{RawDataCollector} also provides EPL/CEP (i.e., distributes, models and detects complex events on the flow of data generated by sensors, providing a language similar to SQL with SELECT, FROM, WHERE, GROUP BY, HAVING and ORDER BY clauses, being able to implement association, filtering and aggregation concepts).
+
+\subsection{Adapting NAM-Hub for Digital Phenotyping}
+
+In addition to physical sensors, digital phenotyping tools are also using virtual sensors~\cite{palaghias:2016} to infer high-level information, such as those related to sociability~\cite{MOURA:2022} and sleep~\cite{funf:2011}. However, the original version of the NAM-Hub~\cite{marcelino:2020} does not work with virtual sensors. Therefore,
+in this work, the drivers were implemented using broadcast receivers, they are: phone call, text message (SMS), screen touch, and screen on/off, were added to the NAM-Hub as an internal technology, where it can be viewed as a \textit{SensorPhone}. The concept of driver in NAM-Hub means a set of code programmed so that the smartphone can interpret/collect the user's interaction with the environment (e.g., driver that receives latitude/longitude data from the GPS sensor when the user moves the smartphone). In this way, the framework \textit{OpenDPMH} manages to collect user data through virtual sensors and generate high-level information from them.
+
+\subsection{Digital Phenotype Model}
+\label{digitalPhenotypeEvent}
+
+The high-level information inferred by the \textit{DataProcessor}, which are situations of interest~\cite{ye:2012} and can represent a user's physical state, an event or a digital phenotype. Before detailing how to represent a digital phenotype, it is important to define which attributes and situations are in the framework.
+
+Attributes (shown in Figure~\ref{fig:digitalPhenotype}) are properties that characterize a digital phenotyping event. Timestamp and location coordinates are examples of user physical state recognition event attributes.
+%These behavioral changes are situations of interest for mental health professionals and researchers to use to monitor well-being or contribute to the treatment of mental disorders.
+Running, walking, driving are possible physical states of users that represent situations of interest to mental health professionals and researchers. Through the class diagram shown in Figure~\ref{fig:digitalPhenotype}, it is possible to represent the digital phenotyping events, and the set of these objects will compose the user's digital phenotype (\textit{DigitalPhenotype}).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figuras/digitalPhenotype.jpeg}
+\caption{Class diagram for representing digital phenotypes in the framework.}
+\label{fig:digitalPhenotype}
+\end{figure}
+
+So the class diagram \textit{DigitalPhenotypeEvent} can represent digital phenotyping events, such as: user identifier (\textit{uid}), name of data processing module \textit{dataProcessorName}, time of occurrence of the event (\textit{startDateTime}, \textit{endDateTime}), and the set of objects \textit{DigitalPhenotypeEvent} make up a \textit{DigitalPhenotype} representing the digital phenotype. The object Attribute can represent the properties of digital phenotyping events, such as: attribute name, value, type. The object Situation can represent the situation of interest, such as: name of the situation of interest (label) and description.
+
+\subsection{Security in OpenDPMH}
+
+
+Information security is a requirement for almost any IT application, therefore, when developing digital phenotyping applications through the OpenDPMH framework it is necessary to ensure security mechanisms, especially if sensitive data is involved. Security properties like authentication, authorization, and confidentiality in the distribution of data are a must for protecting digital phenotyping applications. To guarantee those properties in OpenDPMH framework, we encapsulate the CDDL security service.
+
+The framework security service uses digital certificates to authenticate and establish secure communication channels via TLS and an Access Control List (ACL) to prevent unauthorized users to access the OpenDPMH data, however, this service is optional for the developer to use it or not. The entire process to activate the framework's secure mode is done by \textit{DPManager}, where it uses the builder pattern to receive information to configure the digital certificates. For that, we provide the \textit{DPInterface} interface that contains the signatures of the methods necessary for the developer to configure and implement it in the best way, or use the code that is implemented in the framework. The process to configure the OpenDPMH security service is (I) generate the certificate signing request, (II) send the CSR to the trusted Certificate Authority (CA), (III) import the user signed certificate and trusted CA certificate, (IV) define access control rules. Before using the framework in secure mode, this process must be done so all required certificates can be used on authentication and establishment of secure communication channels. The \textit{PhenotypeComposer} component is responsible for opening the secure connection with the external broker and the \textit{DPInterface} exposes all the methods needed for configuring the digital certificates. 
+
+% Previously, the digital certificate must have already been generated, authorized and signed by the Certificate Authority (CA) for the \textit{PhenotypeComposer} component to be able to use the certificate and open a secure channel with the external broker. For the security service to be used, the developer needs to generate digital certificates duly authenticated and signed by the CA before starting the framework.
+
+To prevent a malicious application from intercepting the communication between the core and the plugin, it is also necessary to open a secure communication channel between them, therefore, the plugin
+will have to start the security service. The plugin also uses the builder pattern to receive information to configure the digital certificate. The plugin has built-in methods (e.g., \textit{sendCertificateCSR}, \textit{receiveCertificate-CRT}) as well as the core that also verifies if the digital certificate has already been created. The process to configure the security service in the plugin is (I) generate the certificate signing request, (II) send the CSR to the trusted Certificate Authority (CA), (III) import the user signed certificate and trusted CA certificate. This way, the security service is configured in the plugin and ready to establish a secure communication channel with the core.
+
+\section{Case Studies}
+\label{casestudies}
+
+Two applications were implemented using the \textit{OpenDPMH} framework: a case study using only the core, and another one with the addition of a plugin. In both case studies, the objective is to demonstrate the mechanisms provided by the framework in the development process of mobile sensing applications for digital phenotyping of mental health.
+
+\subsection{Case Study 1: Core}
+
+The symptoms of mental disorders can be externalized by changes in social behaviors, which characterizes a situation of interest for the monitoring of mental health. To implement the first case study, we considered sociability as a situation of interest in an illustrative scenario described below.
+
+\textit{A psychologist, named Andressa, used an application developed with the framework to understand behaviors and habits of a patient called Maria. In the consultation of the therapy (a first face-to-face session), Andressa collected information about Maria using self-reports. Maria reported living in São Luís, MA (a Brazilian city), married, mother of one child, and working in a private company as a secretary for about one year. Maria further informed that the reason she was seeking therapy was due to personal stresses, relationship conflicts, as well as professional issues. Based on the information obtained, Andressa decided to use a digital phenotyping application to better understand sociability behavior of Maria, as she considered it to be an important aspect to be analyzed, since social relationships' characteristics can protect or contribute to the development of mental disorders~\cite{ivan:2021}. Andressa explained to Maria that she would use a mobile application to support therapy, and no private information collected (e.g., phone calls and text messages) would be exposed. Maria then agreed and authorized the monitoring, so allowing the application to be installed on her smartphone. From the second weekly session, Andressa was able to analyze results achieved by providing the use of the application to Maria.}
+
+By using the \textit{OpenDPMH}, two \textit{DataProcessor} components were implemented to compose digital phenotypes: \textit{Online\_Sociability} and \textit{Physical\_Sociability}. The first one aimed at identifying user online socialization by collecting data from two virtual sensors, phone call and text messaging (SMS), which are already provided by the \textit{OpenDPMH} framework. In this case study, any event of these two virtual sensors indicates that a user is socializing, intends to socialize or, at least, may indicate a cue related to sociability. Examples of events monitored by the virtual sensors are: receiving/initiating phone calls, and receiving/sending SMS messages, screen on/off and screen touch. The second \textit{DataProcessor} component implemented was \textit{Physical\_Sociability}, which aimed to identify whether the user is socializing in person. Audio samples via microphone are captured and inferred the presence of human voice using the VAD library~\cite{vad:2021}. This component assumes that if a human voice is found around the mobile device, there is a cue related to sociability. The composition mode of digital phenotypes defined was \textit{frequency}, with a data distribution interval to the external broker of 15 minutes for visualization by mental health professionals.
+
+Figure~\ref{fig:estudo12} displays application screenshots developed for the first case study. After activating the \textit{DataProcessor} components available in the application, the user can visualize them with status ``on'' (i.e., running), as shown in Figure~\ref{fig:estudo12}(a). When clicking on the \textit{Physical\_Sociability} component card, the application depicts a dashboard of event logs (Figure~\ref{fig:estudo12}(b)), with information such as date and time of the last event, a graph showing the number of conversations in person (x-axis shows the day, and y-axis is the number of conversation records), and a button to finish the processing. Figure~\ref{fig:estudo12}(c) displays a dashboard of the \textit{Online\_Sociability} component, with different information regarding phone calls and SMS messages, such as: date and time of the last record (call and message), the number and type of call (incoming, outgoing or missed) and message (incoming and outgoing).
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figuras/b.jpg}
+\caption{Application screens of the first case study.}
+\label{fig:estudo12}
+\end{figure}
+
+Screenshots in Figures~\ref{fig:estudo12} (b) and (c) present a preview of what is produced from the Maria's smartphone and can be visualized by Andressa in a consumer application. As shown, the application is able to monitor the day-to-day sociability of patients in treatments, so recording the moments when they socialize. From identified situations of interest (sociability in the case study), psychologists can make more appropriate and evidence-based interventions. Therefore, this illustrative case study shows that a developer can use the \textit{OpenDPMH} framework to implement data processing modules (i.e., \textit{DataProcessor} components) capable of generating situations of interest relevant to the mental health professional. Moreover, as the framework provides reusable code available to be instantiated or put into execution (e.g., virtual and physical sensors, data distribution mechanisms), the digital phenotyping application of this case study was easily implemented, so the proposed solution can facilitate the development process.
+
+\subsection{Case Study 2: Plugin}
+
+The second case study is a continuation of the first illustrative scenario presented:
+
+\textit{As therapy sessions progressed, Andressa realized that she also needed to monitor Maria's physical activity, a situation of interest that is strongly related to several mental disorders~\cite{TEYCHENNE:2020}.} 
+
+To add a new \textit{DataProcessor} component to recognize high-level information related to physical activity, the Android project of the first application using the \textit{OpenDPMH} should be reimplemented and recompiled to build a new application. This is not interesting as it would require a software update on the patient's smartphone, which would stop collecting data, hence losing data. Therefore, to enable the monitoring of a new situation of interest required by Andressa, the \textit{DataProcessor} component \textit{Physical\_Activity} was implemented in a plugin using the Activity Recognition API~\cite{apigoogle:2021} to infer user's physical states (e.g., running, walking, in vehicle, on bicycle).
+
+Figure~\ref{fig:plugin} displays screens of the application running over the \textit{Core} part of the framework, which has already two data processing modules working (\textit{Physical\_Sociability} and \textit{Online\_Sociability}), as seen in Figure~\ref{fig:plugin} (a). After running the plugin, the \textit{DataProcessor} component \textit{Physical\_Activity} becomes available to be activated, as seen in Figure~\ref{fig:plugin} (b). Finally, as depicted in Figure~\ref{fig:plugin} (c), a dashboard summarizes different information regarding physical activity states, such as: the total number of each state, a graph with time series of each activity, and the last record of activity transition.
+
+\begin{figure}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figuras/c.jpg}
+\caption{Application screens of the second case study.}
+\label{fig:plugin}
+\end{figure}
+
+The second case study demonstrates our framework working with its two parts integrated (\textit{Core} and \textit{Plugin}), which is a feature that allows mental health professionals to enhance the patient monitoring process using a digital phenotyping. Also, this extensibility feature enables the developer to implement different modules in plugins, which can be shared to be reused in other research.
+
+\section{Energy Consumption Evaluation}
+\label{evaluation}
+
+We performed an experimental evaluation to measure the energy consumption when using the framework. This experimental evaluation is important to verify that mobile applications of digital phenotyping should not consume excessive energy. Otherwise, by accelerating the depletion of the battery, users might uninstall the application to prevent battery drain, so applications will be used for a short time or avoided.
+
+In addition, accelerated battery drain will possibly create user dissatisfaction, causing the application to be uninstalled.
+
+When considering energy consumption as a key point for the adoption of digital phenotyping applications, the objective of the experiments was to evaluate the impact that the framework \textit{OpenDPMH} brought to the energy consumption of a smartphone.
+
+
+
+
+In the experiments, we used the applications developed in the previous case studies with different configurations to monitor energy consumption. Applications were run for a period of 10 hours. After initialization, applications began to collect sensor data and compose digital phenotypes. The battery level was measured before and after the runtime. For this purpose, we used the Android library \textit{BatteryManager}. Furthermore, except for applications that integrate the Android operating system (e.g., calendar, SMS exchange app, phone call app), there were no other applications running on the mobile device. The experiments were carried out in a smartphone Samsung Galaxy A01, 32 GB of disk storage, 2 GB of RAM, 4G network, Wi-Fi, 3000 mAh battery, Octa-Core 2.0 GHz processor, and Android operating system version 10.0.
+
+\subsection{Only Core Working}
+\label{primeiraavaliacao}
+
+We performed the first experimental evaluation to analyze the impact of energy consumption in relation to the three modes of composition of the digital phenotype (\textit{send\_when\_it\_arrives}, \textit{group\_all} and \textit{frequency}). 
+
+The objective of the first evaluation was to analyze the impact of energy consumption caused by the framework working with two processing modules (\textit{Physical\_Activity} and \textit{Physical\_Sociability}) of data in the three modes of composition of digital phenotypes (\textit{frequency}, \textit{group\_all} and \textit{send\_when\_it\_arrives}). The way \textit{frequency} used two frequency settings for sending data to the broker:high (every 15 minutes) and low (every 45 minutes). The module \textit{Physical\_Activity} was configured so, if no activity was inferred within a period of one minute, it would trigger a message with no data to the \textit{PhenotypeComposer}. The purpose of this condition was not to let the \textit{PhenotypeComposer} without receiving data for a long time. The module \textit{Physical\_Sociability}  was set to process for one minute and pause for 3 minutes. These module settings remained fixed across all assessments. In this way, we created five scenarios ({setups}) for the first evaluation, as seen below.
+
+\begin{enumerate}
+    \item {\small \textbf{{Setup 1}}: Smartphone with factory settings;}
+    \item {\small \textbf{{Setup 2}}: Only core application running; Processing modules: \textit{Physical\_Activity} and \textit{Physical\_Sociability}; Composition mode: \textit{frequency} high (15min);}
+	\item {\small \textbf{{Setup 3}}: Only core application running; Processing modules: \textit{Physical\_Activity} and \textit{Physical\_Sociability}; Composition mode: \textit{frequency} low (45 min);}
+    \item {\small \textbf{{Setup 4}}: Only core application running; Processing modules: \textit{Physical\_Activity} and \textit{Physical\_Sociability}; Compose mode: \textit{group\_all};}
+    \item {\small \textbf{{Setup 5}}: Only core application running; Processing modules: \textit{Physical\_Activity} and \textit{Physical\_Sociability}; Compose mode: \textit{send\_when\_it\_arrives}.}
+\end{enumerate}
+
+The results obtained show that the variation in energy consumption was small between the modes of composition of digital phenotypes for a period of 10 hours, as can be seen in Figure~\ref{fig:aval1}a. In us setups 2 and 3, there was a consumption of 8\% of the battery (3000 mAh) for the interval that the phenotypes are distributed every 15 minutes and 7\% for 45 minutes. In compositing mode \textit{group\_all}, there was 10\% power consumption, and 13\% in \textit{send\_when\_it\_arrives}. Comparing the three modes of phenotype composition with each other, we observed that there was a higher consumption for the mode \textit{send\_when\_it\_arrives}, as there is an increase in the frequency of data distribution to the  broker external. For digital phenotype composite mode \textit{send\_when\_it\_arrives}, all information that arrives at the \textit{PhenotypeComposer} it's distributed to the broker immediately. Therefore, among the three composition modes, it is the one that consumes the most energy. In phenotype composition mode \textit{group\_all}, the frequency is based on the data processor's data generation frequency: the rule for distributing the data in the \textit{PhenotypeComposer} it's satisfied when all the data from the active modules arrives. Now for the mode \textit{frequency}, the higher the frequency of data distribution for the broker, the greater the energy consumption.
+
+\begin{figure*}[!htb]
+\centering
+\includegraphics[width=\linewidth]{figuras/aval1.png}
+\caption{Results of experimental evaluations.}
+\label{fig:aval1}
+\end{figure*}
+
+\subsection{Adding a Plugin}
+
+The second experimental evaluation aimed to analyze the impact of consumption of energy using the plugin to extend the framework. 
+
+The objective of the second evaluation was to
+analyze the impact of energy consumption caused by the addition of plugin. The applications of each scenario were also executed for a period of 10 hours. We define the distribution range of the phenotypes in the mode frequency for discharge (every 15 minutes). We only use one data processing module (\textit{Physical\_Activity}) at the {plugin}, with no module in the core. In this way, we have four setups in the second evaluation, as seen below. We emphasize that we carried out experiments with the \textit{group\_all}, and the results were similar to the way \textit{send\_when\_it\_arrives}. As we only use one processing module, the compositing mode \textit{group\_all} works in the same way as \textit{send\_when\_it\_arrives}.
+
+\begin{enumerate}
+    \item {\small \textbf{{Setup 1}}: Core running \textit{Physical\_Activity}, without the plugin; Composition mode: \textit{frequency} high (15min);}
+    
+     \item {\small \textbf{{Setup 2}}: Core without processing module and plugin running \textit{Physical\_Activity}; Composition mode: \textit{frequency} high (15 min);}
+    
+     \item {\small \textbf{{Setup 3}}: Core running \textit{Physical\_Activity}, without the plugin; Compose mode: \textit{send\_ when\_it\_arrives};}
+    
+     \item {\small \textbf{{Setup 4}}: Core without processing module and plugin running \textit{Physical\_Activity}; Compose mode: \textit{send\_when\_it\_arrives}.}
+\end{enumerate}
+
+The results of the second evaluation show that there was a difference in energy consumption with the addition of plugin. In the Figure~\ref{fig:aval1}b we can observe the setups 1 and 2 with mode \textit{frequency}, in which the energy consumption was higher using the plugin than the core with 9\% and 5\%, respectively. We believe that energy consumption with the use of plugin was higher because there are two applications running on the smartphone with services running in the foreground. The same happens in setups 3 and 4 with 8\% power consumption using only the core and 10\% with the inclusion of plugin. For these two scenarios, the compositing mode was \textit{send\_when\_it\_arrives}.
+
+\subsection{Enabling Secure Communication}
+
+The third evaluation aimed to analyze the consumption when activating the security of the framework.
+
+The objective of the third evaluation was to show the impact on energy consumption when activating the security feature provided in the framework. For that, we use the core used two data processing modules (\textit{Physical\_Activity} and \textit{Physical\_Sociability}) with the same settings. We select the mode of composition of digital phenotype's \textit{frequency} high (distributing data every 15 minutes). This mode was chosen due to ensure that the same amount of data would be distributed across both setups, which are presented below.
+
+\begin{enumerate}
+    \item {\small \textbf{{Setup 1}}: Only core application running; Processing modules: \textit{Physical\_Activity} and \textit{Physical\_Sociability}; Composition mode: \textit{frequency} high (15 min); \textbf{No security};}
+    \item {\small \textbf{{Setup 2}}: Only core application running; Processing modules: \textit{Physical\_Activity} and \textit{Physical\_Sociability}; Composition mode: \textit{frequency} high (15 min); \textbf{Safely}.}
+\end{enumerate}
+
+The results show that there is not a big difference when using the security feature provided by the framework, as shown in Figure~\ref{fig:aval1}c. Consumption was 8\% in the setup 1 (no security), and 10\% in the second experiment using security: a 2\% difference in energy consumption impact. We believe that this difference in consumption of 2\% was due to the message encryption process, since every message sent from the core to broker pass is encrypted. To encrypt, there is additional processing and the size of the transmitted message is increased.
+
+These results show the cost related to battery consumption when activating the security feature, which was not high. Thus, we believe that the use of security in the framework is not a fact that can compromise the use of a digital phenotyping application developed with the \textit{OpenDPMH}. Therefore, the developer can use this feature to ensure data distribution protection.
 
 ![](header.png)
 
