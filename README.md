@@ -149,7 +149,6 @@ Figure 4 displays screens of the application running over the <i>Core</i> part o
 The second case study demonstrates our framework working with its two parts integrated (<i>Core</i> and <i>Plugin</i>), which is a feature that allows mental health professionals to enhance the patient monitoring process using a digital phenotyping. Also, this extensibility feature enables the developer to implement different modules in plugins, which can be shared to be reused in other research.
 
 ### Energy Consumption Evaluation
-\label{evaluation}
 
 We performed an experimental evaluation to measure the energy consumption when using the framework. This experimental evaluation is important to verify that mobile applications of digital phenotyping should not consume excessive energy. Otherwise, by accelerating the depletion of the battery, users might uninstall the application to prevent battery drain, so applications will be used for a short time or avoided.
 
@@ -160,19 +159,29 @@ When considering energy consumption as a key point for the adoption of digital p
 In the experiments, we used the applications developed in the previous case studies with different configurations to monitor energy consumption. Applications were run for a period of 10 hours. After initialization, applications began to collect sensor data and compose digital phenotypes. The battery level was measured before and after the runtime. For this purpose, we used the Android library <i>BatteryManager</i>. Furthermore, except for applications that integrate the Android operating system (e.g., calendar, SMS exchange app, phone call app), there were no other applications running on the mobile device. The experiments were carried out in a smartphone Samsung Galaxy A01, 32 GB of disk storage, 2 GB of RAM, 4G network, Wi-Fi, 3000 mAh battery, Octa-Core 2.0 GHz processor, and Android operating system version 10.0.
 
 ### Only Core Working
-\label{primeiraavaliacao}
 
 We performed the first experimental evaluation to analyze the impact of energy consumption in relation to the three modes of composition of the digital phenotype (<i>send\_when\_it\_arrives</i>, <i>group\_all</i> and <i>frequency</i>). 
 
-The objective of the first evaluation was to analyze the impact of energy consumption caused by the framework working with two processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) of data in the three modes of composition of digital phenotypes (<i>frequency</i>, <i>group\_all</i> and <i>send\_when\_it\_arrives</i>). The way <i>frequency</i> used two frequency settings for sending data to the broker:high (every 15 minutes) and low (every 45 minutes). The module <i>Physical\_Activity</i> was configured so, if no activity was inferred within a period of one minute, it would trigger a message with no data to the <i>PhenotypeComposer</i>. The purpose of this condition was not to let the <i>PhenotypeComposer</i> without receiving data for a long time. The module <i>Physical\_Sociability</i>  was set to process for one minute and pause for 3 minutes. These module settings remained fixed across all assessments. In this way, we created five scenarios ({setups}) for the first evaluation, as seen below.
+The objective of the first evaluation was to analyze the impact of energy consumption caused by the framework working with two processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) of data in the three modes of composition of digital phenotypes (<i>frequency</i>, <i>group\_all</i> and <i>send\_when\_it\_arrives</i>). The way <i>frequency</i> used two frequency settings for sending data to the broker:high (every 15 minutes) and low (every 45 minutes). The module <i>Physical\_Activity</i> was configured so, if no activity was inferred within a period of one minute, it would trigger a message with no data to the <i>PhenotypeComposer</i>. The purpose of this condition was not to let the <i>PhenotypeComposer</i> without receiving data for a long time. The module <i>Physical\_Sociability</i>  was set to process for one minute and pause for 3 minutes. These module settings remained fixed across all assessments. In this way, we created five scenarios (setups) for the first evaluation, as seen below.
 
-\begin{enumerate}
-    \item {\small <b>{Setup 1</b>}: Smartphone with factory settings;}
-    \item {\small <b>{Setup 2</b>}: Only core application running; Processing modules: <i>Physical\_Activity</i> and <i>Physical\_Sociability</i>; Composition mode: <i>frequency</i> high (15min);}
-	\item {\small <b>{Setup 3</b>}: Only core application running; Processing modules: <i>Physical\_Activity</i> and <i>Physical\_Sociability</i>; Composition mode: <i>frequency</i> low (45 min);}
-    \item {\small <b>{Setup 4</b>}: Only core application running; Processing modules: <i>Physical\_Activity</i> and <i>Physical\_Sociability</i>; Compose mode: <i>group\_all</i>;}
-    \item {\small <b>{Setup 5</b>}: Only core application running; Processing modules: <i>Physical\_Activity</i> and <i>Physical\_Sociability</i>; Compose mode: <i>send\_when\_it\_arrives</i>.}
-\end{enumerate}
+    <ul> <li><b>Setup 1:</b>
+		<ol> Smartphone in factory settings without any application developed with the framework running.</ol>
+	<li><b>Setup 2:</b>
+		<ol>Only core application running;</ol>
+		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
+		<ol>Composition mode: frequency - high (15 min).</ol>
+	<li><b>Setup 3:</b>
+		<ol>Only core application running;</ol>
+		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
+		<ol>Composition mode: frequency - low (45 min);</ol>
+	<li><b>Setup 4:</b>
+		<ol>Only core application running;</ol>
+		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
+		<ol>Composition mode: group all ;</ol>
+	<li><b>Setup 5:</b>
+		<ol>Only core application running;</ol>
+		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
+		<ol>Composition mode: send when it arrives.</ol>
 
 The results obtained show that the variation in energy consumption was small between the modes of composition of digital phenotypes for a period of 10 hours, as can be seen in Figure~\ref{fig:aval1}a. In us setups 2 and 3, there was a consumption of 8\% of the battery (3000 mAh) for the interval that the phenotypes are distributed every 15 minutes and 7\% for 45 minutes. In compositing mode <i>group\_all</i>, there was 10\% power consumption, and 13\% in <i>send\_when\_it\_arrives</i>. Comparing the three modes of phenotype composition with each other, we observed that there was a higher consumption for the mode <i>send\_when\_it\_arrives</i>, as there is an increase in the frequency of data distribution to the  broker external. For digital phenotype composite mode <i>send\_when\_it\_arrives</i>, all information that arrives at the <i>PhenotypeComposer</i> it's distributed to the broker immediately. Therefore, among the three composition modes, it is the one that consumes the most energy. In phenotype composition mode <i>group\_all</i>, the frequency is based on the data processor's data generation frequency: the rule for distributing the data in the <i>PhenotypeComposer</i> it's satisfied when all the data from the active modules arrives. Now for the mode <i>frequency</i>, the higher the frequency of data distribution for the broker, the greater the energy consumption.
 
@@ -192,15 +201,22 @@ The second experimental evaluation aimed to analyze the impact of consumption of
 The objective of the second evaluation was to
 analyze the impact of energy consumption caused by the addition of plugin. The applications of each scenario were also executed for a period of 10 hours. We define the distribution range of the phenotypes in the mode frequency for discharge (every 15 minutes). We only use one data processing module (<i>Physical\_Activity</i>) at the <i>plugin</i>, with no module in the core. In this way, we have four setups in the second evaluation, as seen below. We emphasize that we carried out experiments with the <i>group\_all</i>, and the results were similar to the way <i>send\_when\_it\_arrives</i>. As we only use one processing module, the compositing mode <i>group\_all</i> works in the same way as <i>send\_when\_it\_arrives</i>.
 
-\begin{enumerate}
-    \item {\small <b>{Setup 1</b>}: Core running <i>Physical\_Activity</i>, without the plugin; Composition mode: <i>frequency</i> high (15min);}
-    
-     \item {\small <b>{Setup 2</b>}: Core without processing module and plugin running <i>Physical\_Activity</i>; Composition mode: <i>frequency</i> high (15 min);}
-    
-     \item {\small <b>{Setup 3</b>}: Core running <i>Physical\_Activity</i>, without the plugin; Compose mode: <i>send\_ when\_it\_arrives</i>;}
-    
-     \item {\small <b>{Setup 4</b>}: Core without processing module and plugin running <i>Physical\_Activity</i>; Compose mode: <i>send\_when\_it\_arrives</i>.}
-\end{enumerate}
+ Setup 1:
+– Core running with Physical Activity, without
+plugin;
+– Composition mode: frequency - high (15 min).
+• Setup 2:
+– Core without processing module, and plugin
+running with Physical Activity;
+– Composition mode: frequency - high (15 min).
+• Setup 3:
+– Core running with Physical Activity, without
+plugin;
+– Composition mode: send when it arrives.
+• Setup 4:
+– Core without processing module, and plugin
+running with Physical Activity;
+– Composition mode: send when it arrives.
 
 The results of the second evaluation show that there was a difference in energy consumption with the addition of plugin. In the Figure~\ref{fig:aval1}b we can observe the setups 1 and 2 with mode <i>frequency</i>, in which the energy consumption was higher using the plugin than the core with 9\% and 5\%, respectively. We believe that energy consumption with the use of plugin was higher because there are two applications running on the smartphone with services running in the foreground. The same happens in setups 3 and 4 with 8\% power consumption using only the core and 10\% with the inclusion of plugin. For these two scenarios, the compositing mode was <i>send\_when\_it\_arrives</i>.
 
