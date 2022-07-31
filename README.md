@@ -75,7 +75,7 @@ The following components are part of the Plugin:
 
 ### Adapting NAM-Hub for Digital Phenotyping
 
-In addition to physical sensors, digital phenotyping tools are also using <a href="https://dl.acm.org/doi/10.1145/2893487">virtual</a> sensors to infer high-level information, such as those related to sociability~\cite{MOURA:2022} and sleep~\cite{funf:2011}. However, the original version of the NAM-Hub~\cite{marcelino:2020} does not work with virtual sensors. Therefore,
+In addition to physical sensors, digital phenotyping tools are also using <a href="https://dl.acm.org/doi/10.1145/2893487">virtual</a> sensors to infer high-level information, such as those related to <a href="https://www.sciencedirect.com/science/article/abs/pii/S0167739X22000310">sociability</a> and <a href="https://www.sciencedirect.com/science/article/abs/pii/S1574119211001246">sleep</a>. However, the original version of the <a href="https://interscity.org/assets/Neighborhood-awareMobileHubAnE.pdf">NAM-Hub</a> does not work with virtual sensors. Therefore,
 in this work, the drivers were implemented using broadcast receivers, they are: phone call, text message (SMS), screen touch, and screen on/off, were added to the NAM-Hub as an internal technology, where it can be viewed as a <i>SensorPhone</i>. The concept of driver in NAM-Hub means a set of code programmed so that the smartphone can interpret/collect the user's interaction with the environment (e.g., driver that receives latitude/longitude data from the GPS sensor when the user moves the smartphone). In this way, the framework <i>OpenDPMH</i> manages to collect user data through virtual sensors and generate high-level information from them.
 
 ### Digital Phenotype Model
