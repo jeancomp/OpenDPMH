@@ -165,7 +165,7 @@ We performed the first experimental evaluation to analyze the impact of energy c
 The objective of the first evaluation was to analyze the impact of energy consumption caused by the framework working with two processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) of data in the three modes of composition of digital phenotypes (<i>frequency</i>, <i>group\_all</i> and <i>send\_when\_it\_arrives</i>). The way <i>frequency</i> used two frequency settings for sending data to the broker:high (every 15 minutes) and low (every 45 minutes). The module <i>Physical\_Activity</i> was configured so, if no activity was inferred within a period of one minute, it would trigger a message with no data to the <i>PhenotypeComposer</i>. The purpose of this condition was not to let the <i>PhenotypeComposer</i> without receiving data for a long time. The module <i>Physical\_Sociability</i>  was set to process for one minute and pause for 3 minutes. These module settings remained fixed across all assessments. In this way, we created five scenarios (setups) for the first evaluation, as seen below.
 
     <ul> <li><b>Setup 1:</b>
-		<ol> Smartphone in factory settings without any application developed with the framework running.</ol>
+		<ol> <li>Smartphone in factory settings without any application developed with the framework running.</li></ol>
 	<li><b>Setup 2:</b>
 		<ol>Only core application running;</ol>
 		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
