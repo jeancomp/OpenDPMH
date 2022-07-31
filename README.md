@@ -79,18 +79,15 @@ In addition to physical sensors, digital phenotyping tools are also using <a hre
 in this work, the drivers were implemented using broadcast receivers, they are: phone call, text message (SMS), screen touch, and screen on/off, were added to the NAM-Hub as an internal technology, where it can be viewed as a <i>SensorPhone</i>. The concept of driver in NAM-Hub means a set of code programmed so that the smartphone can interpret/collect the user's interaction with the environment (e.g., driver that receives latitude/longitude data from the GPS sensor when the user moves the smartphone). In this way, the framework <i>OpenDPMH</i> manages to collect user data through virtual sensors and generate high-level information from them.
 
 ### Digital Phenotype Model
-\label{digitalPhenotypeEvent}
 
-The high-level information inferred by the <i>DataProcessor</i>, which are situations of interest~\cite{ye:2012} and can represent a user's physical state, an event or a digital phenotype. Before detailing how to represent a digital phenotype, it is important to define which attributes and situations are in the framework.
+The high-level information inferred by the <i>DataProcessor</i>, which are <a href="https://www.sciencedirect.com/science/article/abs/pii/S1574119211000253">situations of interest</a> and can represent a user's physical state, an event or a digital phenotype. Before detailing how to represent a digital phenotype, it is important to define which attributes and situations are in the framework.
 
-Attributes (shown in Figure~\ref{fig:digitalPhenotype}) are properties that characterize a digital phenotyping event. Timestamp and location coordinates are examples of user physical state recognition event attributes.
-%These behavioral changes are situations of interest for mental health professionals and researchers to use to monitor well-being or contribute to the treatment of mental disorders.
-Running, walking, driving are possible physical states of users that represent situations of interest to mental health professionals and researchers. Through the class diagram shown in Figure~\ref{fig:digitalPhenotype}, it is possible to represent the digital phenotyping events, and the set of these objects will compose the user's digital phenotype (<i>DigitalPhenotype</i>).
+Attributes (shown in Figure 2) are properties that characterize a digital phenotyping event. Timestamp and location coordinates are examples of user physical state recognition event attributes. These behavioral changes are situations of interest for mental health professionals and researchers to use to monitor well-being or contribute to the treatment of mental disorders.
+Running, walking, driving are possible physical states of users that represent situations of interest to mental health professionals and researchers. Through the class diagram shown in Figure 2, it is possible to represent the digital phenotyping events, and the set of these objects will compose the user's digital phenotype (<i>DigitalPhenotype</i>).
 
 <h5 align="center">
   <img alt="Arquitetura-framework" title="#Class diagram for representing digital phenotypes in the framework." src="/digitalPhenotype.jpeg" height="700" width="500"/>
 	  </h5>
-	
 	
 <h5 align="center">
 	<CAPTION>Fig.2 Class diagram for representing digital phenotypes in the framework.<CAPTION>
