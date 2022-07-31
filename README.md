@@ -91,6 +91,10 @@ Attributes (shown in Figure~\ref{fig:digitalPhenotype}) are properties that char
 %These behavioral changes are situations of interest for mental health professionals and researchers to use to monitor well-being or contribute to the treatment of mental disorders.
 Running, walking, driving are possible physical states of users that represent situations of interest to mental health professionals and researchers. Through the class diagram shown in Figure~\ref{fig:digitalPhenotype}, it is possible to represent the digital phenotyping events, and the set of these objects will compose the user's digital phenotype (<i>DigitalPhenotype</i>).
 
+<h1 align="center">
+  <img alt="Arquitetura-framework" title="#Class diagram for representing digital phenotypes in the framework." src="/digitalPhenotype.jpeg" />
+</h1>
+
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth]{figuras/digitalPhenotype.jpeg}
@@ -125,6 +129,10 @@ By using the <i>OpenDPMH</i>, two <i>DataProcessor</i> components were implement
 
 Figure~\ref{fig:estudo12} displays application screenshots developed for the first case study. After activating the <i>DataProcessor</i> components available in the application, the user can visualize them with status ``on'' (i.e., running), as shown in Figure~\ref{fig:estudo12}(a). When clicking on the <i>Physical\_Sociability</i> component card, the application depicts a dashboard of event logs (Figure~\ref{fig:estudo12}(b)), with information such as date and time of the last event, a graph showing the number of conversations in person (x-axis shows the day, and y-axis is the number of conversation records), and a button to finish the processing. Figure~\ref{fig:estudo12}(c) displays a dashboard of the <i>Online\_Sociability</i> component, with different information regarding phone calls and SMS messages, such as: date and time of the last record (call and message), the number and type of call (incoming, outgoing or missed) and message (incoming and outgoing).
 
+<h1 align="center">
+  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpeg" />
+</h1>
+
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=\linewidth]{figuras/b.jpg}
@@ -143,6 +151,10 @@ The second case study is a continuation of the first illustrative scenario prese
 To add a new <i>DataProcessor</i> component to recognize high-level information related to physical activity, the Android project of the first application using the <i>OpenDPMH</i> should be reimplemented and recompiled to build a new application. This is not interesting as it would require a software update on the patient's smartphone, which would stop collecting data, hence losing data. Therefore, to enable the monitoring of a new situation of interest required by Andressa, the <i>DataProcessor</i> component <i>Physical\_Activity</i> was implemented in a plugin using the Activity Recognition API~\cite{apigoogle:2021} to infer user's physical states (e.g., running, walking, in vehicle, on bicycle).
 
 Figure~\ref{fig:plugin} displays screens of the application running over the <i>Core</i> part of the framework, which has already two data processing modules working (<i>Physical\_Sociability</i> and <i>Online\_Sociability</i>), as seen in Figure~\ref{fig:plugin} (a). After running the plugin, the <i>DataProcessor</i> component <i>Physical\_Activity</i> becomes available to be activated, as seen in Figure~\ref{fig:plugin} (b). Finally, as depicted in Figure~\ref{fig:plugin} (c), a dashboard summarizes different information regarding physical activity states, such as: the total number of each state, a graph with time series of each activity, and the last record of activity transition.
+
+<h1 align="center">
+  <img alt="Arquitetura-framework" title="#Application screens of the second case study." src="/c.jpeg" />
+</h1>
 
 \begin{figure}[!htb]
 \centering
@@ -180,6 +192,10 @@ The objective of the first evaluation was to analyze the impact of energy consum
 \end{enumerate}
 
 The results obtained show that the variation in energy consumption was small between the modes of composition of digital phenotypes for a period of 10 hours, as can be seen in Figure~\ref{fig:aval1}a. In us setups 2 and 3, there was a consumption of 8\% of the battery (3000 mAh) for the interval that the phenotypes are distributed every 15 minutes and 7\% for 45 minutes. In compositing mode <i>group\_all</i>, there was 10\% power consumption, and 13\% in <i>send\_when\_it\_arrives</i>. Comparing the three modes of phenotype composition with each other, we observed that there was a higher consumption for the mode <i>send\_when\_it\_arrives</i>, as there is an increase in the frequency of data distribution to the  broker external. For digital phenotype composite mode <i>send\_when\_it\_arrives</i>, all information that arrives at the <i>PhenotypeComposer</i> it's distributed to the broker immediately. Therefore, among the three composition modes, it is the one that consumes the most energy. In phenotype composition mode <i>group\_all</i>, the frequency is based on the data processor's data generation frequency: the rule for distributing the data in the <i>PhenotypeComposer</i> it's satisfied when all the data from the active modules arrives. Now for the mode <i>frequency</i>, the higher the frequency of data distribution for the broker, the greater the energy consumption.
+
+<h1 align="center">
+  <img alt="Arquitetura-framework" title="#Results of experimental evaluations." src="/aval1.png" />
+</h1>
 
 \begin{figure*}[!htb]
 \centering
