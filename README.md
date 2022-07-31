@@ -87,7 +87,7 @@ Attributes (shown in Figure~\ref{fig:digitalPhenotype}) are properties that char
 Running, walking, driving are possible physical states of users that represent situations of interest to mental health professionals and researchers. Through the class diagram shown in Figure~\ref{fig:digitalPhenotype}, it is possible to represent the digital phenotyping events, and the set of these objects will compose the user's digital phenotype (<i>DigitalPhenotype</i>).
 
 <h5 align="center">
-  <img alt="Arquitetura-framework" title="#Class diagram for representing digital phenotypes in the framework." src="/digitalPhenotype.jpeg" height="50" width="50"/>
+  <img alt="Arquitetura-framework" title="#Class diagram for representing digital phenotypes in the framework." src="/digitalPhenotype.jpeg" height="100" width="100"/>
 	<CAPTION>Fig.2 Class diagram for representing digital phenotypes in the framework.<CAPTION>
 </h5>
 
