@@ -130,7 +130,7 @@ By using the <i>OpenDPMH</i>, two <i>DataProcessor</i> components were implement
 Figure~\ref{fig:estudo12} displays application screenshots developed for the first case study. After activating the <i>DataProcessor</i> components available in the application, the user can visualize them with status ``on'' (i.e., running), as shown in Figure~\ref{fig:estudo12}(a). When clicking on the <i>Physical\_Sociability</i> component card, the application depicts a dashboard of event logs (Figure~\ref{fig:estudo12}(b)), with information such as date and time of the last event, a graph showing the number of conversations in person (x-axis shows the day, and y-axis is the number of conversation records), and a button to finish the processing. Figure~\ref{fig:estudo12}(c) displays a dashboard of the <i>Online\_Sociability</i> component, with different information regarding phone calls and SMS messages, such as: date and time of the last record (call and message), the number and type of call (incoming, outgoing or missed) and message (incoming and outgoing).
 
 <h1 align="center">
-  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpeg" />
+  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpg" />
 </h1>
 
 \begin{figure}[!htb]
@@ -153,7 +153,7 @@ To add a new <i>DataProcessor</i> component to recognize high-level information 
 Figure~\ref{fig:plugin} displays screens of the application running over the <i>Core</i> part of the framework, which has already two data processing modules working (<i>Physical\_Sociability</i> and <i>Online\_Sociability</i>), as seen in Figure~\ref{fig:plugin} (a). After running the plugin, the <i>DataProcessor</i> component <i>Physical\_Activity</i> becomes available to be activated, as seen in Figure~\ref{fig:plugin} (b). Finally, as depicted in Figure~\ref{fig:plugin} (c), a dashboard summarizes different information regarding physical activity states, such as: the total number of each state, a graph with time series of each activity, and the last record of activity transition.
 
 <h1 align="center">
-  <img alt="Arquitetura-framework" title="#Application screens of the second case study." src="/c.jpeg" />
+  <img alt="Arquitetura-framework" title="#Application screens of the second case study." src="/c.jpg" />
 </h1>
 
 \begin{figure}[!htb]
