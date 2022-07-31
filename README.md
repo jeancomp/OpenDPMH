@@ -32,7 +32,7 @@ The general objective of this work is to provide a framework focused on Digital 
 
 ### The framework:
 
-The framework \textit{OpenDPMH} (abbreviation for \textbf{Open} \textbf{D}igital \textbf{P}henotyping of \textbf{M}ental \textbf{H}ealth) was developed to facilitate the development of mobile sensing applications of digital phenotyping. Next, we present its main components and modeling.
+The framework <i>OpenDPMH</i> (abbreviation for <b>Open</b> <b>D</b>igital <b>P</b>henotyping of <b>M</b>ental  <b>H</b>ealth) was developed to facilitate the development of mobile sensing applications of digital phenotyping. Next, we present its main components and modeling.
 
 ### Architecture
 
