@@ -53,7 +53,7 @@ The following components are part of the Core:
 
 * <i>ProcessorManager</i>: this is a service responsible for managing <i>DataProcessor</i> components. It receives the list of <i>DataProcessor</i> components from the <i>DPManager</i> to be started. Also, the <i>ProcessorManager</i> manages the lifecycle of all sensors in the framework, so controlling their activation and deactivation, and managing Android runtime permissions. It avoids keeping sensors active that are not in use, or deactivating sensors in use by <i>DataProcessor</i> components. For this purpose, each <i>DataProcessor</i> should inform the required physical or virtual sensors;
 
-<ul> <i>PhenotypeComposer</i>: service responsible for creating digital phenotype objects to be distributed via CDDL. To enable data buffer, this component works in three different modes:
+<ul> <li><i>PhenotypeComposer</i>: service responsible for creating digital phenotype objects to be distributed via CDDL. To enable data buffer, this component works in three different modes:</li>
 
 <ol>
     <li> <i>send\_when\_it\_arrives</i>: this is the simplest composition mode. When digital phenotyping events and raw context data arrive at the <i>PhenotypeComposer</i>, it immediately distributes them via the MQTT broker external. Therefore, in this mode, data is not buffered. Such mode is important for applications that mental health professionals require (near) real-time information;</li>
