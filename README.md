@@ -38,10 +38,10 @@ The framework <i>OpenDPMH</i> (abbreviation for <b>Open</b> <b>D</b>igital <b>P<
 
 The framework <i>OpenDPMH</i> is implemented in the Java language for the Android operating system. The project is open source, available on GitHub~\cite{githubjean} under the LGPL-3.0 license. It is divided into two main parts: <i>Core</i> and <i>Plugin</i>, as illustrated in the framework architecture in Figure~\ref{fig:framework}. <i>Core</i> part is consumed by a main application and provides features for the management of sensors, raw data processing modules, one or more plugins, and data composition and distribution. The <i>OpenDPMH</i> architecture is enabled to add plugins (<i>Plugin</i> part in Figure~\ref{fig:framework}), which extend the framework's capabilities by allowing the addition of new data processing modules.
 
-<h4 align="center">
+<h5 align="center">
   <img alt="Arquitetura-framework" title="#Arquitetura" src="/framework.png" />
   <CAPTION>Fig.1 Architecture<CAPTION>
-</h4>
+</h5>
 
 The <i>Core</i> runs two CDDL instances. The first starts from the <i>DPManager</i> component and connects to a MQTT micro broker that serves for communication between all framework components. This also enables the communication between components of the <i>Core</i> and <i>Plugin</i>. The second CDDL instance is in the <i>PhenotypeComposer</i> and is used to establish a communication channel with an external broker to distribute a data structure that we call <i>Digital Phenotype</i>. This is a Java class with attributes to represent raw context data and high-level information (i.e., digital phenotyping events, described in Section~\ref{digitalPhenotypeEvent}). High-level information may correspond to human behaviors and habits (e.g., sociability, physical activity, mobility, sleep), and other information of interest for mental health professionals (e.g., environmental context, mood). Other systems (i.e., dashboards for data visualization by professionals) connected to the MQTT external broker can subscribe to receive patient information.
 
