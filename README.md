@@ -92,6 +92,10 @@ Running, walking, driving are possible physical states of users that represent s
 
 <h5 align="center">
   <img alt="Arquitetura-framework" title="#Class diagram for representing digital phenotypes in the framework." src="/digitalPhenotype.jpeg" height="700" width="500"/>
+	  </h5>
+	
+	
+<h5 align="center">
 	<CAPTION>Fig.2 Class diagram for representing digital phenotypes in the framework.<CAPTION>
 </h5>
 
@@ -124,6 +128,9 @@ Figure~\ref{fig:estudo12} displays application screenshots developed for the fir
 
 <h5 align="center">
   <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpg" height="470" width="700"/>
+		</h5>
+	
+<h5 align="center">
 	<CAPTION>Fig.3 Application screens of the first case study.<CAPTION>
 </h5>
 
@@ -141,6 +148,9 @@ Figure~\ref{fig:plugin} displays screens of the application running over the <i>
 
 <h5 align="center">
   <img alt="Arquitetura-framework" title="#Application screens of the second case study." src="/c.jpg" height="470" width="700"/>
+	</h5>
+	
+<h5 align="center">
 	<CAPTION>Fig.4 Application screens of the second case study.<CAPTION>
 </h5>
 
@@ -176,6 +186,10 @@ The results obtained show that the variation in energy consumption was small bet
 
 <h5 align="center">
   <img alt="Arquitetura-framework" title="#Results of experimental evaluations." src="/aval1.png"/>
+		</h5>
+	
+	
+<h5 align="center">
 	<CAPTION>Fig.5 Results of experimental evaluations.<CAPTION>
 </h5>
 
