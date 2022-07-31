@@ -91,13 +91,6 @@ Running, walking, driving are possible physical states of users that represent s
 	<CAPTION>Fig.2 Class diagram for representing digital phenotypes in the framework.<CAPTION>
 </h5>
 
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=\linewidth]{figuras/digitalPhenotype.jpeg}
-\caption{Class diagram for representing digital phenotypes in the framework.}
-\label{fig:digitalPhenotype}
-\end{figure}
-
 So the class diagram <i>DigitalPhenotypeEvent</i> can represent digital phenotyping events, such as: user identifier (<i>uid</i>), name of data processing module <i>dataProcessorName</i>, time of occurrence of the event (<i>startDateTime</i>, <i>endDateTime</i>), and the set of objects <i>DigitalPhenotypeEvent</i> make up a <i>DigitalPhenotype</i> representing the digital phenotype. The object Attribute can represent the properties of digital phenotyping events, such as: attribute name, value, type. The object Situation can represent the situation of interest, such as: name of the situation of interest (label) and description.
 
 ### Security in OpenDPMH
@@ -143,16 +136,9 @@ To add a new <i>DataProcessor</i> component to recognize high-level information 
 Figure~\ref{fig:plugin} displays screens of the application running over the <i>Core</i> part of the framework, which has already two data processing modules working (<i>Physical\_Sociability</i> and <i>Online\_Sociability</i>), as seen in Figure~\ref{fig:plugin} (a). After running the plugin, the <i>DataProcessor</i> component <i>Physical\_Activity</i> becomes available to be activated, as seen in Figure~\ref{fig:plugin} (b). Finally, as depicted in Figure~\ref{fig:plugin} (c), a dashboard summarizes different information regarding physical activity states, such as: the total number of each state, a graph with time series of each activity, and the last record of activity transition.
 
 <h5 align="center">
-  <img alt="Arquitetura-framework" title="#Application screens of the second case study." src="/c.jpg" height="700" width="500"/>
+  <img alt="Arquitetura-framework" title="#Application screens of the second case study." src="/c.jpg" height="470" width="700"/>
 	<CAPTION>Fig.4 Application screens of the second case study.<CAPTION>
 </h5>
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=\linewidth]{figuras/c.jpg}
-\caption{Application screens of the second case study.}
-\label{fig:plugin}
-\end{figure}
 
 The second case study demonstrates our framework working with its two parts integrated (<i>Core</i> and <i>Plugin</i>), which is a feature that allows mental health professionals to enhance the patient monitoring process using a digital phenotyping. Also, this extensibility feature enables the developer to implement different modules in plugins, which can be shared to be reused in other research.
 
@@ -188,13 +174,6 @@ The results obtained show that the variation in energy consumption was small bet
   <img alt="Arquitetura-framework" title="#Results of experimental evaluations." src="/aval1.png"/>
 	<CAPTION>Fig.5 Results of experimental evaluations.<CAPTION>
 </h5>
-
-\begin{figure*}[!htb]
-\centering
-\includegraphics[width=\linewidth]{figuras/aval1.png}
-\caption{Results of experimental evaluations.}
-\label{fig:aval1}
-\end{figure*}
 
 ### Adding a Plugin
 
