@@ -36,7 +36,7 @@ The framework <i>OpenDPMH</i> (abbreviation for <b>Open</b> <b>D</b>igital <b>P<
 
 ### Architecture
 
-The framework <i>OpenDPMH</i> is implemented in the Java language for the Android operating system. The project is open source, available on GitHub~\cite{githubjean} under the LGPL-3.0 license. It is divided into two main parts: <i>Core</i> and <i>Plugin</i>, as illustrated in the framework architecture in Figure~\ref{fig:framework}. <i>Core</i> part is consumed by a main application and provides features for the management of sensors, raw data processing modules, one or more plugins, and data composition and distribution. The <i>OpenDPMH</i> architecture is enabled to add plugins (<i>Plugin</i> part in Figure~\ref{fig:framework}), which extend the framework's capabilities by allowing the addition of new data processing modules.
+The framework <i>OpenDPMH</i> is implemented in the Java language for the Android operating system. The project is open source, available on <a href="https://github.com/jeancomp/OpenDPMH">GitHub</a> under the LGPL-3.0 license. It is divided into two main parts: <i>Core</i> and <i>Plugin</i>, as illustrated in the framework architecture in Figure~\ref{fig:framework}. <i>Core</i> part is consumed by a main application and provides features for the management of sensors, raw data processing modules, one or more plugins, and data composition and distribution. The <i>OpenDPMH</i> architecture is enabled to add plugins (<i>Plugin</i> part in Figure~\ref{fig:framework}), which extend the framework's capabilities by allowing the addition of new data processing modules.
 
 
 <h5 align="center">
