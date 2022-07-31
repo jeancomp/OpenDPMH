@@ -126,16 +126,9 @@ By using the <i>OpenDPMH</i>, two <i>DataProcessor</i> components were implement
 Figure~\ref{fig:estudo12} displays application screenshots developed for the first case study. After activating the <i>DataProcessor</i> components available in the application, the user can visualize them with status ``on'' (i.e., running), as shown in Figure~\ref{fig:estudo12}(a). When clicking on the <i>Physical\_Sociability</i> component card, the application depicts a dashboard of event logs (Figure~\ref{fig:estudo12}(b)), with information such as date and time of the last event, a graph showing the number of conversations in person (x-axis shows the day, and y-axis is the number of conversation records), and a button to finish the processing. Figure~\ref{fig:estudo12}(c) displays a dashboard of the <i>Online\_Sociability</i> component, with different information regarding phone calls and SMS messages, such as: date and time of the last record (call and message), the number and type of call (incoming, outgoing or missed) and message (incoming and outgoing).
 
 <h5 align="center">
-  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpg" height="400" width="700"/>
+  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpg" height="470" width="700"/>
 	<CAPTION>Fig.3 Application screens of the first case study.<CAPTION>
 </h5>
-
-\begin{figure}[!htb]
-\centering
-\includegraphics[width=\linewidth]{figuras/b.jpg}
-\caption{Application screens of the first case study.}
-\label{fig:estudo12}
-\end{figure}
 
 Screenshots in Figures~\ref{fig:estudo12} (b) and (c) present a preview of what is produced from the Maria's smartphone and can be visualized by Andressa in a consumer application. As shown, the application is able to monitor the day-to-day sociability of patients in treatments, so recording the moments when they socialize. From identified situations of interest (sociability in the case study), psychologists can make more appropriate and evidence-based interventions. Therefore, this illustrative case study shows that a developer can use the <i>OpenDPMH</i> framework to implement data processing modules (i.e., <i>DataProcessor</i> components) capable of generating situations of interest relevant to the mental health professional. Moreover, as the framework provides reusable code available to be instantiated or put into execution (e.g., virtual and physical sensors, data distribution mechanisms), the digital phenotyping application of this case study was easily implemented, so the proposed solution can facilitate the development process.
 
