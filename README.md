@@ -126,7 +126,7 @@ By using the <i>OpenDPMH</i>, two <i>DataProcessor</i> components were implement
 Figure~\ref{fig:estudo12} displays application screenshots developed for the first case study. After activating the <i>DataProcessor</i> components available in the application, the user can visualize them with status ``on'' (i.e., running), as shown in Figure~\ref{fig:estudo12}(a). When clicking on the <i>Physical\_Sociability</i> component card, the application depicts a dashboard of event logs (Figure~\ref{fig:estudo12}(b)), with information such as date and time of the last event, a graph showing the number of conversations in person (x-axis shows the day, and y-axis is the number of conversation records), and a button to finish the processing. Figure~\ref{fig:estudo12}(c) displays a dashboard of the <i>Online\_Sociability</i> component, with different information regarding phone calls and SMS messages, such as: date and time of the last record (call and message), the number and type of call (incoming, outgoing or missed) and message (incoming and outgoing).
 
 <h5 align="center">
-  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpg" height="700" width="500"/>
+  <img alt="Arquitetura-framework" title="#Application screens of the first case study." src="/b.jpg" height="400" width="700"/>
 	<CAPTION>Fig.3 Application screens of the first case study.<CAPTION>
 </h5>
 
@@ -192,7 +192,7 @@ The objective of the first evaluation was to analyze the impact of energy consum
 The results obtained show that the variation in energy consumption was small between the modes of composition of digital phenotypes for a period of 10 hours, as can be seen in Figure~\ref{fig:aval1}a. In us setups 2 and 3, there was a consumption of 8\% of the battery (3000 mAh) for the interval that the phenotypes are distributed every 15 minutes and 7\% for 45 minutes. In compositing mode <i>group\_all</i>, there was 10\% power consumption, and 13\% in <i>send\_when\_it\_arrives</i>. Comparing the three modes of phenotype composition with each other, we observed that there was a higher consumption for the mode <i>send\_when\_it\_arrives</i>, as there is an increase in the frequency of data distribution to the  broker external. For digital phenotype composite mode <i>send\_when\_it\_arrives</i>, all information that arrives at the <i>PhenotypeComposer</i> it's distributed to the broker immediately. Therefore, among the three composition modes, it is the one that consumes the most energy. In phenotype composition mode <i>group\_all</i>, the frequency is based on the data processor's data generation frequency: the rule for distributing the data in the <i>PhenotypeComposer</i> it's satisfied when all the data from the active modules arrives. Now for the mode <i>frequency</i>, the higher the frequency of data distribution for the broker, the greater the energy consumption.
 
 <h5 align="center">
-  <img alt="Arquitetura-framework" title="#Results of experimental evaluations." src="/aval1.png" height="700" width="500"/>
+  <img alt="Arquitetura-framework" title="#Results of experimental evaluations." src="/aval1.png"/>
 	<CAPTION>Fig.5 Results of experimental evaluations.<CAPTION>
 </h5>
 
