@@ -40,6 +40,7 @@ The framework <i>OpenDPMH</i> is implemented in the Java language for the Androi
 
 <h1 align="center">
   <img alt="Arquitetura-framework" title="#Arquitetura" src="/framework.png" />
+  <CAPTION>Fig.1 Architecture<CAPTION>
 </h1>
 
 The <i>Core</i> runs two CDDL instances. The first starts from the <i>DPManager</i> component and connects to a MQTT micro broker that serves for communication between all framework components. This also enables the communication between components of the <i>Core</i> and <i>Plugin</i>. The second CDDL instance is in the <i>PhenotypeComposer</i> and is used to establish a communication channel with an external broker to distribute a data structure that we call <i>Digital Phenotype</i>. This is a Java class with attributes to represent raw context data and high-level information (i.e., digital phenotyping events, described in Section~\ref{digitalPhenotypeEvent}). High-level information may correspond to human behaviors and habits (e.g., sociability, physical activity, mobility, sleep), and other information of interest for mental health professionals (e.g., environmental context, mood). Other systems (i.e., dashboards for data visualization by professionals) connected to the MQTT external broker can subscribe to receive patient information.
