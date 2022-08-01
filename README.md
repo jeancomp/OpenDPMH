@@ -167,9 +167,11 @@ The objective of the first evaluation was to analyze the impact of energy consum
     <ul> <li><b>Setup 1:</b>
 		<ol> <li>Smartphone in factory settings without any application developed with the framework running.</li></ol>
 	<li><b>Setup 2:</b>
-		<ol>Only core application running;</ol>
-		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
-		<ol>Composition mode: frequency - high (15 min).</ol>
+		<ol>
+			<li>Only core application running;</li>
+			<li>Processing modules: Physical Activity and Physical Sociability;</li>
+			<li>Composition mode: frequency - high (15 min).</li>
+		</ol>
 	<li><b>Setup 3:</b>
 		<ol>Only core application running;</ol>
 		<ol>Processing modules: Physical Activity and Physical Sociability;</ol>
