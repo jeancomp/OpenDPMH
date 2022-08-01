@@ -261,10 +261,16 @@ The third evaluation aimed to analyze the consumption when activating the securi
 
 The objective of the third evaluation was to show the impact on energy consumption when activating the security feature provided in the framework. For that, we use the core used two data processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) with the same settings. We select the mode of composition of digital phenotype's <i>frequency</i> high (distributing data every 15 minutes). This mode was chosen due to ensure that the same amount of data would be distributed across both setups, which are presented below.
 
-\begin{enumerate}
-    \item {\small <b>{Setup 1</b>}: Only core application running; Processing modules: <i>Physical\_Activity</i> and <i>Physical\_Sociability</i>; Composition mode: <i>frequency</i> high (15 min); <b>No security};}
-    \item {\small <b>{Setup 2</b>}: Only core application running; Processing modules: <i>Physical\_Activity</i> and <i>Physical\_Sociability</i>; Composition mode: <i>frequency</i> high (15 min); <b>Safely</b>.}
-\end{enumerate}
+• Setup 1:
+– Only core application running;
+- Processing modules: Physical Activity and Physical Sociability;
+– Composition mode: frequency - high (15 min);
+– Safe mode disabled.
+• Setup 2:
+– Only core application running;
+– Processing modules: Physical Activity and Physical Sociability;
+– Composition mode: frequency high (15 min);
+– Safe mode enabled.
 
 The results show that there is not a big difference when using the security feature provided by the framework, as shown in Figure~\ref{fig:aval1}c. Consumption was 8\% in the setup 1 (no security), and 10\% in the second experiment using security: a 2\% difference in energy consumption impact. We believe that this difference in consumption of 2\% was due to the message encryption process, since every message sent from the core to broker pass is encrypted. To encrypt, there is additional processing and the size of the transmitted message is increased.
 
