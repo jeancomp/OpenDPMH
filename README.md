@@ -164,13 +164,18 @@ We performed the first experimental evaluation to analyze the impact of energy c
 
 The objective of the first evaluation was to analyze the impact of energy consumption caused by the framework working with two processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) of data in the three modes of composition of digital phenotypes (<i>frequency</i>, <i>group\_all</i> and <i>send\_when\_it\_arrives</i>). The way <i>frequency</i> used two frequency settings for sending data to the broker:high (every 15 minutes) and low (every 45 minutes). The module <i>Physical\_Activity</i> was configured so, if no activity was inferred within a period of one minute, it would trigger a message with no data to the <i>PhenotypeComposer</i>. The purpose of this condition was not to let the <i>PhenotypeComposer</i> without receiving data for a long time. The module <i>Physical\_Sociability</i>  was set to process for one minute and pause for 3 minutes. These module settings remained fixed across all assessments. In this way, we created five scenarios (setups) for the first evaluation, as seen below.
 
-    <ul>
-	    <li><b>Setup 1:</b>
-		<ol>
-			<li>Smartphone in factory settings without any application developed with the framework running.</li>
-	    	</ol>
-	    </li>
-    </ul>
+
+		
+		
+		<ul> <li><i>PhenotypeComposer</i>: service responsible for creating digital phenotype objects to be distributed via CDDL. To enable data buffer, this component works in three different modes:
+
+<ol>
+    <li> <i>send_when_it_arrives</i>: this is the simplest composition mode. When digital phenotyping events and raw context data arrive at the <i>PhenotypeComposer</i>, it immediately distributes them via the MQTT broker external. Therefore, in this mode, data is not buffered. Such mode is important for applications that mental health professionals require (near) real-time information;</li>
+    <li> <i>group_all</i>: this mode distributes digital phenotypes only when digital phenotyping events from all active <i>DataProcessor</i> components arrives. While such condition is not satisfied, raw context data and digital phenotyping events and information is stored in a database (using model - Digital Phenotype Model);</li>
+    <li> <i>frequency</i>: it has a schedule that controls the distribution of high-level information to the broker external, based on the frequency (e.g., seconds, minutes, hours) previously defined when starting the framework. When firing the schedule, all high-level information stored in the database (using model - Digital Phenotype Model) is retrieved and distributed to the broker external.</li>
+</ol>
+	</li>
+	</ul>	
 
 The results obtained show that the variation in energy consumption was small between the modes of composition of digital phenotypes for a period of 10 hours, as can be seen in Figure~\ref{fig:aval1}a. In us setups 2 and 3, there was a consumption of 8\% of the battery (3000 mAh) for the interval that the phenotypes are distributed every 15 minutes and 7\% for 45 minutes. In compositing mode <i>group\_all</i>, there was 10\% power consumption, and 13\% in <i>send\_when\_it\_arrives</i>. Comparing the three modes of phenotype composition with each other, we observed that there was a higher consumption for the mode <i>send\_when\_it\_arrives</i>, as there is an increase in the frequency of data distribution to the  broker external. For digital phenotype composite mode <i>send\_when\_it\_arrives</i>, all information that arrives at the <i>PhenotypeComposer</i> it's distributed to the broker immediately. Therefore, among the three composition modes, it is the one that consumes the most energy. In phenotype composition mode <i>group\_all</i>, the frequency is based on the data processor's data generation frequency: the rule for distributing the data in the <i>PhenotypeComposer</i> it's satisfied when all the data from the active modules arrives. Now for the mode <i>frequency</i>, the higher the frequency of data distribution for the broker, the greater the energy consumption.
 
