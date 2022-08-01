@@ -259,20 +259,32 @@ The results of the second evaluation show that there was a difference in energy 
 
 The third evaluation aimed to analyze the consumption when activating the security of the framework.
 
-The objective of the third evaluation was to show the impact on energy consumption when activating the security feature provided in the framework. For that, we use the core used two data processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) with the same settings. We select the mode of composition of digital phenotype's <i>frequency</i> high (distributing data every 15 minutes). This mode was chosen due to ensure that the same amount of data would be distributed across both setups, which are presented below.
+The objective of the third evaluation was to show the impact on energy consumption when activating the security feature provided in the framework. For that, we use the core used two data processing modules (<i>Physical\_Activity</i> and <i>Physical\_Sociability</i>) with the same settings. We select the mode of composition of digital phenotypes <i>frequency</i> high (distributing data every 15 minutes). This mode was chosen due to ensure that the same amount of data would be distributed across both setups, which are presented below.
 
-• Setup 1:
-– Only core application running;
-- Processing modules: Physical Activity and Physical Sociability;
-– Composition mode: frequency - high (15 min);
-– Safe mode disabled.
-• Setup 2:
-– Only core application running;
-– Processing modules: Physical Activity and Physical Sociability;
-– Composition mode: frequency high (15 min);
-– Safe mode enabled.
+<ul>
+	<li>
+		<b>Setup 1:</b>
+		<ol>
+			<li>
+			– Only core application running;
+			- Processing modules: Physical Activity and Physical Sociability;
+			– Composition mode: frequency - high (15 min);
+			– Safe mode disabled.
+			</li>
+		</ol>
+	</li>
+		<ol>
+		<b>Setup 2:</b>
+			<li>
+			– Only core application running;
+			– Processing modules: Physical Activity and Physical Sociability;
+			– Composition mode: frequency high (15 min);
+			– Safe mode enabled.
+			</li>
+		</ol>
+</ul>
 
-The results show that there is not a big difference when using the security feature provided by the framework, as shown in Figure~\ref{fig:aval1}c. Consumption was 8\% in the setup 1 (no security), and 10\% in the second experiment using security: a 2\% difference in energy consumption impact. We believe that this difference in consumption of 2\% was due to the message encryption process, since every message sent from the core to broker pass is encrypted. To encrypt, there is additional processing and the size of the transmitted message is increased.
+The results show that there is not a big difference when using the security feature provided by the framework, as shown in Figure 5c. Consumption was 8\% in the setup 1 (no security), and 10\% in the second experiment using security: a 2\% difference in energy consumption impact. We believe that this difference in consumption of 2\% was due to the message encryption process, since every message sent from the core to broker pass is encrypted. To encrypt, there is additional processing and the size of the transmitted message is increased.
 
 These results show the cost related to battery consumption when activating the security feature, which was not high. Thus, we believe that the use of security in the framework is not a fact that can compromise the use of a digital phenotyping application developed with the <i>OpenDPMH</i>. Therefore, the developer can use this feature to ensure data distribution protection.
 
