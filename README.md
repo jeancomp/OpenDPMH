@@ -270,15 +270,15 @@ The objective of the third evaluation was to show the impact on energy consumpti
 			<li>Composition mode: frequency - high (15 min);</li>
 			<li>Safe mode disabled.</li>
 		</ol>
+	</li>
 		
+	<li>
 		<b>Setup 2:</b>
 		<ol>
-			<li>
-			– Only core application running;
-			– Processing modules: Physical Activity and Physical Sociability;
-			– Composition mode: frequency high (15 min);
-			– Safe mode enabled.
-			</li>
+			<li>Only core application running;</li>
+			<li>Processing modules: Physical Activity and Physical Sociability;</li>
+			<li>Composition mode: frequency high (15 min);</li>
+			<li>Safe mode enabled.</li>
 		</ol>
 	</li>
 </ul>
