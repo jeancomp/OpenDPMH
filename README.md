@@ -273,6 +273,8 @@ The objective of the third evaluation was to show the impact on energy consumpti
 			</li>
 		</ol>
 	</li>
+	
+	<li>
 		<ol>
 		<b>Setup 2:</b>
 			<li>
@@ -282,6 +284,7 @@ The objective of the third evaluation was to show the impact on energy consumpti
 			– Safe mode enabled.
 			</li>
 		</ol>
+	</li>
 </ul>
 
 The results show that there is not a big difference when using the security feature provided by the framework, as shown in Figure 5c. Consumption was 8\% in the setup 1 (no security), and 10\% in the second experiment using security: a 2\% difference in energy consumption impact. We believe that this difference in consumption of 2\% was due to the message encryption process, since every message sent from the core to broker pass is encrypted. To encrypt, there is additional processing and the size of the transmitted message is increased.
