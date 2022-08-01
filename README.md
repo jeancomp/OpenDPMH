@@ -271,7 +271,9 @@ The objective of the third evaluation was to show the impact on energy consumpti
 			<li>Safe mode disabled.</li>
 		</ol>
 	</li>
+	</ul>
 		
+	<ul>
 	<li>
 		<b>Setup 2:</b>
 		<ol>
