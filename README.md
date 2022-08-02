@@ -93,8 +93,7 @@ Linux & Windows:
 ```sh
 3º option (apk): under construction... 
 ```
-
-Example-of-use
+```sh
 -----
 DPManager
 ```sh
