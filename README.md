@@ -4,12 +4,12 @@ A framework aimed at identifying behavior patterns, habits, customs of monitored
 </p>
 
 ## 📋 Requirements
----
+
 * Android version: 6
 * Android API Version: minSdkVersion > 26
 
 ## 📖  Documentation
----
+
 ### Composition mode:
 
  Composition mode is the app's behavior when a new data is collected by the middleware. The possibilities are:
@@ -36,14 +36,14 @@ digitalPhenotypingManager.stop();
 ```
 
 ## 🧰 Plugin
----
+
 > The plugin is the possibility to create another app that could connect with a previous OpenDPMH app installed on mobile, without the necessity to uninstall this.
 
 ### [Plugin Repository](https://github.com/jeancomp/Plugin)
 
 
 ## 👏 Contributing
---- 
+ 
 
 OpenDPMH is an open-source project. If there's a a bug, or other improvement you'd like, we encourage you to contribute!
 
