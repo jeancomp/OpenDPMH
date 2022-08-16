@@ -48,3 +48,9 @@ digitalPhenotypingManager.stop();
 OpenDPMH is an open-source project. If there's a a bug, or other improvement you'd like, we encourage you to contribute!
 
 If you want to contact directly us, feel free by email: [![Gmail Badge](https://img.shields.io/badge/-ariel@lsdi.ufma.br-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:ariel@lsdi.ufma.br)](mailto:ariel@lsdi.ufma.br)
+
+## 📄 License
+
+OpenDPMH is LGPL-v3.0 licensed, as found in the [LICENSE][l] file.
+
+[l]: https://github.com/jeancomp/OpenDPMH/blob/master/LICENSE.md
