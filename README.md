@@ -1,6 +1,10 @@
-# OpenDPMH - Framework to Facilitate the Development of Digital Phenotyping Applications
+# OpenDPMH: An Extensible Framework for Developing Mobile Sensing Applications of Digital Phenotyping
 <p align="center">
-A framework aimed at identifying behavior patterns, habits, customs of monitored individuals through the collection of data from physical and virtual sensors.
+OpenDPMH is a framework for developing mobile sensing applications able to collect useful user information for Digital Phenotyping of Mental Health (DPMH).
+</p>
+
+<p align="center">
+  <img src="https://github.com/jeancomp/OpenDPMH/blob/master/open-dpmh-example.jpg" alt="OpenDPMH" width="300" />
 </p>
 
 ## 📋 Requirements
@@ -37,7 +41,7 @@ digitalPhenotypingManager.stop();
 
 ## 🧰 Plugin
 
-> The plugin is the possibility to create another app that could connect with a previous OpenDPMH app installed on mobile, without the necessity to uninstall this.
+> The OpenDPMH architecture is enabled to add plugins, which extend the framework's capabilities by allowing the addition of new data processing modules.
 
 ### [Plugin Repository](https://github.com/jeancomp/Plugin)
 
@@ -45,9 +49,9 @@ digitalPhenotypingManager.stop();
 ## 👏 Contributing
  
 
-OpenDPMH is an open-source project. If there's a a bug, or other improvement you'd like, we encourage you to contribute!
+OpenDPMH is an open-source project. If there is a bug, or other improvement you would like to report or request, we encourage you to contribute.
 
-If you want to contact directly us, feel free by email: [![Gmail Badge](https://img.shields.io/badge/-ariel@lsdi.ufma.br-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:ariel@lsdi.ufma.br)](mailto:ariel@lsdi.ufma.br)
+Please, feel free to contact us for any questions: [![Gmail Badge](https://img.shields.io/badge/-ariel@lsdi.ufma.br-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:ariel@lsdi.ufma.br)](mailto:ariel@lsdi.ufma.br)
 
 ## 📄 License
 
