@@ -30,7 +30,7 @@ public class Attribute {
         this.type = type;
     }
 
-    public boolean isQualityAttribute() {
+    public boolean getQualityAttribute() {
         return qualityAttribute;
     }
 
@@ -43,7 +43,7 @@ public class Attribute {
                 "label=" + getLabel() +
                 ", value='" + getValue() + '\'' +
                 ", type=" + getType() +
-                ", qualityAttribute='" + isQualityAttribute() + '\'' +
+                ", qualityAttribute='" + getQualityAttribute() + '\'' +
                 '}';
     }
 }
