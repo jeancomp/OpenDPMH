@@ -42,6 +42,7 @@ import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DistributePhenotypeWork;
@@ -330,11 +331,11 @@ public class PhenotypeComposer extends Service {
     }
 
 
-    DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+    Situation digitalPhenotypeEvent = new Situation();
     Phenotypes phenotype = new Phenotypes();
     DigitalPhenotype digitalPhenotype = new DigitalPhenotype();
     String stringPhenotype = "";
-    DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+    Situation dpe = new Situation();
     Phenotypes phenotypes = new Phenotypes();
     Phenotypes phenotypesFreq = new Phenotypes();
     public ISubscriberListener subscriberRawDataInferenceResultListener = new ISubscriberListener() {
@@ -389,7 +390,7 @@ public class PhenotypeComposer extends Service {
                             }*/
                             if (all) {
                                 Log.i(TAG,"#### tt VAI IMPRIMIR");
-                                digitalPhenotype.setDpeList(digitalPhenotypeEvent);
+                                digitalPhenotype.setSituationList(digitalPhenotypeEvent);
 
                                 // Retrieve information
                                 phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
@@ -397,14 +398,14 @@ public class PhenotypeComposer extends Service {
                                     stringPhenotype = phenotype.getPhenotype();
                                     dpe = phenotype.getObjectFromString(stringPhenotype);
 
-                                    digitalPhenotype.setDpeList(dpe);
+                                    digitalPhenotype.setSituationList(dpe);
 
                                     // Remove from database
                                     databaseManager.getInstance().getDB().phenotypeDAO().delete(phenotype);
 
                                     phenotype = databaseManager.getInstance().getDB().phenotypeDAO().findByPhenotypeAll();
                                 }
-                                if (digitalPhenotype.getDigitalPhenotypeEventList().size() > 0) {
+                                if (digitalPhenotype.getSituationList().size() > 0) {
                                     // Publish the information
                                     publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotype);
                                 }
@@ -523,9 +524,9 @@ public class PhenotypeComposer extends Service {
         return jsonString;
     }
 
-    public DigitalPhenotypeEvent objectFromString(String jsonString){
-        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
-        DigitalPhenotypeEvent digitalPhenotypeEvent = new Gson().fromJson(jsonString, listType);
-        return digitalPhenotypeEvent;
+    public Situation objectFromString(String jsonString){
+        Type listType = new TypeToken<Situation>(){}.getType();
+        Situation situationEvent = new Gson().fromJson(jsonString, listType);
+        return situationEvent;
     }
 }

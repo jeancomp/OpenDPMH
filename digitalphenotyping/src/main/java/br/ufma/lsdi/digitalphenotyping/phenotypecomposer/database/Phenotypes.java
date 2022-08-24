@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 @Entity(tableName = "phenotypes")
 public class Phenotypes{
@@ -31,9 +32,9 @@ public class Phenotypes{
         phenotype = jsonString;
     }
 
-    public DigitalPhenotypeEvent getObjectFromString(String jsonString){
-        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
-        DigitalPhenotypeEvent dpe = new Gson().fromJson(jsonString, listType);
+    public Situation getObjectFromString(String jsonString){
+        Type listType = new TypeToken<Situation>(){}.getType();
+        Situation dpe = new Gson().fromJson(jsonString, listType);
         return dpe;
     }
 }

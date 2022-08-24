@@ -10,6 +10,7 @@ import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class PublishPhenotype {
     private static final String TAG = PublishPhenotype.class.getName();
@@ -34,9 +35,9 @@ public class PublishPhenotype {
         return instance;
     }
 
-    public void publishPhenotypeComposer(DigitalPhenotypeEvent dpe){
+    public void publishPhenotypeComposer(Situation dpe){
         DigitalPhenotype dp = new DigitalPhenotype();
-        dp.setDpeList(dpe);
+        dp.setSituationList(dpe);
         String valor = stringFromObject(dp);
 
         Message message = new Message();
@@ -51,21 +52,21 @@ public class PublishPhenotype {
         try{
             //Log.i(TAG,"#### TOTAL: " + digitalPhenotypeList.getDigitalPhenotypeEventList().size());
 
-            DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+            Situation dpe = new Situation();
             DigitalPhenotype dp = new DigitalPhenotype();
             Message msg = new Message();
             Publisher pub = PublisherFactory.createPublisher();
             pub.addConnection(saveConnection.getInstance().getConnection());
 
-            for (int i = 0; i < digitalPhenotypeList.getDigitalPhenotypeEventList().size(); i++) {
+            for (int i = 0; i < digitalPhenotypeList.getSituationList().size(); i++) {
                 //Log.i(TAG, "#### Data Publish to Server");
 
                 //Log.i(TAG,"#### >>>>>>> " + digitalPhenotypeList.getDigitalPhenotypeEventList().get(i).toString());
 
-                dpe = digitalPhenotypeList.getDigitalPhenotypeEventList().get(i);
+                dpe = digitalPhenotypeList.getSituationList().get(i);
 
                 dp = new DigitalPhenotype();
-                dp.setDpeList(dpe);
+                dp.setSituationList(dpe);
                 String valor = stringFromObject(dp);
 
                 msg.setServiceName("opendpmh");

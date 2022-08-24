@@ -3,18 +3,18 @@ package br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class DigitalPhenotype {
-    public List<DigitalPhenotypeEvent> dpeList = new ArrayList();
+    public List<Situation> situationList = new ArrayList();
 
     public DigitalPhenotype(){}
 
-    public List<DigitalPhenotypeEvent> getDigitalPhenotypeEventList(){
-        return dpeList;
+    public List<Situation> getSituationList(){
+        return situationList;
     }
 
-    public void setDpeList(DigitalPhenotypeEvent digitalPhenotypeEvent){
-        dpeList.add(digitalPhenotypeEvent);
+    public void setSituationList(Situation situation){
+        situationList.add(situation);
     }
 }

@@ -11,10 +11,10 @@ public class Situation {
     private String description = "";
     private String dataProcessorName = "";
     private LocalDateTime startDateTime = LocalDateTime.now();
-
     private LocalDateTime endDateTime = LocalDateTime.now();
-
     private List<Attribute> attributesList = new ArrayList();
+
+    public Situation() { }
 
     public void setDataProcessorName(String dataProcessorName) {
         this.dataProcessorName = dataProcessorName;
@@ -75,5 +75,17 @@ public class Situation {
 
     public String getDescription() {
         return description;
+    }
+
+    public String toString(){
+        return "Situation{" +
+                "DataProcessorName=" + getDataProcessorName() +
+                ", Uid=" + getUid() + '\'' +
+                //", StartDateTime=" + getStartDateTime() + '\'' +
+                //", EndDateTime='" + getEndDateTime() + '\'' +
+                ", Attributes='" + getAttributes().toString() + '\'' +
+                "label=" + getLabel() +
+                ", description='" + getDescription() + '\'' +
+                '}';
     }
 }
