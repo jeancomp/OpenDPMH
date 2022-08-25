@@ -23,7 +23,7 @@ import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
 import br.ufma.lsdi.digitalphenotyping.processormanager.services.handlingexceptions.InvalidSensorNameException;
@@ -128,7 +128,7 @@ public abstract class DataProcessor extends Service {
     }
 
 
-    public void saveDigitalPhenotypeEvent(DigitalPhenotypeEvent digitalPhenotypeEvent){
+    public void saveDigitalPhenotypeEvent(Situation digitalPhenotypeEvent){
         PhenotypesEvent phenotypesEvent = new PhenotypesEvent();
         phenotypesEvent.setDataProcessorName(digitalPhenotypeEvent.getDataProcessorName());
         phenotypesEvent.stringFromObject(digitalPhenotypeEvent);

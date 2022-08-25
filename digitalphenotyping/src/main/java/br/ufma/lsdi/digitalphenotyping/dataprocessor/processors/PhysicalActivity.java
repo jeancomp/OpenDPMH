@@ -23,7 +23,6 @@ import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.TriggerAlarm1;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.handlingexceptions.InvalidDataProcessorNameException;
@@ -43,7 +42,7 @@ public class PhysicalActivity extends DataProcessor {
     private Intent i;
 
     @Override
-    public void init(){
+    public void init() {
         try {
             setDataProcessorName("PhysicalActivity");
 
@@ -52,7 +51,7 @@ public class PhysicalActivity extends DataProcessor {
             startService(i);
 
             triggerAlarm1 = new TriggerAlarm1();
-            triggerAlarm1.getInstance().set(false);
+            TriggerAlarm1.getInstance().set(false);
             thread = new Thread(new ProcessTrigger());
             thread.start();
         } catch (InvalidDataProcessorNameException e) {
@@ -71,9 +70,9 @@ public class PhysicalActivity extends DataProcessor {
 
         @Override
         public void run() {
-            while(!Thread.interrupted()) {
+            while (!Thread.interrupted()) {
                 SystemClock.sleep(tempoDeEspera);
-                if (!triggerAlarm1.getInstance().get()) {
+                if (!TriggerAlarm1.getInstance().get()) {
                     //cria uma mensagem nula: nenhum dado de sensor foi gerado no intervalo de 1 min
                     long timestamp = System.currentTimeMillis();
                     String label = "Nenhum_dado";
@@ -90,22 +89,22 @@ public class PhysicalActivity extends DataProcessor {
 
                     onSensorDataArrived(message);
                 }
-                triggerAlarm1.getInstance().set(false);
+                TriggerAlarm1.getInstance().set(false);
             }
         }
     }
 
 
     @Override
-    public void onSensorDataArrived(Message message){
+    public void onSensorDataArrived(Message message) {
         inferencePhenotypingEvent(message);
     }
 
 
     @Override
-    public void inferencePhenotypingEvent(Message message){
-        Log.i("PhysicalActivity","#### MSG ORIGINAL PhysicalActivity: " + message);
-        DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+    public void inferencePhenotypingEvent(Message message) {
+        Log.i("PhysicalActivity", "#### MSG ORIGINAL PhysicalActivity: " + message);
+        Situation digitalPhenotypeEvent = new Situation();
         digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
         digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
@@ -117,19 +116,17 @@ public class PhysicalActivity extends DataProcessor {
         String mensagemRecebida2 = StringUtils.join(valor2, ",");
         String[] listAttributes = mensagemRecebida2.split(",");
 
-        Situation situation = new Situation();
-        situation.setLabel(listValues[0]);
-        situation.setDescription("Type of activity");
-        digitalPhenotypeEvent.setSituation(situation);
+        digitalPhenotypeEvent.setLabel(listValues[0]);
+        digitalPhenotypeEvent.setDescription("Type of activity");
 
-        if(!listAttributes[1].isEmpty() && !listValues[1].isEmpty()) {
+        if (!listAttributes[1].isEmpty() && !listValues[1].isEmpty()) {
             digitalPhenotypeEvent.setAttributes(listAttributes[1], listValues[1], "Integer", false);
         }
-        if(!listAttributes[2].isEmpty() && !listValues[2].isEmpty()) {
+        if (!listAttributes[2].isEmpty() && !listValues[2].isEmpty()) {
             digitalPhenotypeEvent.setAttributes(listAttributes[2], listValues[2], "Date", false);
         }
 
-        Log.i("PhysicalActivity","#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
+        Log.i("PhysicalActivity", "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent);
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();
@@ -139,11 +136,11 @@ public class PhysicalActivity extends DataProcessor {
     }
 
     @Override
-    public void dO(){
+    public void dO() {
     }
 
 
-    public void end(){
+    public void end() {
         if (thread != null) {
             thread.interrupt();
             thread = null;
@@ -163,15 +160,17 @@ public class PhysicalActivity extends DataProcessor {
 
 
     @Override
-    public IBinder onBind(Intent intent) { return mBinder; }
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
 
     private void initPermissions() {
         // Checa as permissões
         int PERMISSION_ALL = 1;
         String[] PERMISSIONS = {android.Manifest.permission.ACTIVITY_RECOGNITION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
 
-        if (!hasPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS)) {
-            ActivityCompat.requestPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
+        if (!hasPermissions(SaveActivity.getInstance().getActivity(), PERMISSIONS)) {
+            ActivityCompat.requestPermissions(SaveActivity.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);
         }
     }
 

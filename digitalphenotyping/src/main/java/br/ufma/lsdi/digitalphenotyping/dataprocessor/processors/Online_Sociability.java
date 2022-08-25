@@ -24,7 +24,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
-public class Online_Sociability extends DataProcessor{
+public class Online_Sociability extends DataProcessor {
     private static final String TAG = Online_Sociability.class.getName();
     private SaveActivity saveActivity = SaveActivity.getInstance();
     private List<String> listSensors = new ArrayList();
@@ -40,7 +40,7 @@ public class Online_Sociability extends DataProcessor{
             listSensors.add("Call");
             listSensors.add("SMS");
             startSensor(listSensors);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "#### Error: " + e.toString());
         }
     }
@@ -53,10 +53,10 @@ public class Online_Sociability extends DataProcessor{
 
 
     @Override
-    public void inferencePhenotypingEvent(Message message){
+    public void inferencePhenotypingEvent(Message message) {
         try {
             Log.i(TAG, "#### MSG ORIGINAL ONLINE_SOCIABILITY: " + message);
-            DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+            Situation digitalPhenotypeEvent = new Situation();
             digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
             digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
@@ -69,10 +69,8 @@ public class Online_Sociability extends DataProcessor{
             String[] listAttributes = mensagemRecebida2.split(",");
 
             if (message.getServiceName().equals("Call")) {
-                Situation situation = new Situation();
-                situation.setLabel("PhoneCall_Online_Sociability");
-                situation.setDescription("We identify Online_Sociability by the user through the phone call.");
-                digitalPhenotypeEvent.setSituation(situation);
+                digitalPhenotypeEvent.setLabel("PhoneCall_Online_Sociability");
+                digitalPhenotypeEvent.setDescription("We identify Online_Sociability by the user through the phone call.");
 
                 if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {
                     // Numero de telefone (Hash)
@@ -90,12 +88,9 @@ public class Online_Sociability extends DataProcessor{
                     // Duração(seg)
                     digitalPhenotypeEvent.setAttributes(listAttributes[4], listServiceValue[4], "Integer", false);
                 }
-            }
-            else if (message.getServiceName().equals("SMS")) {
-                Situation situation = new Situation();
-                situation.setLabel("SMS_Online_Sociability");
-                    situation.setDescription("We identify Online_Sociability by the user through the SMS.");
-                digitalPhenotypeEvent.setSituation(situation);
+            } else if (message.getServiceName().equals("SMS")) {
+                digitalPhenotypeEvent.setLabel("SMS_Online_Sociability");
+                digitalPhenotypeEvent.setDescription("We identify Online_Sociability by the user through the SMS.");
 
                 if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {
                     // Tipo Mensagem
@@ -123,14 +118,15 @@ public class Online_Sociability extends DataProcessor{
 
             sendProcessedData(msg);
             saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
     @Override
-    public void end(){}
+    public void end() {
+    }
 
 
     @Override
@@ -195,7 +191,7 @@ public class Online_Sociability extends DataProcessor{
 
             // Create Hex String
             StringBuffer hexString = new StringBuffer();
-            for (int i=0; i<messageDigest.length; i++)
+            for (int i = 0; i < messageDigest.length; i++)
                 hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
             return hexString.toString();
 

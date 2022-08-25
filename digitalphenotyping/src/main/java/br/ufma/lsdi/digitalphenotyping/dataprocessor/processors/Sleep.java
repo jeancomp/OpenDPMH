@@ -10,7 +10,6 @@ import java.util.List;
 import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class Sleep extends DataProcessor {
@@ -18,7 +17,7 @@ public class Sleep extends DataProcessor {
     List<String> sensorList = new ArrayList();
 
     @Override
-    public void init(){
+    public void init() {
         try {
             Log.i(TAG, "#### Running processor Sleep");
 
@@ -28,29 +27,27 @@ public class Sleep extends DataProcessor {
             //sensorList.add("Location");
             startSensor(sensorList);
 
-        }catch (Exception e){
-            Log.e(TAG, "Error: " + e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Error: " + e);
         }
     }
 
 
     @Override
-    public void onSensorDataArrived(Message message){
+    public void onSensorDataArrived(Message message) {
         inferencePhenotypingEvent(message);
     }
 
 
     @Override
-    public void inferencePhenotypingEvent(Message message){
-        Log.i(TAG,"#### MSG ORIGINAL SLEEP: " + message);
-        DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+    public void inferencePhenotypingEvent(Message message) {
+        Log.i(TAG, "#### MSG ORIGINAL SLEEP: " + message);
+        Situation digitalPhenotypeEvent = new Situation();
         digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
         digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
-        Situation situation = new Situation();
-        situation.setLabel("Touch");
-        situation.setDescription("Screen touch detection");
-        digitalPhenotypeEvent.setSituation(situation);
+        digitalPhenotypeEvent.setLabel("Touch");
+        digitalPhenotypeEvent.setDescription("Screen touch detection");
 
         Object[] valor1 = message.getServiceValue();
         String mensagemRecebida1 = StringUtils.join(valor1, ", ");
@@ -63,13 +60,13 @@ public class Sleep extends DataProcessor {
         /*if(!listAttrutes[0].isEmpty() && !listValues[0].isEmpty()) {
             digitalPhenotypeEvent.setAttributes(listAttrutes[0], listValues[0], "String", false);
         }*/
-        if(!listAttributes[2].isEmpty() && !listValues[2].isEmpty()) {
-            Log.i(TAG,"#### listAttributes[2]: " + listAttributes[2]);
-            Log.i(TAG,"#### listValues[2]: " + listValues[2]);
+        if (!listAttributes[2].isEmpty() && !listValues[2].isEmpty()) {
+            Log.i(TAG, "#### listAttributes[2]: " + listAttributes[2]);
+            Log.i(TAG, "#### listValues[2]: " + listValues[2]);
             digitalPhenotypeEvent.setAttributes(listAttributes[2], listValues[2], "Date", false);
         }
 
-        Log.i(TAG,"#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
+        Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent);
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();
@@ -82,5 +79,6 @@ public class Sleep extends DataProcessor {
 
 
     @Override
-    public void end(){ }
+    public void end() {
+    }
 }

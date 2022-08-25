@@ -27,7 +27,7 @@ import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Digit
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.AlarmAudio;
 
-public class Physical_Sociability extends DataProcessor{
+public class Physical_Sociability extends DataProcessor {
     private static final String TAG = Physical_Sociability.class.getName();
     private SaveActivity saveActivity = SaveActivity.getInstance();
     private List<String> listSensors = new ArrayList();
@@ -72,7 +72,7 @@ public class Physical_Sociability extends DataProcessor{
             triggerAlarm2.getInstance().set(false);
             flag = true;
             contador = 0;*/
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "#### Error: " + e.toString());
         }
     }
@@ -92,7 +92,7 @@ public class Physical_Sociability extends DataProcessor{
 
 
     @Override
-    public void dO(){
+    public void dO() {
         subscribeMessage(Topics.AUDIO_TOPIC.toString());
         initPermissions();
 
@@ -146,9 +146,9 @@ public class Physical_Sociability extends DataProcessor{
 
 
     @Override
-    public void inferencePhenotypingEvent(Message message){
+    public void inferencePhenotypingEvent(Message message) {
         try {
-            DigitalPhenotypeEvent digitalPhenotypeEvent = new DigitalPhenotypeEvent();
+            Situation digitalPhenotypeEvent = new Situation();
             digitalPhenotypeEvent.setDataProcessorName(getDataProcessorName());
             digitalPhenotypeEvent.setUid(CDDL.getInstance().getConnection().getClientId());
 
@@ -160,10 +160,8 @@ public class Physical_Sociability extends DataProcessor{
             String mensagemRecebida2 = StringUtils.join(valor2, ",");
             String[] listAttributes = mensagemRecebida2.split(",");
 
-            Situation situation = new Situation();
-            situation.setLabel("Physical_Sociability");
-            situation.setDescription("We identify Physical_Sociability by the user through the audio.");
-            digitalPhenotypeEvent.setSituation(situation);
+            digitalPhenotypeEvent.setLabel("Physical_Sociability");
+            digitalPhenotypeEvent.setDescription("We identify Physical_Sociability by the user through the audio.");
 
             if (!listAttributes[1].isEmpty() && !listServiceValue[1].isEmpty()) {
                 digitalPhenotypeEvent.setAttributes(listAttributes[1], listServiceValue[1], "String", false);
@@ -179,17 +177,17 @@ public class Physical_Sociability extends DataProcessor{
             msg.setServiceValue(json);
             sendProcessedData(msg);
             saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
     @Override
-    public void end(){
+    public void end() {
         try {
             alarm.desableAlarm();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -227,7 +225,7 @@ public class Physical_Sociability extends DataProcessor{
         // Checa as permissões para rodar os sensores virtuais
         int PERMISSION_ALL = 1;
 
-        String[] PERMISSIONS = { Manifest.permission.RECORD_AUDIO};
+        String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO};
         if (!hasPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS)) {
             Log.i(TAG, "##### Permission enabled!");
             ActivityCompat.requestPermissions(saveActivity.getInstance().getActivity(), PERMISSIONS, PERMISSION_ALL);

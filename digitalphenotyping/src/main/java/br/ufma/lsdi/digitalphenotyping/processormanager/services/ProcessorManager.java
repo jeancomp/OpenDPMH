@@ -36,7 +36,7 @@ import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Mobility;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.Online_Sociability;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.processors.PhysicalActivity;
@@ -602,7 +602,7 @@ public class ProcessorManager extends Service {
             String json = String.valueOf(separated[0]);
 
             if(json.isEmpty()) {
-                DigitalPhenotypeEvent digitalPhenotypeEvent = getObjectFromString(json);
+                Situation digitalPhenotypeEvent = getObjectFromString(json);
                 saveDigitalPhenotypeEvent(digitalPhenotypeEvent);
             }
         }
@@ -1025,14 +1025,14 @@ public class ProcessorManager extends Service {
     }
 
 
-    public DigitalPhenotypeEvent getObjectFromString(String jsonString){
-        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
-        DigitalPhenotypeEvent dpe = new Gson().fromJson(jsonString, listType);
+    public Situation getObjectFromString(String jsonString){
+        Type listType = new TypeToken<Situation>(){}.getType();
+        Situation dpe = new Gson().fromJson(jsonString, listType);
         return dpe;
     }
 
 
-    public void saveDigitalPhenotypeEvent(DigitalPhenotypeEvent digitalPhenotypeEvent){
+    public void saveDigitalPhenotypeEvent(Situation digitalPhenotypeEvent){
         PhenotypesEvent phenotypesEvent = new PhenotypesEvent();
         phenotypesEvent.setDataProcessorName(digitalPhenotypeEvent.getDataProcessorName());
         phenotypesEvent.stringFromObject(digitalPhenotypeEvent);
