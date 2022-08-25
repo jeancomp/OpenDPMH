@@ -10,7 +10,6 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 @Entity(tableName = "phenotypesevent")
@@ -27,30 +26,31 @@ public class PhenotypesEvent {
     @ColumnInfo(name = "phenotypeevent")
     String phenotypeevent;
 
-    public String getDataProcessorName(){
+    public String getDataProcessorName() {
         return dataProcessorName;
     }
 
-    public void setDataProcessorName(String dataProcessorName){
+    public void setDataProcessorName(String dataProcessorName) {
         this.dataProcessorName = dataProcessorName;
     }
 
-    public String getPhenotypeEvent(){
+    public String getPhenotypeEvent() {
         return phenotypeevent;
     }
 
-    public void setPhenotypeEvent(String str){
+    public void setPhenotypeEvent(String str) {
         this.phenotypeevent = str;
     }
 
-    public void stringFromObject(Situation dpe){
+    public void stringFromObject(Situation dpe) {
         Gson gson = new Gson();
         String jsonString = gson.toJson(dpe);
         phenotypeevent = jsonString;
     }
 
-    public Situation getObjectFromString(String jsonString){
-        Type listType = new TypeToken<Situation>(){}.getType();
+    public Situation getObjectFromString(String jsonString) {
+        Type listType = new TypeToken<Situation>() {
+        }.getType();
         Situation dpe = new Gson().fromJson(jsonString, listType);
         return dpe;
     }

@@ -6,18 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DigitalPhenotypeEvent {
-    private String dataProcessorName="";
-    private String uid="";
+    private String dataProcessorName = "";
+    private String uid = "";
     //private LocalDateTime startDateTime=LocalDateTime.now();;
     //private LocalDateTime endDateTime=LocalDateTime.now();;
-    private List<Attribute> attributesList = new ArrayList();
+    private final List<Attribute> attributesList = new ArrayList();
     private Situation situation;
 
-    public DigitalPhenotypeEvent(){ }
+    public DigitalPhenotypeEvent() {
+    }
 
-    public String getDataProcessorName(){ return dataProcessorName; }
+    public String getDataProcessorName() {
+        return dataProcessorName;
+    }
 
-    public void setDataProcessorName(String dataProcessorName) { this.dataProcessorName = dataProcessorName; }
+    public void setDataProcessorName(String dataProcessorName) {
+        this.dataProcessorName = dataProcessorName;
+    }
 
     public String getUid() {
         return uid;
@@ -65,7 +70,7 @@ public class DigitalPhenotypeEvent {
 
     }
 
-    public String toString(){
+    public String toString() {
         return "DigitalPhenotypeEvent{" +
                 "DataProcessorName=" + getDataProcessorName() +
                 ", Uid=" + getUid() + '\'' +
