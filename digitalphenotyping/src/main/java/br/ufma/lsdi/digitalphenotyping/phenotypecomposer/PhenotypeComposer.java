@@ -41,7 +41,6 @@ import br.ufma.lsdi.cddl.pubsub.Subscriber;
 import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.CompositionMode;
 import br.ufma.lsdi.digitalphenotyping.Topics;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.database.DatabaseManager;
 import br.ufma.lsdi.digitalphenotyping.phenotypecomposer.base.DigitalPhenotype;
@@ -346,7 +345,7 @@ public class PhenotypeComposer extends Service {
                 String mensagemRecebida = StringUtils.join(valor, ", ");
                 digitalPhenotypeEvent = objectFromString(mensagemRecebida);
 
-                if (lastCompositionMode == SEND_WHEN_IT_ARRIVES) { //Publish DigitalPhenotypeEvent
+                if (lastCompositionMode == SEND_WHEN_IT_ARRIVES) { //Publish Situation
                     if(!isConnectedBroker()){
                         throw new InvalidConnectionBroker("#### Error: Failed to connect to broker.");
                     }
@@ -427,7 +426,7 @@ public class PhenotypeComposer extends Service {
                         }
 
                         Log.i(TAG,"#### tt DIRETO");
-                        //Publish DigitalPhenotypeEvent
+                        //Publish Situation
                         publishPhenotype.getInstance().publishPhenotypeComposer(digitalPhenotypeEvent);
                     }
                 } else if (lastCompositionMode == FREQUENCY) {

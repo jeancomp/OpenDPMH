@@ -30,7 +30,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     /**
      * Gerencia os eventos de fenotipagem digital (e.g., chamada telefônica, SMS, Audio)
-     * @return DigitalPhenotypeEvent
+     * @return PhenotypesEventDAO
      */
     public abstract PhenotypesEventDAO phenotypesEventDAO();
 

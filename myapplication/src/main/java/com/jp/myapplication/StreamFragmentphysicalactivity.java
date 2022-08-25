@@ -51,7 +51,7 @@ import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Attribute;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 
 public class StreamFragmentphysicalactivity extends DemoBase {
@@ -183,10 +183,10 @@ public class StreamFragmentphysicalactivity extends DemoBase {
 
 
     public void setCardviewSettings() throws ParseException {
-        List<DigitalPhenotypeEvent> digitalPhenotypeEventList = new ArrayList();
+        List<Situation> digitalPhenotypeEventList = new ArrayList();
 
         for(int i = 0; i < phenotypesEventList.size(); i++){
-            DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+            Situation dpe = new Situation();
             String str = phenotypesEventList.get(i).getPhenotypeEvent();
             dpe = phenotypesEventList.get(i).getObjectFromString(str);
             digitalPhenotypeEventList.add(dpe);
@@ -209,7 +209,7 @@ public class StreamFragmentphysicalactivity extends DemoBase {
         long lastRecordFoot = 0;
         long lastRecord = 0;
         for(int i=0; i < digitalPhenotypeEventList.size(); i++){
-            String value = digitalPhenotypeEventList.get(i).getSituation().getLabel();
+            String value = digitalPhenotypeEventList.get(i).getLabel();
             if(value.equals("In_Vehicle")) {
                 totalRecordsVeic = totalRecordsVeic + 1;
 

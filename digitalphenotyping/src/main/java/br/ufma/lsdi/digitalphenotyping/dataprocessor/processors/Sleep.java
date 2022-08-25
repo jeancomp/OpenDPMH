@@ -66,11 +66,10 @@ public class Sleep extends DataProcessor {
             digitalPhenotypeEvent.setAttributes(listAttributes[2], listValues[2], "Date", false);
         }
 
-        Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent);
+        Log.i(TAG, "#### Situation: " + digitalPhenotypeEvent);
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();
-        //msg.setAvailableAttributesList(new [{"DigitalPhenotypeEvent"}]);
         //msg.setAvailableAttributesList(new [{"RawData"}]);
         msg.setServiceValue(json);
         sendProcessedData(msg);

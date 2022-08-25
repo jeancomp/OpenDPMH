@@ -21,7 +21,6 @@ import br.ufma.lsdi.cddl.CDDL;
 import br.ufma.lsdi.cddl.message.Message;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class Online_Sociability extends DataProcessor {
@@ -110,7 +109,7 @@ public class Online_Sociability extends DataProcessor {
                 }
             }
 
-            Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
+            Log.i(TAG, "#### Situation: " + digitalPhenotypeEvent.toString());
 
             String json = toJson(digitalPhenotypeEvent);
             Message msg = new Message();

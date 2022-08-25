@@ -126,7 +126,7 @@ public class PhysicalActivity extends DataProcessor {
             digitalPhenotypeEvent.setAttributes(listAttributes[2], listValues[2], "Date", false);
         }
 
-        Log.i("PhysicalActivity", "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent);
+        Log.i("PhysicalActivity", "#### Situation: " + digitalPhenotypeEvent);
 
         String json = toJson(digitalPhenotypeEvent);
         Message msg = new Message();

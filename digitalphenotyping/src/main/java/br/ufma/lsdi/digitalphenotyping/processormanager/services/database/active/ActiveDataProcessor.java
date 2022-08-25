@@ -37,8 +37,8 @@ public class ActiveDataProcessor {
     }*/
 
 /*    public List<String> getObjectFromString(String jsonString){
-        Type listType = new TypeToken<DigitalPhenotypeEvent>(){}.getType();
-        DigitalPhenotypeEvent dpe = new Gson().fromJson(jsonString, listType);
+        Type listType = new TypeToken<Situation>(){}.getType();
+        Situation dpe = new Gson().fromJson(jsonString, listType);
         return dpe;
     }*/
 }

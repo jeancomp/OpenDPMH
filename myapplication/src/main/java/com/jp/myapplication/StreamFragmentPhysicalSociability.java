@@ -51,12 +51,12 @@ import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Attribute;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 
 public class StreamFragmentPhysicalSociability extends DemoBase {
     private static final String TAG = StreamFragmentPhysicalSociability.class.getName();
-    private DPManager dpManager = DPManager.getInstance();
+    private final DPManager dpManager = DPManager.getInstance();
     private Button btnFinish;
     private List<PhenotypesEvent> phenotypesEventList = new ArrayList();
     private LineChart holderBackup = null;
@@ -65,11 +65,11 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
     private TextView txtValueRecords;
     private TextView txtRecordDate;
 
-    private HashMap<Long, Integer> audioValue = new HashMap<>();
+    private final HashMap<Long, Integer> audioValue = new HashMap<>();
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd");
-    private SimpleDateFormat dateFormat3 = new SimpleDateFormat("dd-MM-yyyy");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private final SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd");
+    private final SimpleDateFormat dateFormat3 = new SimpleDateFormat("dd-MM-yyyy");
 
     private ListView lv;
 
@@ -89,24 +89,22 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_physical_sociability, viewGroup, false);
 
-        btnFinish = (Button) view.findViewById(R.id.btnFinish);
+        btnFinish = view.findViewById(R.id.btnFinish);
         btnFinish.setOnClickListener(clickListener);
 
-        txtValueRecords = (TextView) view.findViewById(R.id.txtValueRecords);
-        txtRecordDate = (TextView) view.findViewById(R.id.txtRecordDate);
+        txtValueRecords = view.findViewById(R.id.txtValueRecords);
+        txtRecordDate = view.findViewById(R.id.txtRecordDate);
 
         lv = view.findViewById(R.id.listView1);
 
         isStarted = true;
 
         try {
-            phenotypesEventList = dpManager.getInstance().getPhenotypesList("Physical_Sociability");
+            phenotypesEventList = DPManager.getInstance().getPhenotypesList("Physical_Sociability");
             setCardviewSettings();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             setListviewSettings();
         }
         return view;
@@ -127,13 +125,13 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
 
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         isStarted = false;
         super.onDestroy();
     }
 
 
-    public boolean getIsStarted(){
+    public boolean getIsStarted() {
         return this.isStarted;
     }
 
@@ -146,8 +144,8 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
                     try {
                         List<String> dataProcessorsName = new ArrayList();
                         dataProcessorsName.add("Physical_Sociability");
-                        dpManager.getInstance().stopDataProcessors(dataProcessorsName);
-                        Toast.makeText(getContext(), "Finish situation of interest: Physical_Sociability",Toast.LENGTH_SHORT).show();
+                        DPManager.getInstance().stopDataProcessors(dataProcessorsName);
+                        Toast.makeText(getContext(), "Finish situation of interest: Physical_Sociability", Toast.LENGTH_SHORT).show();
                         btnFinish.setEnabled(false);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -163,25 +161,25 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
         String value = String.valueOf(phenotypesEventList.size());
         txtValueRecords.setText(value);
 
-        List<DigitalPhenotypeEvent> digitalPhenotypeEventList = new ArrayList();
+        List<Situation> digitalPhenotypeEventList = new ArrayList();
 
-        for(int i = 0; i < phenotypesEventList.size(); i++){
-            DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+        for (int i = 0; i < phenotypesEventList.size(); i++) {
+            Situation dpe = new Situation();
             String str = phenotypesEventList.get(i).getPhenotypeEvent();
             dpe = phenotypesEventList.get(i).getObjectFromString(str);
             digitalPhenotypeEventList.add(dpe);
         }
 
         long audioLastRecord = 0;
-        for(int i=0; i < digitalPhenotypeEventList.size(); i++){
-            if(digitalPhenotypeEventList.get(i).getSituation().getLabel().equals("Physical_Sociability")){
+        for (int i = 0; i < digitalPhenotypeEventList.size(); i++) {
+            if (digitalPhenotypeEventList.get(i).getLabel().equals("Physical_Sociability")) {
                 List<Attribute> attributeList = new ArrayList();
                 attributeList = digitalPhenotypeEventList.get(i).getAttributes();
-                for(int j=0; j < attributeList.size(); j++) {
-                    if(attributeList.get(j).getType().contains("Date")){
+                for (int j = 0; j < attributeList.size(); j++) {
+                    if (attributeList.get(j).getType().contains("Date")) {
                         String str = attributeList.get(j).getValue();
                         long val = Long.valueOf(str);
-                        if(val > audioLastRecord){
+                        if (val > audioLastRecord) {
                             audioLastRecord = val;
                         }
                         //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
@@ -190,7 +188,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
                 }
             }
         }
-        if(audioLastRecord != 0){
+        if (audioLastRecord != 0) {
             txtRecordDate.setText(String.valueOf(dateFormat.format(audioLastRecord)));
         }
     }
@@ -199,7 +197,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
     public void addAudio(Long timeStamp) throws ParseException {
         try {
             String aux1 = String.valueOf(dateFormat3.format(timeStamp));
-            Date dat = (Date) dateFormat3.parse(aux1);
+            Date dat = dateFormat3.parse(aux1);
             long aux2 = dat.getTime();
             if (!audioValue.containsKey(aux2)) {
                 audioValue.put(aux2, 1);
@@ -209,13 +207,13 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
                 value = value + 1;
                 audioValue.put(aux2, value);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    public void setListviewSettings(){
+    public void setListviewSettings() {
         list.add(new LineChartItem(generateDataLine(3 + 1), getContext()));
 
         ChartDataAdapter cda = new ChartDataAdapter(getContext(), list);
@@ -229,7 +227,9 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
     }
 
 
-    /** adapter that supports 3 different item types */
+    /**
+     * adapter that supports 3 different item types
+     */
     private class ChartDataAdapter extends ArrayAdapter<ChartItem> {
 
         ChartDataAdapter(Context context, List<ChartItem> objects) {
@@ -271,7 +271,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
         values1.add(new Entry(i, (int) (Math.random() * 65) + 40));
     }*/
         for (HashMap.Entry<Long, Integer> entry : audioValue.entrySet()) {
-            System.out.printf("#### Audio: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            System.out.printf("#### Audio: %s -> %s%n", dateFormat2.format(entry.getKey()), entry.getValue());
             values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
         }
 
@@ -330,7 +330,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
-            entries.add(new PieEntry((float) ((Math.random() * 70) + 30), "Quarter " + (i+1)));
+            entries.add(new PieEntry((float) ((Math.random() * 70) + 30), "Quarter " + (i + 1)));
         }
 
         PieDataSet d = new PieDataSet(entries, "");
@@ -438,7 +438,7 @@ public class StreamFragmentPhysicalSociability extends DemoBase {
 
             // set data
             holder.chart.setData((LineData) mChartData);
-            holderBackup = (LineChart)holder.chart;
+            holderBackup = holder.chart;
 
             // do not forget to refresh the chart
             // holder.chart.invalidate();

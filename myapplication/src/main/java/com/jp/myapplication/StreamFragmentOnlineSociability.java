@@ -52,23 +52,23 @@ import java.util.List;
 
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.database.PhenotypesEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Attribute;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
+import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dpmanager.DPManager;
 
 public class StreamFragmentOnlineSociability extends DemoBase {
     private static final String TAG = StreamFragmentOnlineSociability.class.getName();
-    private DPManager dpManager = DPManager.getInstance();
+    private final DPManager dpManager = DPManager.getInstance();
     private List<PhenotypesEvent> phenotypesEventList = new ArrayList();
     private Button btnFinish;
     private LineChart holderBackup = null;
     private boolean isStarted = false;
 
-    private HashMap<Long, Integer> callValue = new HashMap<>();
-    private HashMap<Long, Integer> SMSValue = new HashMap<>();
+    private final HashMap<Long, Integer> callValue = new HashMap<>();
+    private final HashMap<Long, Integer> SMSValue = new HashMap<>();
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-    private SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd");
-    private SimpleDateFormat dateFormat3 = new SimpleDateFormat("dd-MM-yyyy");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+    private final SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd");
+    private final SimpleDateFormat dateFormat3 = new SimpleDateFormat("dd-MM-yyyy");
 
     private TextView txtEntradaCall;
     private TextView txtSaidaCall;
@@ -98,30 +98,29 @@ public class StreamFragmentOnlineSociability extends DemoBase {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_online_sociability, viewGroup, false);
-        btnFinish = (Button) view.findViewById(R.id.btnFinish);
+        btnFinish = view.findViewById(R.id.btnFinish);
         btnFinish.setOnClickListener(clickListener);
 
-        txtEntradaCall = (TextView) view.findViewById(R.id.txtEntradaCall);
-        txtSaidaCall = (TextView) view.findViewById(R.id.txtSaidaCall);
-        txtPerdidaCall = (TextView) view.findViewById(R.id.txtPerdidaCall);
+        txtEntradaCall = view.findViewById(R.id.txtEntradaCall);
+        txtSaidaCall = view.findViewById(R.id.txtSaidaCall);
+        txtPerdidaCall = view.findViewById(R.id.txtPerdidaCall);
 
-        txtEntradaSMS = (TextView) view.findViewById(R.id.txtEntradaSMS);
-        txtSaidaSMS = (TextView) view.findViewById(R.id.txtSaidaSMS);
+        txtEntradaSMS = view.findViewById(R.id.txtEntradaSMS);
+        txtSaidaSMS = view.findViewById(R.id.txtSaidaSMS);
 
-        txtCallRecordDate = (TextView) view.findViewById(R.id.txtCallRecordDate);
-        txtSMSRecordDate = (TextView) view.findViewById(R.id.txtSMSRecordDate);
+        txtCallRecordDate = view.findViewById(R.id.txtCallRecordDate);
+        txtSMSRecordDate = view.findViewById(R.id.txtSMSRecordDate);
 
         lv = view.findViewById(R.id.listView1);
 
         isStarted = true;
 
         try {
-            phenotypesEventList = dpManager.getInstance().getPhenotypesList("Online_Sociability");
+            phenotypesEventList = DPManager.getInstance().getPhenotypesList("Online_Sociability");
             setCardviewSettings();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             setListviewSettings();
         }
         return view;
@@ -142,13 +141,13 @@ public class StreamFragmentOnlineSociability extends DemoBase {
 
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         isStarted = false;
         super.onDestroy();
     }
 
 
-    public boolean getIsStarted(){
+    public boolean getIsStarted() {
         return this.isStarted;
     }
 
@@ -161,8 +160,8 @@ public class StreamFragmentOnlineSociability extends DemoBase {
                     try {
                         List<String> dataProcessorsName = new ArrayList();
                         dataProcessorsName.add("Online_Sociability");
-                        dpManager.getInstance().stopDataProcessors(dataProcessorsName);
-                        Toast.makeText(getContext(), "Finish situation of interest: Online_Sociability",Toast.LENGTH_SHORT).show();
+                        DPManager.getInstance().stopDataProcessors(dataProcessorsName);
+                        Toast.makeText(getContext(), "Finish situation of interest: Online_Sociability", Toast.LENGTH_SHORT).show();
                         btnFinish.setEnabled(false);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -175,10 +174,10 @@ public class StreamFragmentOnlineSociability extends DemoBase {
 
 
     public void setCardviewSettings() throws ParseException {
-        List<DigitalPhenotypeEvent> digitalPhenotypeEventList = new ArrayList();
+        List<Situation> digitalPhenotypeEventList = new ArrayList();
 
-        for(int i = 0; i < phenotypesEventList.size(); i++){
-            DigitalPhenotypeEvent dpe = new DigitalPhenotypeEvent();
+        for (int i = 0; i < phenotypesEventList.size(); i++) {
+            Situation dpe = new Situation();
             String str = phenotypesEventList.get(i).getPhenotypeEvent();
             dpe = phenotypesEventList.get(i).getObjectFromString(str);
             digitalPhenotypeEventList.add(dpe);
@@ -191,11 +190,11 @@ public class StreamFragmentOnlineSociability extends DemoBase {
         int total_saida_sms_record = 0;
         long callLastRecord = 0;
         long SMSRecordDate = 0;
-        for(int i=0; i < digitalPhenotypeEventList.size(); i++){
-            if(digitalPhenotypeEventList.get(i).getSituation().getLabel().equals("PhoneCall_Online_Sociability")){
+        for (int i = 0; i < digitalPhenotypeEventList.size(); i++) {
+            if (digitalPhenotypeEventList.get(i).getLabel().equals("PhoneCall_Online_Sociability")) {
                 List<Attribute> attributeList = new ArrayList();
                 attributeList = digitalPhenotypeEventList.get(i).getAttributes();
-                for(int j=0; j < attributeList.size(); j++) {
+                for (int j = 0; j < attributeList.size(); j++) {
                     if (attributeList.get(j).getValue().contains("Incoming_call")) {
                         total_entrada_call_record = total_entrada_call_record + 1;
                     } else if (attributeList.get(j).getValue().contains("Outgoing_call")) {
@@ -203,29 +202,28 @@ public class StreamFragmentOnlineSociability extends DemoBase {
                     } else if (attributeList.get(j).getValue().contains("Missed_call")) {
                         total_perdida_call_record = total_perdida_call_record + 1;
                     }
-                    if(attributeList.get(j).getType().contains("Date")){
+                    if (attributeList.get(j).getType().contains("Date")) {
                         String str = attributeList.get(j).getValue();
                         long val = Long.valueOf(str);
-                        if(val > callLastRecord){
+                        if (val > callLastRecord) {
                             callLastRecord = val;
                         }
                         //values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
                         addCall(val);
                     }
                 }
-            }
-            else if(digitalPhenotypeEventList.get(i).getSituation().getLabel().equals("SMS_Online_Sociability")){
+            } else if (digitalPhenotypeEventList.get(i).getLabel().equals("SMS_Online_Sociability")) {
                 List<Attribute> attributeList = new ArrayList();
                 attributeList = digitalPhenotypeEventList.get(i).getAttributes();
-                for(int j=0; j < attributeList.size(); j++) {
+                for (int j = 0; j < attributeList.size(); j++) {
                     if (attributeList.get(j).getValue().contains("Sms_incoming")) {
                         total_entrada_sms_record = total_entrada_sms_record + 1;
                     } else if (attributeList.get(j).getValue().contains("Sms_outgoing")) {
                         total_saida_sms_record = total_saida_sms_record + 1;
                     }
-                    if(attributeList.get(j).getType().contains("Date")){
+                    if (attributeList.get(j).getType().contains("Date")) {
                         long val = Long.parseLong(attributeList.get(j).getValue());
-                        if(val > SMSRecordDate){
+                        if (val > SMSRecordDate) {
                             SMSRecordDate = val;
                         }
                         //values2.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(val))),1));
@@ -242,10 +240,10 @@ public class StreamFragmentOnlineSociability extends DemoBase {
         txtEntradaSMS.setText(String.valueOf(total_entrada_sms_record));
         txtSaidaSMS.setText(String.valueOf(total_saida_sms_record));
 
-        if(callLastRecord != 0){
+        if (callLastRecord != 0) {
             txtCallRecordDate.setText(String.valueOf(dateFormat.format(callLastRecord)));
         }
-        if(SMSRecordDate != 0){
+        if (SMSRecordDate != 0) {
             txtSMSRecordDate.setText(String.valueOf(dateFormat.format(SMSRecordDate)));
         }
     }
@@ -254,7 +252,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
     public void addCall(Long timeStamp) throws ParseException {
         try {
             String aux1 = String.valueOf(dateFormat3.format(timeStamp));
-            Date dat = (Date) dateFormat3.parse(aux1);
+            Date dat = dateFormat3.parse(aux1);
             long aux2 = dat.getTime();
             Log.i(TAG, "#### aux: " + aux1);
             if (!callValue.containsKey(aux2)) {
@@ -265,7 +263,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
                 value = value + 1;
                 callValue.put(aux2, value);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -274,7 +272,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
     public void addSMS(Long timeStamp) throws ParseException {
         try {
             String aux1 = String.valueOf(dateFormat3.format(timeStamp));
-            Date dat = (Date) dateFormat3.parse(aux1);
+            Date dat = dateFormat3.parse(aux1);
             long aux2 = dat.getTime();
             if (!SMSValue.containsKey(aux2)) {
                 SMSValue.put(aux2, 1);
@@ -284,13 +282,13 @@ public class StreamFragmentOnlineSociability extends DemoBase {
                 value = value + 1;
                 SMSValue.put(aux2, value);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    public void setListviewSettings(){
+    public void setListviewSettings() {
         list.add(new LineChartItem(generateDataLine(3 + 1), getContext()));
 
         ChartDataAdapter cda = new ChartDataAdapter(getContext(), list);
@@ -304,7 +302,9 @@ public class StreamFragmentOnlineSociability extends DemoBase {
     }
 
 
-    /** adapter that supports 3 different item types */
+    /**
+     * adapter that supports 3 different item types
+     */
     private class ChartDataAdapter extends ArrayAdapter<ChartItem> {
 
         ChartDataAdapter(Context context, List<ChartItem> objects) {
@@ -346,7 +346,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
         values1.add(new Entry(i, (int) (Math.random() * 65) + 40));
     }*/
         for (HashMap.Entry<Long, Integer> entry : callValue.entrySet()) {
-            System.out.printf("#### Call: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            System.out.printf("#### Call: %s -> %s%n", dateFormat2.format(entry.getKey()), entry.getValue());
             values1.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
         }
 
@@ -362,7 +362,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
         values2.add(new Entry(i, values1.get(i).getY() - 30));
     }*/
         for (HashMap.Entry<Long, Integer> entry : SMSValue.entrySet()) {
-            System.out.printf("#### SMS: %s -> %s%n", String.valueOf(dateFormat2.format(entry.getKey())), entry.getValue());
+            System.out.printf("#### SMS: %s -> %s%n", dateFormat2.format(entry.getKey()), entry.getValue());
             values2.add(new Entry(Integer.valueOf(String.valueOf(dateFormat2.format(entry.getKey()))), entry.getValue()));
         }
 
@@ -415,7 +415,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
         ArrayList<PieEntry> entries = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
-            entries.add(new PieEntry((float) ((Math.random() * 70) + 30), "Quarter " + (i+1)));
+            entries.add(new PieEntry((float) ((Math.random() * 70) + 30), "Quarter " + (i + 1)));
         }
 
         PieDataSet d = new PieDataSet(entries, "");
@@ -523,7 +523,7 @@ public class StreamFragmentOnlineSociability extends DemoBase {
 
             // set data
             holder.chart.setData((LineData) mChartData);
-            holderBackup = (LineChart)holder.chart;
+            holderBackup = holder.chart;
 
             // do not forget to refresh the chart
             // holder.chart.invalidate();

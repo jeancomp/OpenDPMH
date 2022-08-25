@@ -23,7 +23,6 @@ import br.ufma.lsdi.cddl.pubsub.SubscriberFactory;
 import br.ufma.lsdi.digitalphenotyping.SaveActivity;
 import br.ufma.lsdi.digitalphenotyping.Topics;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.base.DataProcessor;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.util.AlarmAudio;
 
@@ -169,8 +168,6 @@ public class Physical_Sociability extends DataProcessor {
             if (!listAttributes[2].isEmpty() && !listServiceValue[2].isEmpty()) {
                 digitalPhenotypeEvent.setAttributes(listAttributes[2], listServiceValue[2], "Date", false);
             }
-
-            //Log.i(TAG, "#### DigitalPhenotypeEvent: " + digitalPhenotypeEvent.toString());
 
             String json = toJson(digitalPhenotypeEvent);
             Message msg = new Message();

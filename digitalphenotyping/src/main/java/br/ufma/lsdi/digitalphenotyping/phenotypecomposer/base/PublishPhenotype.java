@@ -9,7 +9,6 @@ import br.ufma.lsdi.cddl.network.ConnectionImpl;
 import br.ufma.lsdi.cddl.pubsub.Publisher;
 import br.ufma.lsdi.cddl.pubsub.PublisherFactory;
 import br.ufma.lsdi.digitalphenotyping.Topics;
-import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.DigitalPhenotypeEvent;
 import br.ufma.lsdi.digitalphenotyping.dataprocessor.digitalphenotypeevent.Situation;
 
 public class PublishPhenotype {
@@ -47,11 +46,9 @@ public class PublishPhenotype {
         publisher.publish(message);
     }
 
-    //Lista de DigitalPhenotypeEvent dentro do DigitalPhenotype
+    //Lista de Situation dentro do DigitalPhenotype
     public void publishPhenotypeComposer(DigitalPhenotype digitalPhenotypeList) {
         try{
-            //Log.i(TAG,"#### TOTAL: " + digitalPhenotypeList.getDigitalPhenotypeEventList().size());
-
             Situation dpe = new Situation();
             DigitalPhenotype dp = new DigitalPhenotype();
             Message msg = new Message();
