@@ -5,6 +5,7 @@ OpenDPMH is a framework for developing mobile sensing applications able to colle
 
 <p align="center">
   <img src="https://github.com/jeancomp/OpenDPMH/blob/master/open-dpmh-example.jpg" alt="OpenDPMH" width="300" />
+  <img src="https://github.com/jeancomp/OpenDPMH/blob/master/open-dpmh-example_2.jpg" alt="OpenDPMH2" width="300" />
 </p>
 
 ## 📋 Requirements
