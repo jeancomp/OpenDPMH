@@ -1,0 +1,16 @@
+@software {10178808,
+author = {J. Mendes and F. Silva and A. Cardoso and I. Moura and L. Coutinho and D. Viana and M. Endler and A. S. Teles},
+booktitle = {2023 IEEE 36th International Symposium on Computer-Based Medical Systems (CBMS)},
+title = {OpenDPMH: A Framework for Developing Mobile Sensing Applications of Digital Phenotyping},
+year = {2023},
+volume = {},
+issn = {},
+pages = {198-203},
+abstract = {Digital Phenotyping of Mental Health (DPMH) aims to passively collect data from ubiquitous devices to be used as evidence in the process of diagnosis, treatment, and monitoring. Literature presents different sensing mobile applications for digital phenotyping, however they are not extensible and can not be customized for use in other research. In this paper, we propose OpenDPMH, a framework for developing mobile sensing applications able to collect contextual data in order to produce useful user information that represent situations of interest for mental health professionals and researchers, such as human behaviors and habits. Our solution is extensible and reusable, as it allows the inclusion of modules for collecting and processing new raw context data with features for data distribution. By implementing a case study, we demonstrate that OpenDPMH is suitable for the development of DPMH mobile applications. Moreover, we carried out experiments to evaluate the energy consumption on smartphones, which demonstrate a low battery cost to run applications developed using the proposed framework.},
+keywords = {energy consumption;costs;mental health;sensors;mobile applications;behavioral sciences;batteries},
+doi = {10.1109/CBMS58004.2023.00216},
+url = {https://doi.ieeecomputersociety.org/10.1109/CBMS58004.2023.00216},
+publisher = {IEEE Computer Society},
+address = {Los Alamitos, CA, USA},
+month = {jun}
+}
