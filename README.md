@@ -45,7 +45,7 @@ digitalPhenotypingManager.stop();
 
 ### [Plugin Repository](https://github.com/jeancomp/Plugin)
 
-## Cited Article IEEE Xplore
+## 🤖 Access our article in IEEE Xplore
 
 ### [IEEE Xplore](https://ieeexplore.ieee.org/abstract/document/10178808)
 
